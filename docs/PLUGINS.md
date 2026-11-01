@@ -58,5 +58,6 @@ Available to scripts (sandboxed: no files, no network):
 2. Add the satellite profile and the plugin to `catalog/index.json`.
 3. Open a pull request. CI validates the manifest and the catalog and runs the plugin on its test data.
 
-Status: the manifest and catalog format are in place (`core/crates/sh-plugin`); the Luau runtime
+Status: the manifest and catalog format are in place (`core/crates/sh-plugin`); the plan and
+milestones for the runtime and the chains are in DECODERS_ROADMAP.md. The Luau runtime
 and the AFSK1200 / AX.25 chain are the next step.
