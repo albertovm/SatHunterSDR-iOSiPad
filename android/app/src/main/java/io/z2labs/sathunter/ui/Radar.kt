@@ -66,7 +66,7 @@ fun Radar(
         Modifier
             .offset { IntOffset(off.x.roundToInt(), off.y.roundToInt()) }
             .size(sizeDp, sizeDp + 40.dp)
-            .background(Color(0xD90A0E14), RoundedCornerShape(12.dp))
+            .background(Color(0xA60A0E14), RoundedCornerShape(12.dp))
             .pointerInput(Unit) { detectDragGestures { c, drag -> c.consume(); off += drag } }
             .pointerInput(compassOn) {
                 detectTapGestures { p ->

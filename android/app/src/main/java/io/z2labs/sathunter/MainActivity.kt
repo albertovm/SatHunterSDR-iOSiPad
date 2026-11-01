@@ -1,5 +1,8 @@
 package io.z2labs.sathunter
 
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.Intent
@@ -10,6 +13,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -20,6 +25,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,6 +45,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import io.z2labs.sathunter.ui.Bg
+import io.z2labs.sathunter.ui.Panel
 import io.z2labs.sathunter.ui.ReceiverScreen
 import io.z2labs.sathunter.ui.SatHunterTheme
 import io.z2labs.sathunter.ui.SatScreen
@@ -156,17 +164,27 @@ class MainActivity : ComponentActivity() {
             if (on) compass.start() else compass.stop()
         }
 
+        // Landscape: the tabs go to a slim rail on the side, the height is for the plot
+        val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
         Scaffold(
             containerColor = Bg,
             bottomBar = {
-                if (!full) NavigationBar {
+                if (!full && !landscape) NavigationBar {
                     NavigationBarItem(selected = tab == 0, onClick = { tab = 0 }, icon = { Icon(Icons.Filled.Radio, null) }, label = { Text("Receiver") })
                     NavigationBarItem(selected = tab == 1, onClick = { tab = 1 }, icon = { Icon(Icons.Filled.SatelliteAlt, null) }, label = { Text("Satellites") })
                     NavigationBarItem(selected = tab == 2, onClick = { tab = 2 }, icon = { Icon(Icons.Filled.Settings, null) }, label = { Text("Settings") })
                 }
             },
         ) { pad ->
-            Box(Modifier.fillMaxSize().padding(pad)) {
+            Row(Modifier.fillMaxSize().padding(pad)) {
+            if (!full && landscape) {
+                NavigationRail(containerColor = Panel) {
+                    NavigationRailItem(selected = tab == 0, onClick = { tab = 0 }, icon = { Icon(Icons.Filled.Radio, null) }, label = { Text("Receiver") })
+                    NavigationRailItem(selected = tab == 1, onClick = { tab = 1 }, icon = { Icon(Icons.Filled.SatelliteAlt, null) }, label = { Text("Satellites") })
+                    NavigationRailItem(selected = tab == 2, onClick = { tab = 2 }, icon = { Icon(Icons.Filled.Settings, null) }, label = { Text("Settings") })
+                }
+            }
+            Box(Modifier.weight(1f).fillMaxHeight()) {
                 when (tab) {
                     0 -> ReceiverScreen(
                         st = st, detail = detail, pose = pose, compassOn = compassOn, radarOn = radarOn, muted = muted,
@@ -198,6 +216,7 @@ class MainActivity : ComponentActivity() {
                         },
                     )
                 }
+            }
             }
         }
         error?.let { e ->
