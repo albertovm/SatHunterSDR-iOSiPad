@@ -744,7 +744,11 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
                     i.note(format!("recording {name} closed: the sample rate changed"));
                 }
             } else if let Some(r) = rec.as_mut() {
-                r.push(&b.samples, b.center_hz);
+                let sat = {
+                    let sel = lock(&i.cfg).selected;
+                    sel.and_then(|n| lock(&i.sat).sats.iter().find(|s| s.norad == n).map(|s| (n, s.name.clone())))
+                };
+                r.push(&b.samples, b.center_hz, p.vfo_hz, sat);
             }
         }
         let offset = p.vfo_hz - b.center_hz;

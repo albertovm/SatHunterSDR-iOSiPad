@@ -30,3 +30,28 @@ Analyse a recording (spectrum, carriers, CW at the VFO, waterfall image):
 
 /8 decimation keeps the files small: 300 kS/s = 1.2 MB/s (a 10-minute pass: ~720 MB);
 the full 2.4 MS/s is 9.6 MB/s.
+
+## 2026-11-01 11:44 UTC, CUBEBUG-2 (LO-74) AFSK1200 + a second signal, IQ recording
+
+`baseband_437246965Hz_11-44-52_01-11-2026.wav`: 170.6 s at 1.024 MS/s (no decimation), RTL-SDR v3,
+manual gain 12.4 dB, bias tee on (SkywalkerLNA), tracking CUBEBUG-2; the antenna was turned
+between two satellites during the recording. No lost blocks.
+
+| | |
+|---|---|
+| CUBEBUG-2 frames | every 32.6 s, 1.75 s long: ~240 ms 1200 Hz, ~750 ms of HDLC flags, then the frame. Decoded 3 of 5 with a good CRC (prototype AFSK1200 + PLL clock recovery + HDLC): `CUBEB2-6>CQ: Manolito ad astra! 73 to LU1VZ, LU7AA, and all my HAM friends!` |
+| CUBEBUG-2 signal | carrier 42 dB over the noise in a 15.6 Hz bin, about C/N0 55 dB-Hz (the simulator's budget predicted 50–60). FM deviation small (~±660 Hz), Bell 202 tones 1200 / 2200 Hz |
+| Doppler | burst centres 437.4501 → 437.4406 MHz over 131 s (−72 Hz/s); zero crossing ~437.4466 MHz, i.e. +1.6 kHz (3.7 ppm) over the 437.445 MHz in the database |
+| 437.2017 MHz | a 6 s burst and a 0.75 s one every ~60 s, ~8 kHz wide, no Doppler between bursts 60 s apart and the same audio content each time: a terrestrial periodic transmission, not a LEO satellite |
+| Other | spurs at 437.120 and 437.497 MHz all the time; a 5-line comb (437.459…437.535 MHz, 19 kHz apart) for 11 s at t = 37 s, no Doppler: local interference / intermodulation. The noise floor steps with the antenna turning between sky and ground |
+| Level | total −28.5 dBFS, no clipping: with the LNA the noise is ~16 dB over the ADC's own, 12.4 dB gain loses ~0.1 dB; anything from 12 to 25 dB is fine with this chain |
+
+The CUBEBUG-2 burst is kept as a test vector for the AFSK1200 / AX.25 chain (M9):
+`core/crates/sh-dsp/testdata/cubebug2_afsk1200_64k.wav` (64 kS/s IQ centred on the burst, 2.4 s,
+the expected text in its "shmd" chunk). Lessons for the chain: a PLL clock recovery is needed
+(a fixed sampling phase loses the frame over ~1000 bits), and the long flag preamble must not
+confuse the squelch / AGC.
+
+Since this recording the recorder also logs, with their time, satellite changes and VFO jumps
+of more than 5 kHz ("events" in the JSON chunk), so a recording that hops between satellites
+can be cut apart.
