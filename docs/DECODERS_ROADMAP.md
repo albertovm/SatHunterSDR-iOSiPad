@@ -26,7 +26,7 @@ NOAA APT is not on the list: NOAA-15/18/19 were switched off in 2025.
 | Milestone | Target | Contents |
 |---|---|---|
 | **M1 — Plugin runtime + CW** | 2026-11-15, beta 10 | Luau runtime (sandboxed: `show.*`, `bytes.*`), loader for built-in and catalog plugins; streaming CW chain; decoder panel under the waterfall (log, live values); generic `cw-beacon` plugin; ITUPSAT 1 test from the 2026-11-01 recording; CI runs plugin tests |
-| **M2 — APRS + SSTV** | 2026-11-29, beta 11 | AFSK1200 / HDLC / AX.25 chain; `iss-aprs` live with map pins; SSTV (Robot36, PD120) for ISS events; IQ / audio test vectors from SatNOGS observations |
+| **M2 — APRS + SSTV** | 2026-11-29, beta 11 | AFSK1200 / HDLC / AX.25 chain (prototype decoded CUBEBUG-2 from a field recording; test vector in sh-dsp/testdata); `iss-aprs` live with map pins; SSTV (Robot36, PD120) for ISS events; IQ / audio test vectors from SatNOGS observations |
 | **M3 — 9k6 telemetry** | 2026-12-13, beta 12 | G3RUH FSK9600 and GMSK chains; a generic AX.25 telemetry plugin; plugins for 2–3 of the best-heard 9k6 satellites (by the "Best heard" list) |
 | **M4 — FUNcube and Fox** | 2027-01-17, 0.3 | BPSK 1200 with FUNcube FEC; Fox DUV; their telemetry plugins |
 | **M5 — Meteor LRPT** | 2027-02-28, 0.4 | QPSK / Viterbi / RS / JPEG; first on the desktop tools, on the phone if the CPU allows |

@@ -29,6 +29,10 @@ pub struct Recorder {
     pub dropped: u64,
     retunes: Vec<(f64, f64)>,
     last_center: f64,
+    /// VFO jumps and satellite changes (what was listened to when), with their time
+    events: Vec<Value>,
+    last_vfo: f64,
+    last_sat: Option<u64>,
     meta: Value,
 }
 
@@ -122,16 +126,30 @@ impl Recorder {
             dropped: 0,
             retunes: vec![(0.0, center_hz)],
             last_center: center_hz,
+            events: Vec::new(),
+            last_vfo: f64::NAN,
+            last_sat: None,
             meta,
         })
     }
 
     /// Hand over a block (from the DSP thread). `center_hz`: the block's tuning; a change is
-    /// logged with its time in the recording.
-    pub fn push(&mut self, samples: &[sh_dsp::Complex32], center_hz: f64) {
+    /// logged with its time in the recording. `vfo_hz` and `sat` (selected NORAD id): a VFO
+    /// jump of more than 5 kHz (not the slow Doppler steps) and a satellite change are logged
+    /// too, so a recording that hops between satellites can be cut apart afterwards.
+    pub fn push(&mut self, samples: &[sh_dsp::Complex32], center_hz: f64, vfo_hz: f64, sat: Option<(u64, String)>) {
         if (center_hz - self.last_center).abs() > 0.5 {
             self.retunes.push((self.seconds(), center_hz));
             self.last_center = center_hz;
+        }
+        let norad = sat.as_ref().map(|s| s.0);
+        if norad != self.last_sat || self.last_vfo.is_nan() {
+            self.events.push(json!({ "t_s": self.seconds(), "satellite": sat.as_ref().map(|s| json!({ "norad": s.0, "name": s.1 })), "vfo_hz": vfo_hz }));
+            self.last_sat = norad;
+            self.last_vfo = vfo_hz;
+        } else if (vfo_hz - self.last_vfo).abs() > 5_000.0 {
+            self.events.push(json!({ "t_s": self.seconds(), "vfo_hz": vfo_hz }));
+            self.last_vfo = vfo_hz;
         }
         let v: Vec<i16> = samples
             .iter()
@@ -162,6 +180,7 @@ impl Recorder {
         meta["duration_s"] = json!(self.seconds());
         meta["dropped_blocks"] = json!(self.dropped);
         meta["retunes"] = json!(self.retunes.iter().map(|(t, f)| json!({"t_s": t, "center_hz": f})).collect::<Vec<_>>());
+        meta["events"] = json!(self.events);
         let _ = self.tx.send(Msg::Finish(meta.clone()));
         let t = self.thread.take().ok_or("recorder already closed")?;
         t.join().map_err(|_| "recorder thread panicked".to_string())?.map_err(|e| e.to_string())?;
@@ -237,11 +256,18 @@ mod tests {
         let mut nco = Nco::new(-12_345.0, rate);
         let block: Vec<Complex32> = (0..30_000).map(|_| nco.next() * 0.5).collect();
         for k in 0..10 {
-            r.push(&block, if k < 5 { 437.3e6 } else { 437.31e6 });
+            let sat = if k < 7 { Some((39440, "CUBEBUG-2".to_string())) } else { Some((25544, "ISS".to_string())) };
+            let vfo = if k == 3 { 437.33e6 } else { 437.32e6 + k as f64 * 10.0 }; // a jump, and Doppler steps
+            r.push(&block, if k < 5 { 437.3e6 } else { 437.31e6 }, vfo, sat);
             std::thread::sleep(std::time::Duration::from_millis(2));
         }
         let meta = r.finish(json!({"mode": "CW"})).unwrap();
         assert_eq!(meta["retunes"].as_array().unwrap().len(), 2);
+        // start, the jump at block 3, back at block 4, the satellite change at block 7
+        let ev = meta["events"].as_array().unwrap();
+        assert_eq!(ev.len(), 4, "{ev:?}");
+        assert_eq!(ev[0]["satellite"]["name"], "CUBEBUG-2");
+        assert_eq!(ev[3]["satellite"]["norad"], 25544);
         let (fs, iq, m) = read_wav(&std::fs::read(&path).unwrap()).unwrap();
         assert_eq!(fs, rate);
         assert_eq!(iq.len(), 300_000);
