@@ -46,7 +46,7 @@ between two satellites during the recording. No lost blocks.
 | Other | spurs at 437.120 and 437.497 MHz all the time; a 5-line comb (437.459…437.535 MHz, 19 kHz apart) for 11 s at t = 37 s, no Doppler: local interference / intermodulation. The noise floor steps with the antenna turning between sky and ground |
 | Level | total −28.5 dBFS, no clipping: with the LNA the noise is ~16 dB over the ADC's own, 12.4 dB gain loses ~0.1 dB; anything from 12 to 25 dB is fine with this chain |
 
-The CUBEBUG-2 burst is kept as a test vector for the AFSK1200 / AX.25 chain (M2):
+The CUBEBUG-2 burst is kept as a test vector for the AFSK1200 / AX.25 chain (M9):
 `core/crates/sh-dsp/testdata/cubebug2_afsk1200_64k.wav` (64 kS/s IQ centred on the burst, 2.4 s,
 the expected text in its "shmd" chunk). Lessons for the chain: a PLL clock recovery is needed
 (a fixed sampling phase loses the frame over ~1000 bits), and the long flag preamble must not
