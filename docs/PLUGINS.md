@@ -58,6 +58,7 @@ Available to scripts (sandboxed: no files, no network):
 2. Add the satellite profile and the plugin to `catalog/index.json`.
 3. Open a pull request. CI validates the manifest and the catalog and runs the plugin on its test data.
 
-Status: the manifest and catalog format are in place (`core/crates/sh-plugin`); the plan and
-milestones for the runtime and the chains are in DECODERS_ROADMAP.md. The Luau runtime
-and the AFSK1200 / AX.25 chain are the next step.
+Status: the manifest and catalog format and the Luau runtime are in place (`core/crates/sh-plugin`,
+`runtime.rs`: sandboxed, 50 ms per call, 16 MB; `show.*`, `bytes.*`, `aprs.position`). The CI runs
+every plugin's `test/frames.txt` against `test/expected.txt`. The signal chains (streaming CW first,
+then AFSK1200 / AX.25) and the decoder panel in the app are next; see DECODERS_ROADMAP.md.
