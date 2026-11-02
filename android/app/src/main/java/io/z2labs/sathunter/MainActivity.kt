@@ -50,6 +50,7 @@ import io.z2labs.sathunter.ui.ReceiverScreen
 import io.z2labs.sathunter.ui.SatHunterTheme
 import io.z2labs.sathunter.ui.SatScreen
 import io.z2labs.sathunter.ui.SettingsScreen
+import io.z2labs.sathunter.ui.UpdateBanner
 
 class MainActivity : ComponentActivity() {
     private lateinit var engine: Engine
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var gps: Gps
     private lateinit var usb: UsbSdrs
     private lateinit var recorder: IqRecorder
+    private lateinit var updater: Updater
     private val prefs by lazy { getSharedPreferences("ui", MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +72,7 @@ class MainActivity : ComponentActivity() {
             compass.setPosition(l.latitude, l.longitude, l.altitude)
         }
         recorder = IqRecorder(this, engine)
+        updater = Updater(applicationContext).also { Updater.instance = it }
         usb = UsbSdrs(this, engine)
         usb.register()
         setContent { SatHunterTheme { App() } }
@@ -143,6 +146,11 @@ class MainActivity : ComponentActivity() {
             }
         }
         LaunchedEffect(st.running) { if (st.running) audio.start() else audio.stop() }
+        // Look for a newer release once per start; the lab link can ask for an update too
+        val upd by updater.state.collectAsState()
+        var updDismissed by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { updater.check() }
+        LaunchedEffect(st.updateReq) { if (st.updateReq > 0) { updDismissed = false; updater.check(st.updatePrerelease, thenInstall = true) } }
         // The engine closes a recording itself when the receiver stops: publish the file
         LaunchedEffect(st.recording == null) { if (st.recording == null) recorder.finishedElsewhere() }
         val saved by recorder.saved.collectAsState()
@@ -168,6 +176,9 @@ class MainActivity : ComponentActivity() {
         val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
         Scaffold(
             containerColor = Bg,
+            topBar = {
+                if (!full && !updDismissed) UpdateBanner(upd, onUpdate = { updater.install(it) }, onDismiss = { updDismissed = true })
+            },
             bottomBar = {
                 if (!full && !landscape) NavigationBar {
                     NavigationBarItem(selected = tab == 0, onClick = { tab = 0 }, icon = { Icon(Icons.Filled.Radio, null) }, label = { Text("Receiver") })
@@ -206,7 +217,7 @@ class MainActivity : ComponentActivity() {
                         prefs.edit().putBoolean("radar", it).apply()
                     }
                     else -> SettingsScreen(
-                        st = st, engine = engine, compassOn = compassOn, onCompass = { setCompass(it) }, gpsInfo = gpsInfo,
+                        st = st, engine = engine, updater = updater, compassOn = compassOn, onCompass = { setCompass(it) }, gpsInfo = gpsInfo,
                         onFollowGps = { on ->
                             engine.followGps(on)
                             if (on) {

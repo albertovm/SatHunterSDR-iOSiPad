@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import io.z2labs.sathunter.BuildConfig
 import io.z2labs.sathunter.Engine
 import io.z2labs.sathunter.Status
+import io.z2labs.sathunter.Updater
+import androidx.compose.runtime.collectAsState
 
 @Composable
 private fun Section(title: String) {
@@ -45,6 +47,7 @@ private fun Section(title: String) {
 fun SettingsScreen(
     st: Status,
     engine: Engine,
+    updater: Updater,
     compassOn: Boolean,
     onCompass: (Boolean) -> Unit,
     gpsInfo: String,
@@ -185,6 +188,20 @@ fun SettingsScreen(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Compass (turn the radar with the phone, aim at the satellite)", Modifier.weight(1f), fontSize = 14.sp)
             Switch(checked = compassOn, onCheckedChange = onCompass)
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Updates")
+        val upd by updater.state.collectAsState()
+        var pre by remember { mutableStateOf(updater.includePrerelease) }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Beta and lab builds too", Modifier.weight(1f), fontSize = 14.sp)
+            Switch(checked = pre, onCheckedChange = { pre = it; updater.includePrerelease = it })
+        }
+        Text(updateText(upd), color = Dim, fontSize = 12.sp)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { updater.check(pre) }) { Text("Check now") }
+            (upd as? Updater.State.Available)?.let { a -> Button(onClick = { updater.install(a.rel) }) { Text("Install ${a.rel.tag}") } }
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))

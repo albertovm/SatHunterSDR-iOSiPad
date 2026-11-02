@@ -89,6 +89,8 @@ struct Inner {
     running: AtomicBool,
     /// Decimation the running source applies (1 = none): the span is rate / decim
     decim: std::sync::atomic::AtomicUsize,
+    /// Update requests (lab link / UI): the app reacts when the counter changes
+    update_req: Mutex<(u64, bool)>,
     quit: AtomicBool,
     time_shift: Mutex<(f64, f64)>, // (seconds added to the clock, LOS of the simulated pass)
     work: Mutex<Sender<Work>>,
@@ -194,6 +196,9 @@ enum Cmd {
     /// Fixed lab PIN (4-8 digits), empty = random each time
     LabPin { pin: String },
     LabStop,
+    /// Ask the app to look for a newer release on GitHub and offer it (the app shows the
+    /// system install dialog; Android does not allow a silent install)
+    Update { prerelease: Option<bool> },
 }
 
 impl Engine {
@@ -223,6 +228,7 @@ impl Engine {
             dropped: Mutex::new(None),
             running: AtomicBool::new(false),
             decim: std::sync::atomic::AtomicUsize::new(1),
+            update_req: Mutex::new((0, true)),
             quit: AtomicBool::new(false),
             time_shift: Mutex::new((0.0, 0.0)),
             work: Mutex::new(wtx),
@@ -559,6 +565,12 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             i.save();
             lab::set_pin(i, &pin);
             Ok(lab::status(i))
+        }
+        Cmd::Update { prerelease } => {
+            let mut u = lock(&i.update_req);
+            u.0 += 1;
+            u.1 = prerelease.unwrap_or(true);
+            Ok(json!({ "update_req": u.0 }))
         }
         Cmd::LabStop => {
             lab::stop(i);
@@ -1285,6 +1297,8 @@ fn status(i: &Inner) -> Value {
         "lab": lab::status(i),
         "debug_mode": c.debug_mode,
         "lab_pin": c.lab_pin,
+        "update_req": lock(&i.update_req).0,
+        "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
 }

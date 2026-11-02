@@ -64,7 +64,12 @@ jobs:
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name || (startsWith(github.ref, 'refs/tags/v') && github.ref_name) || '' }}
         run: |
+          # Growing versionCode (the in-app updater installs newer over older), name from the tag
+          export VERSION_CODE=$((1000 + ${{ github.run_number }}))
+          export VERSION_NAME="${RELEASE_TAG#v}"
+          [ -n "$VERSION_NAME" ] || export VERSION_NAME="0.2.0-dev+$(git rev-parse --short=7 HEAD)"
           if [ -n "$KEYSTORE_B64" ]; then
             echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
             export ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"

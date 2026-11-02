@@ -76,6 +76,9 @@ data class Status(
     val recording: Rec? = null,
     val debugMode: Boolean = false,
     val labPin: String = "",
+    /** Update requests from the lab link (counter) and their channel */
+    val updateReq: Long = 0,
+    val updatePrerelease: Boolean = true,
     /** null when the lab link is off */
     val lab: LabState? = null,
 )
@@ -352,6 +355,8 @@ class Engine(dataDir: String) {
             followGps = j.optBoolean("follow_gps", true),
             debugMode = j.optBoolean("debug_mode"),
             labPin = j.optString("lab_pin"),
+            updateReq = j.optLong("update_req", 0),
+            updatePrerelease = j.optBoolean("update_prerelease", true),
             lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
                 val ph = l.optJSONObject("phase")
                 fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()

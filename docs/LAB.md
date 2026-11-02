@@ -75,6 +75,6 @@ the cloud Claude session, which cannot reach the LAN.
 ## API (for other scripts)
 
 Port 8765, PIN as `?pin=` or `X-Lab-Pin`: `GET /status`, `POST /cmd` (the app's JSON commands),
-`GET /measure?hz=&bw=&secs=`, `GET /cw?secs=`, `GET /iq?secs=` (WAV), `GET /audio?secs=` (demodulated audio, 16-bit WAV, 48 kHz), `POST /phase`, `POST /log`,
+`GET /measure?hz=&bw=&secs=`, `GET /cw?secs=`, `GET /iq?secs=` (WAV), `GET /audio?secs=` (demodulated audio, 16-bit WAV, 48 kHz), `POST /cmd {"cmd":"update"}` (the app looks for a newer GitHub release and opens the installer; one tap on the phone), `POST /phase`, `POST /log`,
 `GET /log`. Without a phone: `cargo run --release -p sh-engine --example lab_demo` runs the engine
 with the demo source and the lab link on this computer.
