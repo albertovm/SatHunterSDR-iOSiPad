@@ -372,7 +372,12 @@ fn cw(i: &Inner, secs: f64) -> Result<Value, String> {
     if a.len() < 48_000 {
         return Err("less than 1 s of audio yet".into());
     }
-    let r = sh_dsp::cw::decode(&a, sh_dsp::demod::AUDIO_RATE, (200.0, 3500.0));
+    // Look for the tone over the whole CW audio passband (beat note +- bw/2): a fixed 200-3500 Hz
+    // band cut the top off filters wider than 3 kHz (lab 2026-11-02, Doppler test)
+    let bw = lock(&i.cfg).bw;
+    let beat = sh_dsp::demod::cw_beat(bw);
+    let band = ((beat - bw / 2.0 - 100.0).max(150.0), (beat + bw / 2.0 + 100.0).max(1500.0));
+    let r = sh_dsp::cw::decode(&a, sh_dsp::demod::AUDIO_RATE, band);
     log(i, format!("cw: \"{}\" {:.0} WPM C/N0 {:.0} dB-Hz", r.text, r.wpm, r.cn0_dbhz));
     Ok(json!({
         "text": r.text, "wpm": r.wpm, "snr_db": r.snr_db, "cn0_dbhz": r.cn0_dbhz, "drift_hz_s": r.drift_hz_s,

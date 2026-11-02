@@ -52,7 +52,7 @@ impl Mode {
 
 /// CW beat note: 700 Hz for a narrow filter; with a wide one, high enough that the whole
 /// passband stays above 0 Hz (a carrier 1 kHz below the VFO is still a tone, not DC).
-fn cw_beat(bw: f64) -> f64 {
+pub fn cw_beat(bw: f64) -> f64 {
     (bw / 2.0 + 300.0).max(700.0)
 }
 

@@ -52,6 +52,7 @@ def main():
     ap.add_argument("--text", default="VVV DE HG0LAB TEST")
     ap.add_argument("--wpm", type=float, default=15)
     ap.add_argument("--arb-rate", type=float, default=25e3, help="doppler: waveform rate (long files at 100 kS/s crash the VSG software)")
+    ap.add_argument("--cw-bw", type=float, default=2000.0, help="doppler: CW filter bandwidth, Hz")
     ap.add_argument("--name", default=None)
     a = ap.parse_args()
 
@@ -98,7 +99,7 @@ def main():
                 gen.off()
                 res["sweeps"].append({"gain_db": g, "rows": rows})
         else:
-            phone.cmd(cmd="mode", mode="CW", bw=2000.0)
+            phone.cmd(cmd="mode", mode="CW", bw=a.cw_bw)
             phone.cmd(cmd="gain", db=12.5)
             phone.cmd(cmd="tune", hz=a.freq)
             time.sleep(1.5)
@@ -116,7 +117,7 @@ def main():
                     time.sleep(max(8.0, 2.2 * msg_s))
                     c = phone.cw(max(8, int(2.2 * msg_s)))
                     ok = a.text.replace(" ", "") in c["text"].replace(" ", "")
-                    row = {"hz_per_s": r, "level_dbm": lv, "sweep_hz": r * msg_s, "text": c["text"], "ok": ok,
+                    row = {"hz_per_s": r, "level_dbm": lv, "cw_bw_hz": a.cw_bw, "sweep_hz": r * msg_s, "text": c["text"], "ok": ok,
                            "wpm": c["wpm"], "cn0_dbhz": c["cn0_dbhz"], "drift_hz_s": c.get("drift_hz_s")}
                     res["doppler"].append(row)
                     phone.log(f"{r:.0f} Hz/s ({r * msg_s:.0f} Hz per message), {lv:.0f} dBm: {'OK ' if ok else 'BAD'} \"{c['text']}\" drift {c.get('drift_hz_s')}")
