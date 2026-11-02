@@ -80,7 +80,7 @@ def edges(x, fs, ref_band, drop=6.0):
 def fm_tone(rate, dev, fm=1000.0, periods=100):
     n = int(round(rate / fm)) * periods
     t = np.arange(n) / rate
-    ph = 2 * np.pi * dev / fm * np.sin(2 * np.pi * fm * t)  # periodic: whole number of tone periods
+    ph = dev / fm * np.sin(2 * np.pi * fm * t)  # modulation index dev/fm; whole number of tone periods
     return [complex(v) for v in np.exp(1j * ph)]
 
 
@@ -92,6 +92,19 @@ def noise_iq(rate, bw, n=1 << 16, seed=2):
     x /= np.abs(x).max()
     papr = 10 * math.log10(1.0 / np.mean(np.abs(x) ** 2))
     return [complex(v) for v in x], papr
+
+
+def am_noise_iq(rate, audio_bw, depth=0.3, n=1 << 16, seed=3):
+    """A carrier AM-modulated by flat noise (0..audio_bw): the AM demodulator's audio spectrum is
+    then the channel filter's shape (an unmodulated noise input would give its self-convolution)."""
+    rng = np.random.default_rng(seed)
+    f = np.fft.rfftfreq(n, 1 / rate)
+    spec = (rng.standard_normal(len(f)) + 1j * rng.standard_normal(len(f))) * ((f > 20) & (f <= audio_bw))
+    m = np.fft.irfft(spec, n)
+    m /= np.abs(m).max()
+    x = 1.0 + depth * m
+    x /= np.abs(x).max()
+    return [complex(v) for v in x]
 
 
 def main():
@@ -215,10 +228,13 @@ def main():
             nrate, nbw = 200e3, 120e3
             iq, papr = noise_iq(nrate, nbw)
             mean = a.noise_psd + 10 * math.log10(nbw)
-            gen.play(vfo, mean + papr, "sathunter_noise_120k.cf32", iq, nrate)
             k = 0
             total = sum(len(b) for _, b in tests) + 7
             for mode, bws in tests:
+                if mode == "AM":
+                    gen.play(vfo, a.fm_level, "sathunter_am_noise_15k.cf32", am_noise_iq(nrate, 15000.0), nrate)
+                elif mode == "USB":
+                    gen.play(vfo, mean + papr, "sathunter_noise_120k.cf32", iq, nrate)
                 for bw in bws:
                     k += 1
                     phone.phase("filter bandwidth", k, total, f"{mode} {bw} Hz")
