@@ -162,6 +162,19 @@ fun SettingsScreen(
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Debug")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Debug mode (lab link)", fontSize = 14.sp)
+                Text(
+                    "Measurements over the LAN: a PC on the same Wi-Fi or USB Ethernet drives a signal generator and reads the receiver (tools/lab/lab.py). The lab console on the receiver screen shows the address and the PIN.",
+                    color = Dim, fontSize = 12.sp,
+                )
+            }
+            Switch(checked = st.debugMode, onCheckedChange = { engine.debugMode(it) })
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("Radar")
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Compass (turn the radar with the phone, aim at the satellite)", Modifier.weight(1f), fontSize = 14.sp)

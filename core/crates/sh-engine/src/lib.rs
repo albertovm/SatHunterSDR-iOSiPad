@@ -3,6 +3,7 @@
 //! and audio. Nothing in here panics on bad input; errors come back as {"ok": false, "error"}.
 
 pub mod config;
+mod lab;
 pub mod record;
 pub mod sat;
 
@@ -94,6 +95,10 @@ struct Inner {
     messages: Mutex<VecDeque<String>>,
     /// IQ recording in progress
     recorder: Mutex<Option<record::Recorder>>,
+    /// Lab link (debug mode): server state, and what the DSP hands it
+    lab: Mutex<Option<lab::Lab>>,
+    tap: Mutex<lab::Tap>,
+    lab_on: AtomicBool,
 }
 
 impl Inner {
@@ -182,6 +187,11 @@ enum Cmd {
     RecordStart { dir: Option<String>, fd: Option<i32>, name: Option<String> },
     /// Stop recording; returns the metadata written into the file
     RecordStop,
+    /// Debug mode on / off: the lab link on the LAN (remembered)
+    DebugMode { on: bool },
+    /// Lab link without changing the setting (tests)
+    LabStart { port: Option<u16> },
+    LabStop,
 }
 
 impl Engine {
@@ -216,6 +226,9 @@ impl Engine {
             work: Mutex::new(wtx),
             messages: Mutex::new(VecDeque::new()),
             recorder: Mutex::new(None),
+            lab: Mutex::new(None),
+            tap: Mutex::new(lab::Tap::default()),
+            lab_on: AtomicBool::new(false),
             devices: Mutex::new(Vec::new()),
             cfg: Mutex::new(cfg),
         });
@@ -232,6 +245,11 @@ impl Engine {
         let i2 = inner.clone();
         if let Ok(t) = std::thread::Builder::new().name("control".into()).spawn(move || control(i2)) {
             threads.push(t);
+        }
+        if lock(&inner.cfg).debug_mode {
+            if let Err(e) = lab::start(&inner, None) {
+                inner.note(e);
+            }
         }
         Engine { inner, threads }
     }
@@ -289,283 +307,303 @@ impl Engine {
     }
 
     fn run(&self, c: Cmd) -> Result<Value, String> {
-        let i = &self.inner;
-        match c {
-            Cmd::Start => {
-                start(i)?;
-                Ok(json!({}))
+        run_cmd(&self.inner, c)
+    }
+}
+
+/// Run one command (the JSON API: the app, the lab link).
+fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
+    match c {
+        Cmd::Start => {
+            start(i)?;
+            Ok(json!({}))
+        }
+        Cmd::Stop => {
+            stop(i);
+            Ok(json!({}))
+        }
+        Cmd::Tune { hz } => {
+            tune(i, hz)?;
+            Ok(json!({ "vfo_hz": lock(&i.cfg).vfo_hz }))
+        }
+        Cmd::Center { hz } => {
+            let (min, max) = lock(&i.source).as_ref().map(|s| (s.info().min_hz, s.info().max_hz)).unwrap_or((0.0, f64::MAX));
+            let c = set_center(i, hz.clamp(min, max))?;
+            if lock(&i.cfg).center_tuning {
+                // Centre tuning: the VFO rides in the middle of the span
+                lock(&i.cfg).vfo_hz = c;
+                i.bump_params(|p| p.vfo_hz = c);
+                return Ok(json!({ "center_hz": c, "vfo_hz": c }));
             }
-            Cmd::Stop => {
+            // The VFO stays where it is unless it would leave the received span: then it is
+            // pushed along at the edge
+            let (rate, bw, vfo) = {
+                let cfg = lock(&i.cfg);
+                (cfg.rate, cfg.bw, cfg.vfo_hz)
+            };
+            let edge = (rate * 0.45 - bw / 2.0).max(rate * 0.05);
+            let v = vfo.clamp(c - edge, c + edge);
+            if v != vfo {
+                lock(&i.cfg).vfo_hz = v;
+                i.bump_params(|p| p.vfo_hz = v);
+            }
+            Ok(json!({ "center_hz": c, "vfo_hz": v }))
+        }
+        Cmd::Mode { mode, bw } => {
+            let m = Mode::parse(&mode).ok_or("unknown mode")?;
+            let bw = bw.unwrap_or(m.default_bw());
+            {
+                let mut c = lock(&i.cfg);
+                c.mode = m.name().into();
+                c.bw = bw;
+            }
+            i.bump_params(|p| {
+                p.mode = m;
+                p.bw = bw;
+            });
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Bandwidth { hz } => {
+            let hz = hz.clamp(100.0, 250_000.0);
+            lock(&i.cfg).bw = hz;
+            i.bump_params(|p| p.bw = hz);
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::BiasTee { on } => {
+            lock(&i.cfg).bias_tee = on;
+            if let Some(s) = lock(&i.source).as_mut() {
+                if s.has_bias_tee() {
+                    s.set_bias_tee(on).map_err(|e| e.to_string())?;
+                }
+            }
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Ppm { ppm } => {
+            let ppm = ppm.clamp(-200.0, 200.0);
+            lock(&i.cfg).ppm = ppm;
+            if let Some(s) = lock(&i.source).as_mut() {
+                s.set_ppm(ppm).map_err(|e| e.to_string())?;
+            }
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Gain { db } => {
+            lock(&i.cfg).gain = db;
+            if let Some(s) = lock(&i.source).as_mut() {
+                s.set_gain(db).map_err(|e| e.to_string())?;
+            }
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Decimation { factor } => {
+            let f = match factor {
+                0 | 1 => 1,
+                2 | 3 => 2,
+                4..=7 => 4,
+                _ => 8,
+            };
+            let was = i.running.load(Ordering::SeqCst);
+            if was {
                 stop(i);
-                Ok(json!({}))
             }
-            Cmd::Tune { hz } => {
-                tune(i, hz)?;
-                Ok(json!({ "vfo_hz": lock(&i.cfg).vfo_hz }))
+            lock(&i.cfg).decimation = f;
+            i.save();
+            if was {
+                start(i)?;
             }
-            Cmd::Center { hz } => {
-                let (min, max) = lock(&i.source).as_ref().map(|s| (s.info().min_hz, s.info().max_hz)).unwrap_or((0.0, f64::MAX));
-                let c = set_center(i, hz.clamp(min, max))?;
-                if lock(&i.cfg).center_tuning {
-                    // Centre tuning: the VFO rides in the middle of the span
-                    lock(&i.cfg).vfo_hz = c;
-                    i.bump_params(|p| p.vfo_hz = c);
-                    return Ok(json!({ "center_hz": c, "vfo_hz": c }));
-                }
-                // The VFO stays where it is unless it would leave the received span: then it is
-                // pushed along at the edge
-                let (rate, bw, vfo) = {
-                    let cfg = lock(&i.cfg);
-                    (cfg.rate, cfg.bw, cfg.vfo_hz)
-                };
-                let edge = (rate * 0.45 - bw / 2.0).max(rate * 0.05);
-                let v = vfo.clamp(c - edge, c + edge);
-                if v != vfo {
-                    lock(&i.cfg).vfo_hz = v;
-                    i.bump_params(|p| p.vfo_hz = v);
-                }
-                Ok(json!({ "center_hz": c, "vfo_hz": v }))
+            Ok(json!({ "factor": f }))
+        }
+        Cmd::Rate { hz } => {
+            let was = i.running.load(Ordering::SeqCst);
+            if was {
+                stop(i);
             }
-            Cmd::Mode { mode, bw } => {
-                let m = Mode::parse(&mode).ok_or("unknown mode")?;
-                let bw = bw.unwrap_or(m.default_bw());
-                {
-                    let mut c = lock(&i.cfg);
-                    c.mode = m.name().into();
-                    c.bw = bw;
-                }
-                i.bump_params(|p| {
-                    p.mode = m;
-                    p.bw = bw;
-                });
-                i.save();
-                Ok(json!({}))
+            lock(&i.cfg).rate = hz;
+            i.save();
+            if was {
+                start(i)?;
             }
-            Cmd::Bandwidth { hz } => {
-                let hz = hz.clamp(100.0, 250_000.0);
-                lock(&i.cfg).bw = hz;
-                i.bump_params(|p| p.bw = hz);
-                i.save();
-                Ok(json!({}))
+            Ok(json!({}))
+        }
+        Cmd::Fft { size } => {
+            let size = size.clamp(256, 16384).next_power_of_two().min(16384);
+            lock(&i.cfg).fft_size = size;
+            i.bump_params(|p| p.fft_size = size);
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Squelch { db } => {
+            lock(&i.cfg).squelch = db;
+            i.bump_params(|p| p.squelch = db);
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Station { lat, lon, alt_m } => {
+            set_station(i, lat, lon, alt_m);
+            Ok(json!({}))
+        }
+        Cmd::Locator { loc } => {
+            let (lat, lon) = locator::to_lat_lon(&loc).ok_or("bad locator")?;
+            set_station(i, lat, lon, None);
+            Ok(json!({ "lat": lat, "lon": lon }))
+        }
+        Cmd::Gps { lat, lon, alt_m } => {
+            let (follow, st) = {
+                let c = lock(&i.cfg);
+                (c.follow_gps, c.station)
+            };
+            // Recalculate only for a real move (200 m, 50 m height)
+            let dlat = (lat - st.lat) * 111.0;
+            let dlon = (lon - st.lon) * 111.0 * lat.to_radians().cos();
+            if follow && ((dlat * dlat + dlon * dlon).sqrt() > 0.2 || (alt_m - st.alt_m).abs() > 50.0) {
+                set_station(i, lat, lon, Some(alt_m));
             }
-            Cmd::BiasTee { on } => {
-                lock(&i.cfg).bias_tee = on;
-                if let Some(s) = lock(&i.source).as_mut() {
-                    if s.has_bias_tee() {
-                        s.set_bias_tee(on).map_err(|e| e.to_string())?;
-                    }
-                }
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::Ppm { ppm } => {
-                let ppm = ppm.clamp(-200.0, 200.0);
-                lock(&i.cfg).ppm = ppm;
-                if let Some(s) = lock(&i.source).as_mut() {
-                    s.set_ppm(ppm).map_err(|e| e.to_string())?;
-                }
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::Gain { db } => {
-                lock(&i.cfg).gain = db;
-                if let Some(s) = lock(&i.source).as_mut() {
-                    s.set_gain(db).map_err(|e| e.to_string())?;
-                }
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::Decimation { factor } => {
-                let f = match factor {
-                    0 | 1 => 1,
-                    2 | 3 => 2,
-                    4..=7 => 4,
-                    _ => 8,
-                };
-                let was = i.running.load(Ordering::SeqCst);
-                if was {
-                    stop(i);
-                }
-                lock(&i.cfg).decimation = f;
-                i.save();
-                if was {
-                    start(i)?;
-                }
-                Ok(json!({ "factor": f }))
-            }
-            Cmd::Rate { hz } => {
-                let was = i.running.load(Ordering::SeqCst);
-                if was {
-                    stop(i);
-                }
-                lock(&i.cfg).rate = hz;
-                i.save();
-                if was {
-                    start(i)?;
-                }
-                Ok(json!({}))
-            }
-            Cmd::Fft { size } => {
-                let size = size.clamp(256, 16384).next_power_of_two().min(16384);
-                lock(&i.cfg).fft_size = size;
-                i.bump_params(|p| p.fft_size = size);
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::Squelch { db } => {
-                lock(&i.cfg).squelch = db;
-                i.bump_params(|p| p.squelch = db);
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::Station { lat, lon, alt_m } => {
-                set_station(i, lat, lon, alt_m);
-                Ok(json!({}))
-            }
-            Cmd::Locator { loc } => {
-                let (lat, lon) = locator::to_lat_lon(&loc).ok_or("bad locator")?;
-                set_station(i, lat, lon, None);
-                Ok(json!({ "lat": lat, "lon": lon }))
-            }
-            Cmd::Gps { lat, lon, alt_m } => {
-                let (follow, st) = {
-                    let c = lock(&i.cfg);
-                    (c.follow_gps, c.station)
-                };
-                // Recalculate only for a real move (200 m, 50 m height)
-                let dlat = (lat - st.lat) * 111.0;
-                let dlon = (lon - st.lon) * 111.0 * lat.to_radians().cos();
-                if follow && ((dlat * dlat + dlon * dlon).sqrt() > 0.2 || (alt_m - st.alt_m).abs() > 50.0) {
-                    set_station(i, lat, lon, Some(alt_m));
-                }
-                Ok(json!({}))
-            }
-            Cmd::FollowGps { on } => {
-                lock(&i.cfg).follow_gps = on;
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::Filter { filter } => {
-                lock(&i.cfg).filter = filter;
-                i.save();
-                let _ = lock(&i.work).send(Work::Recalc);
-                Ok(json!({}))
-            }
-            Cmd::Favourite { norad, on } => {
-                {
-                    let mut c = lock(&i.cfg);
-                    if on {
-                        c.favourites.insert(norad);
-                    } else {
-                        c.favourites.remove(&norad);
-                    }
-                }
-                i.save();
-                let _ = lock(&i.work).send(Work::Recalc);
-                Ok(json!({}))
-            }
-            Cmd::SatUpdate => {
-                let _ = lock(&i.work).send(Work::Download);
-                Ok(json!({}))
-            }
-            Cmd::SatSelect { norad, tx } => {
-                select(i, norad, tx);
-                Ok(json!({}))
-            }
-            Cmd::SatTrack { on } => {
-                set_tracking(i, on);
-                Ok(json!({}))
-            }
-            Cmd::SatResetOffset => {
-                lock(&i.sat).tracker.reset();
-                Ok(json!({}))
-            }
-            Cmd::Simulate => {
-                simulate(i);
-                Ok(json!({}))
-            }
-            Cmd::RealTime => {
-                *lock(&i.time_shift) = (0.0, 0.0);
-                lock(&i.sat).tracker.reset();
-                let _ = lock(&i.work).send(Work::Recalc);
-                Ok(json!({}))
-            }
-            Cmd::StepHz { hz } => {
-                let hz = hz.clamp(1.0, 1000.0);
-                lock(&i.cfg).step_hz = hz;
-                lock(&i.sat).tracker.step_hz = hz;
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::CenterTuning { on } => {
-                lock(&i.cfg).center_tuning = on;
+            Ok(json!({}))
+        }
+        Cmd::FollowGps { on } => {
+            lock(&i.cfg).follow_gps = on;
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::Filter { filter } => {
+            lock(&i.cfg).filter = filter;
+            i.save();
+            let _ = lock(&i.work).send(Work::Recalc);
+            Ok(json!({}))
+        }
+        Cmd::Favourite { norad, on } => {
+            {
+                let mut c = lock(&i.cfg);
                 if on {
-                    let v = lock(&i.cfg).vfo_hz;
-                    tune(i, v)?;
-                }
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::AutoDemod { on } => {
-                lock(&i.cfg).auto_demod = on;
-                i.save();
-                Ok(json!({}))
-            }
-            Cmd::RecordName => Ok(json!({ "name": record_name(i) })),
-            Cmd::RecordStart { dir, fd, name } => record_start(i, dir, fd, name),
-            Cmd::RecordStop => record_stop(i, "stopped"),
-            Cmd::SatList => Ok(sat_list(i)),
-            Cmd::SatDetail => Ok(sat_detail(i)),
-            Cmd::Status => Ok(status(i)),
-            Cmd::Messages => Ok(json!({ "messages": lock(&i.messages).iter().cloned().collect::<Vec<_>>() })),
-            Cmd::Config => serde_json::to_value(lock(&i.cfg).clone()).map_err(|e| e.to_string()),
-            Cmd::UsbAttach { fd, vid, pid, product } => {
-                let blog_v4 = product.as_deref().map(|p| p.contains("Blog V4")).unwrap_or(false);
-                let kind = if (vid, pid) == sh_sources::usb::ESP32S3_JTAG {
-                    "esp"
-                } else if sh_sources::usb::is_rtl(vid, pid) {
-                    "rtl"
+                    c.favourites.insert(norad);
                 } else {
-                    return Err(format!("unknown USB device {vid:04x}:{pid:04x}"));
-                };
-                {
-                    let mut d = lock(&i.devices);
-                    d.retain(|x| x.kind != kind);
-                    d.push(UsbDev { kind, vid, pid, fd, blog_v4 });
+                    c.favourites.remove(&norad);
                 }
-                i.note(format!("USB: {kind} {vid:04x}:{pid:04x} {} plugged in", product.unwrap_or_default()));
-                if lock(&i.cfg).usb_autostart {
-                    switch_source(i, kind)?;
+            }
+            i.save();
+            let _ = lock(&i.work).send(Work::Recalc);
+            Ok(json!({}))
+        }
+        Cmd::SatUpdate => {
+            let _ = lock(&i.work).send(Work::Download);
+            Ok(json!({}))
+        }
+        Cmd::SatSelect { norad, tx } => {
+            select(i, norad, tx);
+            Ok(json!({}))
+        }
+        Cmd::SatTrack { on } => {
+            set_tracking(i, on);
+            Ok(json!({}))
+        }
+        Cmd::SatResetOffset => {
+            lock(&i.sat).tracker.reset();
+            Ok(json!({}))
+        }
+        Cmd::Simulate => {
+            simulate(i);
+            Ok(json!({}))
+        }
+        Cmd::RealTime => {
+            *lock(&i.time_shift) = (0.0, 0.0);
+            lock(&i.sat).tracker.reset();
+            let _ = lock(&i.work).send(Work::Recalc);
+            Ok(json!({}))
+        }
+        Cmd::StepHz { hz } => {
+            let hz = hz.clamp(1.0, 1000.0);
+            lock(&i.cfg).step_hz = hz;
+            lock(&i.sat).tracker.step_hz = hz;
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::CenterTuning { on } => {
+            lock(&i.cfg).center_tuning = on;
+            if on {
+                let v = lock(&i.cfg).vfo_hz;
+                tune(i, v)?;
+            }
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::AutoDemod { on } => {
+            lock(&i.cfg).auto_demod = on;
+            i.save();
+            Ok(json!({}))
+        }
+        Cmd::RecordName => Ok(json!({ "name": record_name(i) })),
+        Cmd::RecordStart { dir, fd, name } => record_start(i, dir, fd, name),
+        Cmd::RecordStop => record_stop(i, "stopped"),
+        Cmd::DebugMode { on } => {
+            lock(&i.cfg).debug_mode = on;
+            i.save();
+            if on {
+                lab::start(i, None)
+            } else {
+                lab::stop(i);
+                Ok(json!({ "on": false }))
+            }
+        }
+        Cmd::LabStart { port } => lab::start(i, port),
+        Cmd::LabStop => {
+            lab::stop(i);
+            Ok(json!({}))
+        }
+        Cmd::SatList => Ok(sat_list(i)),
+        Cmd::SatDetail => Ok(sat_detail(i)),
+        Cmd::Status => Ok(status(i)),
+        Cmd::Messages => Ok(json!({ "messages": lock(&i.messages).iter().cloned().collect::<Vec<_>>() })),
+        Cmd::Config => serde_json::to_value(lock(&i.cfg).clone()).map_err(|e| e.to_string()),
+        Cmd::UsbAttach { fd, vid, pid, product } => {
+            let blog_v4 = product.as_deref().map(|p| p.contains("Blog V4")).unwrap_or(false);
+            let kind = if (vid, pid) == sh_sources::usb::ESP32S3_JTAG {
+                "esp"
+            } else if sh_sources::usb::is_rtl(vid, pid) {
+                "rtl"
+            } else {
+                return Err(format!("unknown USB device {vid:04x}:{pid:04x}"));
+            };
+            {
+                let mut d = lock(&i.devices);
+                d.retain(|x| x.kind != kind);
+                d.push(UsbDev { kind, vid, pid, fd, blog_v4 });
+            }
+            i.note(format!("USB: {kind} {vid:04x}:{pid:04x} {} plugged in", product.unwrap_or_default()));
+            if lock(&i.cfg).usb_autostart {
+                switch_source(i, kind)?;
+            }
+            Ok(json!({ "source": kind }))
+        }
+        Cmd::UsbDetach { vid, pid } => {
+            let gone: Vec<UsbDev> = {
+                let mut d = lock(&i.devices);
+                let g = d.iter().filter(|x| x.vid == vid && x.pid == pid).cloned().collect();
+                d.retain(|x| !(x.vid == vid && x.pid == pid));
+                g
+            };
+            let cur = lock(&i.cfg).source.clone();
+            if gone.iter().any(|g| g.kind == cur) {
+                i.note(format!("USB: {cur} unplugged"));
+                stop(i);
+                if lock(&i.cfg).demo_when_no_device {
+                    switch_source(i, "demo")?;
                 }
-                Ok(json!({ "source": kind }))
             }
-            Cmd::UsbDetach { vid, pid } => {
-                let gone: Vec<UsbDev> = {
-                    let mut d = lock(&i.devices);
-                    let g = d.iter().filter(|x| x.vid == vid && x.pid == pid).cloned().collect();
-                    d.retain(|x| !(x.vid == vid && x.pid == pid));
-                    g
-                };
-                let cur = lock(&i.cfg).source.clone();
-                if gone.iter().any(|g| g.kind == cur) {
-                    i.note(format!("USB: {cur} unplugged"));
-                    stop(i);
-                    if lock(&i.cfg).demo_when_no_device {
-                        switch_source(i, "demo")?;
-                    }
-                }
-                Ok(json!({}))
-            }
-            Cmd::Source { id } => {
-                switch_source(i, &id)?;
-                Ok(json!({}))
-            }
+            Ok(json!({}))
+        }
+        Cmd::Source { id } => {
+            switch_source(i, &id)?;
+            Ok(json!({}))
         }
     }
 }
 
 impl Drop for Engine {
     fn drop(&mut self) {
+        lab::stop(&self.inner);
         stop(&self.inner);
         self.inner.quit.store(true, Ordering::SeqCst);
         // Wake the worker: a closed channel ends its loop
@@ -755,9 +793,12 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
         if !matches!(&demod, Some((_, r, m, bw)) if *r == b.rate && *m == p.mode && *bw == p.bw) {
             demod = Some((Demodulator::new(p.mode, b.rate, offset, p.bw), b.rate, p.mode, p.bw));
         }
+        let mut new_rows = Vec::new();
         if let Some((s, _, _)) = spec.as_mut() {
-            let mut new_rows = Vec::new();
             s.push(&b.samples, |f| new_rows.push(f.to_vec()));
+            if i.lab_on.load(Ordering::Relaxed) && !new_rows.is_empty() {
+                lab::feed(&i, b.center_hz, b.rate, &new_rows, &[]);
+            }
             if !new_rows.is_empty() {
                 let mut q = lock(&i.rows);
                 for r in new_rows {
@@ -775,6 +816,9 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
             d.squelch_db = p.squelch;
             audio.clear();
             d.process(&b.samples, &mut audio);
+            if i.lab_on.load(Ordering::Relaxed) {
+                lab::feed(&i, b.center_hz, b.rate, &[], &audio);
+            }
             let mut q = lock(&i.audio);
             q.extend(audio.iter());
             while q.len() > AUDIO_MAX {
@@ -1226,6 +1270,8 @@ fn status(i: &Inner) -> Value {
         "locator": locator::from_lat_lon(c.station.lat, c.station.lon),
         "follow_gps": c.follow_gps,
         "markers": lock(&i.sat).markers.clone(),
+        "lab": lab::status(i),
+        "debug_mode": c.debug_mode,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
 }
@@ -1498,6 +1544,51 @@ mod tests {
         dm.process(&iq, &mut audio);
         let rep = sh_dsp::cw::decode(&audio, sh_dsp::demod::AUDIO_RATE, (300.0, 3500.0));
         assert!(rep.text.contains("VV DE HG0"), "decoded {:?}", rep.text); // the 6 s recording ends there
+    }
+
+    /// The lab link over real HTTP: PIN check, a command, a phase on the console, and a
+    /// measurement of the demo's CW beacon (level, frequency) and its CW decode.
+    #[test]
+    fn lab_link_measures_the_demo_beacon() {
+        let d = tmpdir("lab");
+        write_iss(&d);
+        Config { update_days: 0.0, rate: 2_400_000.0, fft_size: 8192, ..Config::default() }.save(&d.join("config.json"));
+        let e = Engine::new(&d);
+        cmd(&e, r#"{"cmd":"source","id":"demo"}"#);
+        let st = cmd(&e, r#"{"cmd":"lab_start","port":18765}"#);
+        assert_eq!(st["on"], true, "{st}");
+        let pin = st["pin"].as_str().unwrap().to_string();
+        let base = "http://127.0.0.1:18765";
+        let get = |p: &str| -> (u16, Value) {
+            match ureq::get(&format!("{base}{p}")).call() {
+                Ok(mut r) => (r.status().as_u16(), serde_json::from_str(&r.body_mut().read_to_string().unwrap()).unwrap_or(Value::Null)),
+                Err(ureq::Error::StatusCode(c)) => (c, Value::Null),
+                Err(e) => panic!("{e}"),
+            }
+        };
+        let post = |p: &str, body: &str| -> Value {
+            let mut r = ureq::post(&format!("{base}{p}?pin={pin}")).send(body.as_bytes()).unwrap();
+            serde_json::from_str(&r.body_mut().read_to_string().unwrap()).unwrap()
+        };
+        assert_eq!(get("/status?pin=000000").0, 403);
+        assert_eq!(get(&format!("/status?pin={pin}")).1["running"], true);
+        assert_eq!(post("/cmd", r#"{"cmd":"decimation","factor":8}"#)["ok"], true);
+        assert_eq!(post("/cmd", r#"{"cmd":"mode","mode":"CW"}"#)["ok"], true);
+        assert_eq!(post("/cmd", r#"{"cmd":"tune","hz":432400000}"#)["ok"], true);
+        assert_eq!(post("/phase", r#"{"phase":"self test","step":1,"total":2,"detail":"demo beacon"}"#)["ok"], true);
+        std::thread::sleep(Duration::from_millis(500));
+        let (code, m) = get(&format!("/measure?pin={pin}&hz=432400000&bw=2000&secs=3"));
+        assert_eq!(code, 200, "{m}");
+        assert!(m["peak_snr_db"].as_f64().unwrap() > 15.0, "{m}");
+        assert!(m["offset_hz"].as_f64().unwrap().abs() < 100.0, "{m}");
+        std::thread::sleep(Duration::from_millis(5000));
+        let (_, c) = get(&format!("/cw?pin={pin}&secs=8"));
+        assert!(c["text"].as_str().unwrap_or("").contains("DE HG0DEMO") || c["text"].as_str().unwrap_or("").contains("DEMO"), "{c}");
+        let lg = cmd(&e, r#"{"cmd":"status"}"#)["lab"]["log"].to_string();
+        assert!(lg.contains("PHASE [1/2] self test") && lg.contains("PC connected"), "{lg}");
+        cmd(&e, r#"{"cmd":"lab_stop"}"#);
+        assert!(ureq::get(&format!("{base}/status?pin={pin}")).call().is_err());
+        cmd(&e, r#"{"cmd":"stop"}"#);
     }
 
     #[test]

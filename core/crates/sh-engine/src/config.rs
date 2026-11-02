@@ -40,6 +40,8 @@ pub struct Config {
     pub ppm: f64,
     /// Decimation of the receiver stream: 1 (off), 2, 4, 8
     pub decimation: usize,
+    /// Debug mode: the lab link (measurements over the LAN) is on
+    pub debug_mode: bool,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
 }
@@ -72,6 +74,7 @@ impl Default for Config {
             bias_tee: false,
             ppm: 0.0,
             decimation: 1,
+            debug_mode: false,
             freqs: Default::default(),
         }
     }
