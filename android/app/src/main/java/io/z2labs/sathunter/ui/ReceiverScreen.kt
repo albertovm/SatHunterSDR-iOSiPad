@@ -280,6 +280,15 @@ fun ReceiverScreen(
                     drawRoundRect(Color(0xCC0A0F16), Offset(left, top), Size(lw, txt.size.height.toFloat()), androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()))
                     drawText(txt, topLeft = Offset(left + 3.dp.toPx(), top))
                 }
+                // Decimated span: the outer 8 % on each side is not alias-free (the decimation
+                // filter keeps the central 84 %), shade it so an alias is not taken for a signal
+                if (s.decimation > 1) {
+                    val edgeL = x(shownCenter - 0.42 * s.specRate)
+                    val edgeR = x(shownCenter + 0.42 * s.specRate)
+                    val shade = Color(0x8C05080C)
+                    if (edgeL > 0f) drawRect(shade, Offset(0f, 0f), Size(edgeL, size.height))
+                    if (edgeR < w) drawRect(shade, Offset(edgeR, 0f), Size(w - edgeR, size.height))
+                }
                 // Divider between spectrum and waterfall
                 drawRect(Color(0xFF0A0E14), Offset(0f, specH - 1.5.dp.toPx()), Size(w, 3.dp.toPx()))
                 drawLine(Color(0xFF6B7F95), Offset(0f, specH), Offset(w, specH), 1.5.dp.toPx())

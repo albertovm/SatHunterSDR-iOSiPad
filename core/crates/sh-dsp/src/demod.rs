@@ -123,6 +123,9 @@ impl Demodulator {
             Mode::Wfm => 15_000.0,
             Mode::Cw => (cw_beat(bw) + bw / 2.0 + 200.0).max(1_200.0),
             Mode::Usb | Mode::Lsb => bw.min(3_500.0),
+            // AM: the audio is one sideband wide (lab 2026-11-02: a fixed 4 kHz made 10 and
+            // 20 kHz settings sound like 8 kHz)
+            Mode::Am => (bw / 2.0).clamp(1_000.0, 15_000.0),
             _ => 4_000.0,
         };
         // SSB / CW: the sharp sideband filter runs at ~12 kHz instead of 48 kHz (4x fewer taps
@@ -139,9 +142,12 @@ impl Demodulator {
         };
         let chan = Channel::new(fs_in, offset, chan_bw, min_rate);
         let fs_ch = chan.rate();
+        // Full-scale deviation. Fixed, so the volume does not jump with the filter bandwidth
+        // (lab 2026-11-02: deriving it from the bandwidth gave 11 dB between 6.25 and 25 kHz,
+        // and clipping at 6.25 kHz with 2.5 kHz deviation)
         let dev = match mode {
             Mode::Wfm => 75_000.0,
-            _ => (bw / 2.0 - 3000.0).max(2500.0),
+            _ => 5_000.0,
         };
         // Images of the linear interpolation start at fs_ch - audio_cut
         let post_fir = if narrow && fs_ch < AUDIO_RATE * 0.9 {
