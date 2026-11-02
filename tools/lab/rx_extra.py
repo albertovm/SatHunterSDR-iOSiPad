@@ -51,6 +51,7 @@ def main():
     ap.add_argument("--cw-levels", default="-135,-141", help="doppler: dBm")
     ap.add_argument("--text", default="VVV DE HG0LAB TEST")
     ap.add_argument("--wpm", type=float, default=15)
+    ap.add_argument("--arb-rate", type=float, default=25e3, help="doppler: waveform rate (long files at 100 kS/s crash the VSG software)")
     ap.add_argument("--name", default=None)
     a = ap.parse_args()
 
@@ -107,11 +108,11 @@ def main():
             msg_s = len(cw_keying(a.text, a.wpm, 100)) / 100
             k = 0
             for r in rates:
-                iq = keyed_chirp(a.text, a.wpm, 100e3, r)
+                iq = keyed_chirp(a.text, a.wpm, a.arb_rate, r)
                 for lv in lvls:
                     k += 1
                     phone.phase("Doppler CW", k, len(rates) * len(lvls), f"{r:.0f} Hz/s, {lv:.0f} dBm")
-                    gen.play(a.freq, lv, f"sathunter_chirp_{int(r)}.cf32", iq, 100e3)
+                    gen.play(a.freq, lv, f"sathunter_chirp_{int(r)}_{int(a.arb_rate)}.cf32", iq, a.arb_rate)
                     time.sleep(max(8.0, 2.2 * msg_s))
                     c = phone.cw(max(8, int(2.2 * msg_s)))
                     ok = a.text.replace(" ", "") in c["text"].replace(" ", "")
