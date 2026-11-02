@@ -10,6 +10,7 @@
 //!   GET  /measure?hz=&bw=&secs=  channel at `hz`: peak level, noise floor, SNR, frequency offset
 //!   GET  /cw?secs=               CW decode of the last `secs` of demodulated audio
 //!   GET  /iq?secs=               `secs` of IQ as an SDR++ style WAV (binary)
+//!   GET  /audio?secs=            `secs` of demodulated audio, 16-bit mono WAV at 48 kHz
 //!   POST /phase                  {"phase","step","total","detail"}: shown on the phone's console
 //!   POST /log                    {"line"}: a line on the phone's console
 //!   GET  /log                    the console lines
@@ -205,7 +206,7 @@ const HELP: &str = "<!doctype html><meta charset=utf-8><title>SatHunterSDR lab l
 <body style='font-family:monospace;background:#0a0f16;color:#5ae08c;padding:16px'>\
 <h3>SatHunterSDR lab link</h3><p>The phone shows its address and PIN on the lab console.</p>\
 <p>On the PC: <b>python tools/lab/lab.py --phone &lt;address&gt; --pin &lt;PIN&gt;</b></p>\
-<p>JSON API (PIN as ?pin= or X-Lab-Pin): /status, POST /cmd, /measure?hz=&amp;bw=&amp;secs=, /cw?secs=, /iq?secs=, POST /phase, POST /log, /log</p></body>";
+<p>JSON API (PIN as ?pin= or X-Lab-Pin): /status, POST /cmd, /measure?hz=&amp;bw=&amp;secs=, /cw?secs=, /iq?secs=, /audio?secs=, POST /phase, POST /log, /log</p></body>";
 
 fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
     let url = rq.url().to_string();
@@ -255,6 +256,7 @@ fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
         ("GET", "/measure") => measure(i, num("hz", f64::NAN), num("bw", 2000.0), num("secs", 2.0).clamp(0.2, 30.0)),
         ("GET", "/cw") => cw(i, num("secs", 20.0).clamp(2.0, 60.0)),
         ("GET", "/iq") => return iq(i, rq, num("secs", 2.0).clamp(0.1, 30.0)),
+        ("GET", "/audio") => return audio(i, rq, num("secs", 2.0).clamp(0.1, 20.0)),
         ("POST", "/phase") => {
             let v: Value = serde_json::from_str(&body).unwrap_or(Value::Null);
             let p = v["phase"].as_str().unwrap_or("").to_string();
@@ -379,6 +381,38 @@ fn cw(i: &Inner, secs: f64) -> Result<Value, String> {
 }
 
 /// `secs` of IQ as a WAV, through the recorder into a scratch file.
+/// The last `secs` of demodulated audio (after the filter, demodulator and AGC) as a 16-bit
+/// mono WAV at 48 kHz: the PC measures filter shapes and tone pitch from it.
+fn audio(i: &Arc<Inner>, rq: tiny_http::Request, secs: f64) {
+    lock(&i.tap).audio.clear();
+    std::thread::sleep(Duration::from_secs_f64(secs));
+    let a: Vec<f32> = lock(&i.tap).audio.iter().copied().collect();
+    if a.is_empty() {
+        return reply(rq, 400, &json!({ "ok": false, "error": "no audio (receiver stopped?)" }));
+    }
+    let rate = sh_dsp::demod::AUDIO_RATE as u32;
+    let data_len = (a.len() * 2) as u32;
+    let mut b = Vec::with_capacity(44 + a.len() * 2);
+    b.extend_from_slice(b"RIFF");
+    b.extend_from_slice(&(36 + data_len).to_le_bytes());
+    b.extend_from_slice(b"WAVEfmt ");
+    b.extend_from_slice(&16u32.to_le_bytes());
+    b.extend_from_slice(&1u16.to_le_bytes()); // PCM
+    b.extend_from_slice(&1u16.to_le_bytes()); // mono
+    b.extend_from_slice(&rate.to_le_bytes());
+    b.extend_from_slice(&(rate * 2).to_le_bytes());
+    b.extend_from_slice(&2u16.to_le_bytes());
+    b.extend_from_slice(&16u16.to_le_bytes());
+    b.extend_from_slice(b"data");
+    b.extend_from_slice(&data_len.to_le_bytes());
+    for v in &a {
+        b.extend_from_slice(&((v.clamp(-1.0, 1.0) * 32767.0) as i16).to_le_bytes());
+    }
+    log(i, format!("audio: {:.1} s sent", a.len() as f64 / rate as f64));
+    let h = tiny_http::Header::from_bytes(&b"Content-Type"[..], &b"audio/wav"[..]).unwrap();
+    let _ = rq.respond(tiny_http::Response::from_data(b).with_header(h));
+}
+
 fn iq(i: &Arc<Inner>, rq: tiny_http::Request, secs: f64) {
     if lock(&i.recorder).is_some() {
         return reply(rq, 409, &json!({ "ok": false, "error": "a recording is running on the phone" }));
