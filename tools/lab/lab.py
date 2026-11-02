@@ -114,7 +114,7 @@ def cw_keying(text, wpm, rate):
     return out
 
 
-def awgn_band(rate, bw, n=1 << 15, seed=1):
+def awgn_band(rate, bw, n=1 << 15, seed=1):  # noqa: E302
     """Periodic complex Gaussian noise, flat over +-bw/2 and zero outside (built in the frequency
     domain, so it loops in the ARB without a seam). Returns (samples, peak-to-average ratio dB)."""
     import numpy as np
@@ -242,7 +242,8 @@ class Vsg60Gen:
         sep = "\\" if "\\" in self.path or ":" in self.path[:3] else "/"
         return self.path.rstrip("\\/") + sep + name, len(env)
 
-    def _load(self, name, env):
+    def _load(self, name, env, rate=None):
+        rate = rate or self.RATE
         if self.loaded == name:
             return
         remote, n = self._file(name, env)
@@ -255,7 +256,7 @@ class Vsg60Gen:
         length = int(float(self.query(":SOURce:RADio:ARB:WAVeform:LENgth?")))
         if length != n:
             raise SystemExit(f"VSG60: {remote} has {length} samples, expected {n}")
-        for c in (f":SOURce:RADio:ARB:SRATe {self.RATE:.0f}",
+        for c in (f":SOURce:RADio:ARB:SRATe {rate:.0f}",
                   ":SOURce:RADio:ARB:IQ:SCALe:AUTO:STATe ON",
                   ":SOURce:RADio:ARB:IQ:SCALe:AVERage:STATe OFF",
                   ":SOURce:RADio:ARB:SAMPle:OFFSet 0",
@@ -269,9 +270,9 @@ class Vsg60Gen:
         self.check()
         self.loaded = name
 
-    def _play(self, hz, dbm, name, env):
+    def _play(self, hz, dbm, name, env, rate=None):
         gen = dbm + self.atten
-        self._load(name, env)
+        self._load(name, env, rate)
         self.write(f":SOURce:FREQuency {hz:.0f}")
         self.write(f":SOURce:POWer {gen:.2f}")
         self.opc()
@@ -285,6 +286,14 @@ class Vsg60Gen:
 
     def cw(self, hz, dbm):
         self._play(hz, dbm, "sathunter_cw.cf32", [1.0] * 10_000)
+
+    def play(self, hz, dbm, name, iq, rate):
+        """Any waveform; `dbm` is the set level (the waveform's peak, Auto Scale)."""
+        self._play(hz, dbm, name, iq, rate)
+
+    def tune(self, hz):
+        self.write(f":SOURce:FREQuency {hz:.0f}")
+        self.opc()
 
     def noise(self, hz, dbm_mean, bw):
         """Band-limited AWGN, flat over +-bw/2, mean power `dbm_mean` at the receiver input.
