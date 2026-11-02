@@ -1,0 +1,125 @@
+{
+ "note": "merged from the doppler, doppler-25/50/100/170 runs (the VSG software was restarted between waveforms)",
+ "doppler": [
+  {
+   "hz_per_s": 0.0,
+   "level_dbm": -130.0,
+   "sweep_hz": 0.0,
+   "text": "AVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.747539446961415,
+   "cn0_dbhz": 43.328685026738,
+   "drift_hz_s": 0.1330358768785566
+  },
+  {
+   "hz_per_s": 0.0,
+   "level_dbm": -138.0,
+   "sweep_hz": 0.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.226697398139057,
+   "cn0_dbhz": 35.30110058161445,
+   "drift_hz_s": 0.024928414280647723
+  },
+  {
+   "hz_per_s": 10.0,
+   "level_dbm": -130.0,
+   "sweep_hz": 138.4,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.703025475706497,
+   "cn0_dbhz": 42.18074819533315,
+   "drift_hz_s": 0.5120241098754856
+  },
+  {
+   "hz_per_s": 10.0,
+   "level_dbm": -138.0,
+   "sweep_hz": 138.4,
+   "text": "AVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.321477428180573,
+   "cn0_dbhz": 35.50281324071197,
+   "drift_hz_s": 0.4826515017335712
+  },
+  {
+   "hz_per_s": 25.0,
+   "level_dbm": -130.0,
+   "sweep_hz": 346.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.692300738966354,
+   "cn0_dbhz": 42.986136016414086,
+   "drift_hz_s": 1.6211833578023622
+  },
+  {
+   "hz_per_s": 25.0,
+   "level_dbm": -138.0,
+   "sweep_hz": 346.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.24512063931151,
+   "cn0_dbhz": 35.37964456571562,
+   "drift_hz_s": 1.5140980344000512
+  },
+  {
+   "hz_per_s": 50.0,
+   "level_dbm": -130.0,
+   "sweep_hz": 692.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.704722272480558,
+   "cn0_dbhz": 42.85722035399007,
+   "drift_hz_s": 2.5114526503537284
+  },
+  {
+   "hz_per_s": 50.0,
+   "level_dbm": -138.0,
+   "sweep_hz": 692.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.271980841601096,
+   "cn0_dbhz": 35.1443825866114,
+   "drift_hz_s": 3.332361346637094
+  },
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -130.0,
+   "sweep_hz": 1384.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.31618301191798,
+   "cn0_dbhz": 42.85728376699713,
+   "drift_hz_s": 6.040231486872096
+  },
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -138.0,
+   "sweep_hz": 1384.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.273735070495857,
+   "cn0_dbhz": 35.07475622602439,
+   "drift_hz_s": 5.095754614796845
+  },
+  {
+   "hz_per_s": 170.0,
+   "level_dbm": -130.0,
+   "sweep_hz": 2352.8,
+   "text": "AV DE HG0LAB TTST AV DE HG~LAB TES S",
+   "ok": false,
+   "wpm": 14.953239531552786,
+   "cn0_dbhz": 41.554503844655294,
+   "drift_hz_s": 13.818723416468096
+  },
+  {
+   "hz_per_s": 170.0,
+   "level_dbm": -138.0,
+   "sweep_hz": 2352.8,
+   "text": "UV DE HG0LAB TR UV DE HG0LAB TEI E US",
+   "ok": false,
+   "wpm": 15.364820335791618,
+   "cn0_dbhz": 34.58575171810159,
+   "drift_hz_s": 13.293753527206462
+  }
+ ]
+}
