@@ -173,6 +173,12 @@ fun SettingsScreen(
             }
             Switch(checked = st.debugMode, onCheckedChange = { engine.debugMode(it) })
         }
+        var pin by remember(st.labPin) { mutableStateOf(st.labPin) }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(pin, { pin = it.filter(Char::isDigit).take(8) }, label = { Text("Lab PIN (4-8 digits, empty = random)") }, singleLine = true,
+                modifier = Modifier.weight(1f), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword))
+            Button(onClick = { engine.labPin(pin) }) { Text("Set") }
+        }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("Radar")

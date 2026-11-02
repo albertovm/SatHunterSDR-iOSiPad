@@ -42,6 +42,8 @@ pub struct Config {
     pub decimation: usize,
     /// Debug mode: the lab link (measurements over the LAN) is on
     pub debug_mode: bool,
+    /// Lab link PIN (4-8 digits); empty = a new random PIN every time
+    pub lab_pin: String,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
 }
@@ -75,6 +77,7 @@ impl Default for Config {
             ppm: 0.0,
             decimation: 1,
             debug_mode: false,
+            lab_pin: "1027".into(),
             freqs: Default::default(),
         }
     }

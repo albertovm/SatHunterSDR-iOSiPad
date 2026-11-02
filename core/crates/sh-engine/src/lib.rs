@@ -191,6 +191,8 @@ enum Cmd {
     DebugMode { on: bool },
     /// Lab link without changing the setting (tests)
     LabStart { port: Option<u16> },
+    /// Fixed lab PIN (4-8 digits), empty = random each time
+    LabPin { pin: String },
     LabStop,
 }
 
@@ -548,6 +550,16 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             }
         }
         Cmd::LabStart { port } => lab::start(i, port),
+        Cmd::LabPin { pin } => {
+            let pin = pin.trim().to_string();
+            if !pin.is_empty() && !lab::valid_pin(&pin) {
+                return Err("the PIN is 4 to 8 digits (empty: a random one each time)".into());
+            }
+            lock(&i.cfg).lab_pin = pin.clone();
+            i.save();
+            lab::set_pin(i, &pin);
+            Ok(lab::status(i))
+        }
         Cmd::LabStop => {
             lab::stop(i);
             Ok(json!({}))
@@ -1272,6 +1284,7 @@ fn status(i: &Inner) -> Value {
         "markers": lock(&i.sat).markers.clone(),
         "lab": lab::status(i),
         "debug_mode": c.debug_mode,
+        "lab_pin": c.lab_pin,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
 }

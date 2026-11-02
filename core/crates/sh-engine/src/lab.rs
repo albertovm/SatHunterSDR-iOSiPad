@@ -79,6 +79,17 @@ fn lan_ips() -> Vec<String> {
     v
 }
 
+pub(crate) fn valid_pin(p: &str) -> bool {
+    (4..=8).contains(&p.len()) && p.bytes().all(|b| b.is_ascii_digit())
+}
+
+/// A new PIN for the running lab link (the setting is saved by the caller)
+pub(crate) fn set_pin(i: &Inner, pin: &str) {
+    if let Some(l) = lock(&i.lab).as_mut() {
+        l.pin = if valid_pin(pin) { pin.to_string() } else { new_pin() };
+    }
+}
+
 fn new_pin() -> String {
     let n = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0);
     let mut x = (n as u64) ^ 0x9E37_79B9_7F4A_7C15;
@@ -111,7 +122,8 @@ pub(crate) fn start(i: &Arc<Inner>, port: Option<u16>) -> Result<Value, String> 
     let port = port.unwrap_or(PORT);
     let server = tiny_http::Server::http(("0.0.0.0", port)).map_err(|e| format!("lab link: port {port}: {e}"))?;
     let stop = Arc::new(AtomicBool::new(false));
-    let pin = new_pin();
+    let fixed = lock(&i.cfg).lab_pin.trim().to_string();
+    let pin = if valid_pin(&fixed) { fixed } else { new_pin() };
     *lock(&i.lab) = Some(Lab {
         port,
         pin: pin.clone(),

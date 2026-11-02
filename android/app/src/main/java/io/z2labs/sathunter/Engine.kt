@@ -75,6 +75,7 @@ data class Status(
     val markers: List<Marker> = emptyList(),
     val recording: Rec? = null,
     val debugMode: Boolean = false,
+    val labPin: String = "",
     /** null when the lab link is off */
     val lab: LabState? = null,
 )
@@ -303,6 +304,7 @@ class Engine(dataDir: String) {
     fun biasTee(on: Boolean) = async("bias_tee", JSONObject().put("on", on))
     fun ppm(ppm: Double) = async("ppm", JSONObject().put("ppm", ppm))
     fun debugMode(on: Boolean) = async("debug_mode", JSONObject().put("on", on))
+    fun labPin(pin: String) = async("lab_pin", JSONObject().put("pin", pin))
     fun decimation(factor: Int) = async("decimation", JSONObject().put("factor", factor))
     fun filter(f: FilterState) = async("filter", JSONObject().put("filter", f.toJson())) { refreshList() }
     fun favourite(norad: Long, on: Boolean) = async("favourite", JSONObject().put("norad", norad).put("on", on)) { refreshList() }
@@ -349,6 +351,7 @@ class Engine(dataDir: String) {
             locator = j.optString("locator"),
             followGps = j.optBoolean("follow_gps", true),
             debugMode = j.optBoolean("debug_mode"),
+            labPin = j.optString("lab_pin"),
             lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
                 val ph = l.optJSONObject("phase")
                 fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()
