@@ -7,20 +7,21 @@ This PC (same LAN, Python 3 only, no packages):
     python tools/lab/lab.py --phone 192.168.1.23 --pin 123456 --gen demo         # self test, no generator
     python tools/lab/lab.py --phone 192.168.1.23 --pin 123456 --gen manual \\
         --freq 437.1e6 --atten 80                                               # you set the generator
-    python tools/lab/lab.py --phone 192.168.1.23 --pin 123456 --gen vsg60 \\
-        --freq 437.1e6 --atten 80 --levels -40,-50,-60,-70,-80                   # Signal Hound VSG60
+    python tools/lab/lab.py --phone 192.168.1.23 --pin 123456 --gen vsg60 --vsg 192.168.1.199:5124 \\
+        --freq 437.1e6 --atten 86 --levels=-60,-80,-100,-110,-120,-125,-130      # Signal Hound VSG60 (SCPI)
 
 Phases (the phone's console shows each): connect, setup, noise floor, frequency accuracy,
 level sweep (SNR, linearity, sensitivity), CW decode vs level. The report (report.md, CSV, JSON)
 goes to docs/lab/<date_time>/ so it can be committed and read by everyone (and by Claude).
 
 --atten is the attenuation between the generator and the receiver input (cables, fixed and step
-attenuators), so the levels in the report are at the receiver input. The VSG60's own output
-range is limited (around -40 dBm at the bottom; check its data sheet): weak-signal levels need
-external attenuators and good shielding, otherwise leakage around the attenuators dominates.
+attenuators, the 3-10 dB pad on the VSG60 output), so the levels in the report are at the receiver
+input. Weak-signal levels need external attenuators and good shielding: below about -80 dBm the
+leakage from the VSG60's case and USB cable matters (the noise-floor phase warns when the test
+frequency is not clean with the generator off). Warm the VSG60 up for ~30 minutes.
 """
 
-import argparse, csv, ctypes, json, math, os, sys, time, urllib.request, urllib.error
+import argparse, csv, json, math, os, sys, time, urllib.request, urllib.error
 
 # ---------------------------------------------------------------------------------------------
 # Phone
@@ -150,61 +151,136 @@ class ManualGen:
 
 
 class Vsg60Gen:
-    """Signal Hound VSG60 through its C API (vsg_api.dll / libvsg_api.so from the Signal Hound SDK).
+    """Signal Hound VSG60A through the VSG software's SCPI server (TCP, port 5124 by default),
+    ARB mode with .cf32 waveforms, as in the lab's VSG60 guide (VSG60_MERESI_SEGEDLET.md):
 
-    The calls follow the VSG API (vsgOpenDevice, vsgSetFrequency, vsgSetLevel, vsgSetSampleRate,
-    vsgRepeatWaveform, vsgAbort, vsgCloseDevice). If your SDK version names them differently,
-    adjust them here: everything else in the script stays the same.
+    - VSG software: Edit > Preferences > SCPI enabled, port 5124 (restart after a change); firewall
+      rule for the port; one VSG software instance; only one SCPI client at a time.
+    - ARB (not Streaming), Auto Scale ON, Output Signal Average OFF: |IQ| = 1.0 is the set level.
+      Sample offset 0, count = period = file length (else only the start of the file plays).
+    - Heavy commands are followed by *OPC and *ESR? polling; :SYSTem:ERRor? is read until empty.
+    - Bring-up: RF OFF, set up the receiver, then RF ON.
+    - The .cf32 files are written by this script into --vsg-dir; the VSG software opens them by
+      the path it sees (--vsg-path, default the same folder: run lab.py on the VSG PC, or share
+      the folder).
     """
     name = "vsg60"
     fixed_freq = None
     can_level = True
-    RATE = 100e3  # waveform sample rate
+    RATE = 100e3  # waveform sample rate (CW needs little); the VSG upsamples
 
-    def __init__(self, atten, lib=None):
+    def __init__(self, atten, host, port, vsg_dir, vsg_path):
+        import socket
         self.atten = atten
-        names = [lib] if lib else ["vsg_api.dll", "libvsg_api.so", "./vsg_api.dll"]
-        last = None
-        for n in names:
+        self.dir = vsg_dir
+        self.path = vsg_path or vsg_dir
+        os.makedirs(self.dir, exist_ok=True)
+        try:
+            self.s = socket.create_connection((host, port), timeout=10)
+        except OSError as e:
+            raise SystemExit(f"VSG60: no SCPI at {host}:{port} ({e}). VSG software running, SCPI on, firewall rule, one instance?")
+        self.f = self.s.makefile("rwb")
+        idn = self.query("*IDN?")
+        print(f"   VSG: {idn}")
+        self.write(":OUTPut:STATe OFF")
+        self.check()
+        self.loaded = None
+
+    # --- SCPI basics
+    def write(self, c):
+        self.f.write((c + "\n").encode())
+        self.f.flush()
+
+    def query(self, c):
+        self.write(c)
+        line = self.f.readline()
+        if not line:
+            raise SystemExit(f"VSG60: no answer to {c} (another SCPI client connected?)")
+        return line.decode(errors="replace").strip()
+
+    def opc(self, timeout=30):
+        self.write("*OPC")
+        t = time.time()
+        while time.time() - t < timeout:
             try:
-                self.dll = ctypes.CDLL(n)
+                if int(float(self.query("*ESR?"))) & 1:
+                    return
+            except ValueError:
+                pass
+            time.sleep(0.05)
+        raise SystemExit("VSG60: *OPC timeout (a zombie VSG instance on another port?)")
+
+    def check(self):
+        errs = []
+        for _ in range(20):
+            e = self.query(":SYSTem:ERRor?")
+            if e.startswith("0") or "No error" in e:
                 break
-            except OSError as e:
-                last = e
-        else:
-            raise SystemExit(f"VSG60 API library not found ({last}); copy vsg_api.dll next to lab.py or pass --vsg-lib")
-        self.h = ctypes.c_int(-1)
-        self._ok(self.dll.vsgOpenDevice(ctypes.byref(self.h)), "vsgOpenDevice")
-        self._ok(self.dll.vsgSetSampleRate(self.h, ctypes.c_double(self.RATE)), "vsgSetSampleRate")
+            errs.append(e)
+        if errs:
+            raise SystemExit(f"VSG60 errors: {errs}")
 
-    def _ok(self, status, what):
-        if status < 0:
-            raise SystemExit(f"VSG60: {what} failed (status {status})")
+    # --- waveforms
+    def _file(self, name, env):
+        local = os.path.join(self.dir, name)
+        import struct
+        with open(local, "wb") as f:
+            f.write(b"".join(struct.pack("<ff", a, 0.0) for a in env))
+        sep = "\\" if "\\" in self.path or ":" in self.path[:3] else "/"
+        return self.path.rstrip("\\/") + sep + name, len(env)
 
-    def _play(self, hz, dbm, env):
-        gen_dbm = dbm + self.atten
-        self._ok(self.dll.vsgAbort(self.h), "vsgAbort")
-        self._ok(self.dll.vsgSetFrequency(self.h, ctypes.c_double(hz)), "vsgSetFrequency")
-        self._ok(self.dll.vsgSetLevel(self.h, ctypes.c_double(gen_dbm)), f"vsgSetLevel {gen_dbm:.1f} dBm (out of range? change --atten)")
-        iq = (ctypes.c_float * (2 * len(env)))()
-        for k, a in enumerate(env):
-            iq[2 * k] = a
-            iq[2 * k + 1] = 0.0
-        self._ok(self.dll.vsgRepeatWaveform(self.h, iq, len(env)), "vsgRepeatWaveform")
+    def _load(self, name, env):
+        if self.loaded == name:
+            return
+        remote, n = self._file(name, env)
+        self.write(":OUTPut:STATe OFF")
+        self.write(":SOURce:RADio:ARB:WAVeform:UNLOAD")
+        self.write(f':SOURce:RADio:ARB:WAVeform:LOAD:BINFC "{remote}"')
+        self.opc(60)
+        if self.query(":SOURce:RADio:ARB:WAVeform:LOAD?").strip() != "1":
+            raise SystemExit(f"VSG60: could not load {remote} (is that path valid on the VSG PC? --vsg-path)")
+        length = int(float(self.query(":SOURce:RADio:ARB:WAVeform:LENgth?")))
+        if length != n:
+            raise SystemExit(f"VSG60: {remote} has {length} samples, expected {n}")
+        for c in (f":SOURce:RADio:ARB:SRATe {self.RATE:.0f}",
+                  ":SOURce:RADio:ARB:IQ:SCALe:AUTO:STATe ON",
+                  ":SOURce:RADio:ARB:IQ:SCALe:AVERage:STATe OFF",
+                  ":SOURce:RADio:ARB:SAMPle:OFFSet 0",
+                  f":SOURce:RADio:ARB:SAMPle:COUNt {n}",
+                  f":SOURce:RADio:ARB:SAMPle:PERiod {n}",
+                  ":SOURce:RADio:ARB:TRIGger:TYPE CONTinuous",
+                  ":SOURce:RADio:ARB:STATe ON",
+                  ":OUTPut:MODulation:STATe ON"):
+            self.write(c)
+        self.opc()
+        self.check()
+        self.loaded = name
+
+    def _play(self, hz, dbm, name, env):
+        gen = dbm + self.atten
+        self._load(name, env)
+        self.write(f":SOURce:FREQuency {hz:.0f}")
+        self.write(f":SOURce:POWer {gen:.2f}")
+        self.opc()
+        self.check()
+        self.write(":OUTPut:STATe ON")
+        time.sleep(0.05)  # level settling (5 ms after a >20 dB step), well inside the dwell
 
     def off(self):
-        self.dll.vsgAbort(self.h)
+        self.write(":OUTPut:STATe OFF")
+        self.opc()
 
     def cw(self, hz, dbm):
-        self._play(hz, dbm, [1.0] * 10_000)
+        self._play(hz, dbm, "sathunter_cw.cf32", [1.0] * 10_000)
 
     def keyed(self, hz, dbm, text, wpm):
-        self._play(hz, dbm, cw_keying(text, wpm, self.RATE))
+        name = "sathunter_key_%s_%dwpm.cf32" % ("".join(c for c in text if c.isalnum())[:16], wpm)
+        self._play(hz, dbm, name, cw_keying(text, wpm, self.RATE))
 
     def close(self):
         try:
-            self.dll.vsgAbort(self.h)
-            self.dll.vsgCloseDevice(self.h)
+            self.write(":OUTPut:STATe OFF")
+            self.s.close()
         except Exception:
             pass
 
@@ -228,7 +304,10 @@ def main():
     ap.add_argument("--pin", required=True, help="the PIN on the lab console")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--gen", choices=["demo", "manual", "vsg60"], default="demo")
-    ap.add_argument("--vsg-lib", help="path of vsg_api.dll / libvsg_api.so")
+    ap.add_argument("--vsg", default="192.168.1.199:5124", help="VSG software SCPI host:port")
+    ap.add_argument("--vsg-dir", default=r"C:\sathunter_lab", help="folder the script writes the .cf32 waveforms into")
+    ap.add_argument("--vsg-path", help="the same folder as the VSG PC sees it (default: --vsg-dir)")
+    ap.add_argument("--passes", type=int, default=2, help="level sweep passes, each in a random order")
     ap.add_argument("--freq", type=float, default=437.1e6, help="test frequency, Hz")
     ap.add_argument("--atten", type=float, default=0.0, help="dB between the generator and the receiver input")
     ap.add_argument("--levels", default="-60,-70,-80,-90,-100,-110,-115,-120,-125,-130",
@@ -244,7 +323,7 @@ def main():
     a = ap.parse_args()
 
     phone = Phone(a.phone, a.pin, a.port)
-    gen = {"demo": lambda: DemoGen(), "manual": lambda: ManualGen(a.atten), "vsg60": lambda: Vsg60Gen(a.atten, a.vsg_lib)}[a.gen]()
+    gen = {"demo": lambda: DemoGen(), "manual": lambda: ManualGen(a.atten), "vsg60": lambda: Vsg60Gen(a.atten, a.vsg.split(":")[0], int(a.vsg.split(":")[1]) if ":" in a.vsg else 5124, a.vsg_dir, a.vsg_path)}[a.gen]()
     freq = gen.fixed_freq or a.freq
     levels = [float(x) for x in a.levels.split(",") if x.strip()]
     cw_levels = [float(x) for x in a.cw_levels.split(",") if x.strip()]
@@ -283,6 +362,8 @@ def main():
             m = phone.measure(freq, 2000, a.secs)
             res["noise"] = m
             phone.log(f"noise {m['noise_dbfs_per_bin']:.1f} dBFS per {m['bin_hz']:.0f} Hz bin")
+            if m["peak_snr_db"] > 6:
+                phone.log(f"WARNING: {m['peak_snr_db']:.1f} dB at the test frequency with the generator OFF: another signal or leakage")
         else:
             phone.log("demo: the beacon cannot be switched off, skipped")
 
@@ -298,16 +379,30 @@ def main():
         # 5. level sweep
         sweep = []
         if gen.can_level:
-            for k, lv in enumerate(levels):
-                phone.phase("level sweep", 5, total, f"{lv:.0f} dBm ({k + 1}/{len(levels)})")
+            import random
+            order = []
+            for p in range(max(1, a.passes)):
+                lv_p = levels[:]
+                random.shuffle(lv_p)  # random order per pass: slow drift does not bend the curve
+                order += [(p + 1, lv) for lv in lv_p]
+            for k, (pas, lv) in enumerate(order):
+                phone.phase("level sweep", 5, total, f"{lv:.0f} dBm (pass {pas}, {k + 1}/{len(order)})")
                 gen.cw(freq, lv)
                 time.sleep(0.8)
                 m = phone.measure(freq, 2000, a.secs)
-                row = {"level_dbm": lv, **{k2: m.get(k2) for k2 in ("peak_dbfs", "noise_dbfs_per_bin", "peak_snr_db", "channel_snr_db", "offset_hz", "cn0_dbhz", "bin_hz")}}
+                row = {"pass": pas, "level_dbm": lv, **{k2: m.get(k2) for k2 in ("peak_dbfs", "noise_dbfs_per_bin", "peak_snr_db", "channel_snr_db", "offset_hz", "cn0_dbhz", "bin_hz")}}
                 sweep.append(row)
                 phone.log(f"{lv:7.1f} dBm: peak {m['peak_dbfs']:6.1f} dBFS, SNR {m['peak_snr_db']:5.1f} dB, C/N0 {m['cn0_dbhz']:5.1f} dB-Hz")
             res["sweep"] = sweep
-            res["mds_dbm"] = mds_from_sweep(sweep)
+            # mean and spread per level over the passes
+            by = {}
+            for r in sweep:
+                by.setdefault(r["level_dbm"], []).append(r)
+            res["sweep_mean"] = [{"level_dbm": lv, "passes": len(rs),
+                                  **{k2: sum(r[k2] for r in rs) / len(rs) for k2 in ("peak_dbfs", "peak_snr_db", "cn0_dbhz", "offset_hz")},
+                                  "snr_spread_db": max(r["peak_snr_db"] for r in rs) - min(r["peak_snr_db"] for r in rs),
+                                  "bin_hz": rs[0]["bin_hz"]} for lv, rs in sorted(by.items(), reverse=True)]
+            res["mds_dbm"] = mds_from_sweep(res["sweep_mean"])
         else:
             phone.phase("level sweep", 5, total, "needs a generator, skipped")
 
@@ -346,11 +441,12 @@ def main():
         L += [f"Noise floor: {res['noise']['noise_dbfs_per_bin']:.1f} dBFS per {res['noise']['bin_hz']:.0f} Hz bin", ""]
     fr = res["frequency"]
     L += [f"Frequency: offset {fr['offset_hz']:+.1f} Hz ({fr['offset_ppm']:+.2f} ppm) at {fr['peak_snr_db']:.1f} dB SNR", ""]
-    if res.get("sweep"):
-        L += ["| Level dBm | Peak dBFS | SNR dB | C/N0 dB-Hz | Offset Hz |", "|---|---|---|---|---|"]
-        L += [f"| {r['level_dbm']:.1f} | {r['peak_dbfs']:.1f} | {r['peak_snr_db']:.1f} | {r['cn0_dbhz']:.1f} | {r['offset_hz']:+.1f} |" for r in res["sweep"]]
+    if res.get("sweep_mean"):
+        L += ["| Level dBm | Passes | Peak dBFS | SNR dB | SNR spread dB | C/N0 dB-Hz | Offset Hz |", "|---|---|---|---|---|---|---|"]
+        L += [f"| {r['level_dbm']:.1f} | {r['passes']} | {r['peak_dbfs']:.1f} | {r['peak_snr_db']:.1f} | {r['snr_spread_db']:.1f} | {r['cn0_dbhz']:.1f} | {r['offset_hz']:+.1f} |" for r in res["sweep_mean"]]
         mds = res.get("mds_dbm")
-        L += ["", f"Sensitivity (SNR 3 dB in a {res['sweep'][0]['bin_hz']:.0f} Hz bin): " + (f"{mds:.1f} dBm" if mds is not None else "not reached in the sweep"), ""]
+        L += ["", f"Sensitivity (SNR 3 dB in a {res['sweep_mean'][0]['bin_hz']:.0f} Hz bin): " + (f"{mds:.1f} dBm" if mds is not None else "not reached in the sweep"),
+              "", "Levels are at the receiver input (generator level minus --atten); the VSG60's absolute level is ±2 dB.", ""]
     L += ["| CW level dBm | Decoded | OK | WPM |", "|---|---|---|---|"]
     L += [f"| {d['level_dbm'] if d['level_dbm'] is not None else 'demo'} | `{d['text']}` | {'yes' if d['ok'] else 'no'} | {d['wpm']:.1f} |" for d in res["cw"]]
     with open(os.path.join(out, "report.md"), "w") as f:

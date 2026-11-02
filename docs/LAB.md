@@ -25,20 +25,36 @@ Same network as the phone, Python 3, no packages:
 python tools/lab/lab.py --phone <address> --pin <PIN> --gen demo                    # self test
 python tools/lab/lab.py --phone <address> --pin <PIN> --gen manual --freq 437.1e6 --atten 80
 python tools/lab/lab.py --phone <address> --pin <PIN> --gen vsg60  --freq 437.1e6 --atten 80 \
-    --levels -60,-70,-80,-90,-100,-110,-115,-120,-125,-130 --note "SMA 1 m, 40+40 dB pads"
+    --levels=-60,-70,-80,-90,-100,-110,-115,-120,-125,-130 --note "SMA 1 m, 40+40 dB pads"
 ```
 
 - `demo`: no generator; the phone switches to the demo source and measures its CW beacon.
   Checks the whole chain (LAN, PIN, commands, measurement, CW decode) in a minute.
 - `manual`: the script tells you what to set on any generator and waits for Enter.
-- `vsg60`: Signal Hound VSG60 through its C API (`vsg_api.dll` from the Signal Hound SDK next to
-  the script, or `--vsg-lib`). The function names follow the VSG API; if your SDK differs, only
-  the `Vsg60Gen` class needs a touch.
+- `vsg60`: Signal Hound VSG60A through the **VSG software's SCPI server** (TCP, `--vsg
+  192.168.1.199:5124` by default), ARB mode, as in the lab's VSG60 guide:
+  - VSG software: Edit → Preferences → SCPI enabled, port 5124 (restart after a change), a
+    firewall rule for the port, **one** VSG software instance, and no other SCPI client while
+    lab.py runs.
+  - The script writes its waveforms (`sathunter_cw.cf32`, `sathunter_key_*.cf32`: float32 IQ,
+    100 kS/s) into `--vsg-dir` (default `C:\sathunter_lab`) and has the VSG software load them by
+    the path the VSG PC sees (`--vsg-path`, default the same): simplest is to run lab.py on the
+    VSG PC itself.
+  - It sets ARB, Auto Scale ON, **Output Signal Average OFF** (so |IQ| = 1 is the set level),
+    sample offset 0 and count = period = file length, continuous trigger; every heavy command is
+    followed by `*OPC` / `*ESR?` polling and `:SYSTem:ERRor?` is read until empty; RF is OFF
+    while the phone is set up and during the noise floor.
+  - The level sweep runs `--passes` times (default 2), each in a random order, and the report
+    shows the mean and the spread per level.
+  - `tools/lab/mock_vsg.py` answers like the VSG software and logs the commands: a dry run
+    without the generator.
 
-`--atten` is everything between the generator and the receiver input; all levels in the report
-are at the receiver input. The generator's own range ends around −40 dBm (check the data sheet),
-so satellite-like levels (−120 … −140 dBm) need fixed and step attenuators and good shielding:
-with poor shielding the leakage around the attenuators sets the level, not the attenuators.
+`--atten` is everything between the generator and the receiver input (the 3–10 dB pad that
+always sits on the VSG60 output, cables, fixed and step attenuators; measure it); all levels in
+the report are at the receiver input. The VSG60's absolute level is ±2 dB; warm it up ~30
+minutes. Satellite-like levels (−120 … −140 dBm) need good shielding: below about −80 dBm the
+leakage from the VSG60's case and USB cable matters; the noise-floor phase (generator OFF) warns
+when the test frequency is not clean.
 
 ## Phases
 
