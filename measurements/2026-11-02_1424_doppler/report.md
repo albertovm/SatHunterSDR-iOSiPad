@@ -25,8 +25,9 @@ Levels at the LNA input (attenuation calibrated 34.7 dB).
    untracked pass decodes except for the few seconds around the closest point.
 2. At 170 Hz/s the message runs out of the 2 kHz filter, not out of the decoder's tracking: with TLE
    tracking the residual is far below this; without it a wider CW filter (3-4 kHz) would cover it.
-3. The decoder's own drift estimate (`drift_hz_s` in the JSON) reads about 1/15 of the true ramp; the
-   decoding is not affected, but the number should not be shown to the user as Hz/s until it is fixed.
+3. The decoder's drift estimate (`drift_hz_s` in the JSON) reads about 1/15 of the ramp here. That is the
+   test signal, not the decoder: the estimate is a straight-line fit over the 31 s decode window, and the
+   waveform jumps back every 13.8 s (sawtooth), so the fit sees little net slope. A real pass is monotonic.
 
 ## Notes on the method
 
