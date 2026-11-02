@@ -7,10 +7,12 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 
 | Date | Run | Chain | Key results |
 |---|---|---|---|
-| 2026-11-02 | [System A](2026-11-02_1028_system-a/report.md) | VSG60 -> Spacewalker LNA 434 -> RTL-SDR V3 -> Mi 10 | NF 2.0 dB, +0.34 ppm, CW decoded at -123 dBm |
+| 2026-11-02 | [System A](2026-11-02_1028_system-a/report.md) | VSG60 -> Spacewalker LNA 434 -> RTL-SDR V3 -> Mi 10 | NF 2.0 dB, best RTL gain 12.5 dB, +0.34 ppm |
+| 2026-11-02 | [System A2](2026-11-02_1044_system-a2-mds/report.md) | as A, +30 dB attenuator | MDS -154.4 dBm (31 Hz), CW decode to -145 dBm (29 dB-Hz) |
 
 ## Planned
 
-- System A2: MDS and CW decode threshold with an external attenuator (below -123 dBm).
+- DSP check: every sample rate x decimation, every mode x filter bandwidth (`tools/lab/dsp_check.py`).
+- BB60C check of the VSG60 absolute level (the last dB of the NF).
 - Spacewalker LNA 434 MHz alone (VSG60 -> LNA -> BB60C): gain and passband, out-of-band rejection, P1dB, IIP3, current.
 - Simulated satellite pass with Doppler.

@@ -1,4 +1,46 @@
-# Lab measurement 2026-11-02 10:44:28
+# System A2: sensitivity and CW decode threshold, 436.6 MHz
+
+Run: 2026-11-02 10:44-10:58, `tools/lab/lab.py`. Same chain as [System A](../2026-11-02_1028_system-a/report.md)
+with a 30 dB attenuator after the VSG60, so the generator reaches -154 dBm at the LNA input.
+
+## Setup
+
+| Item | Value |
+|---|---|
+| Chain | VSG60A -> 30 dB attenuator -> 1.5 m cable (3.6 dB) -> Spacewalker LNA 434 MHz v1.4 (bias tee) -> RTL-SDR Blog V3 -> Xiaomi Mi 10 |
+| RTL gain | 12.5 dB fixed (the best gain from System A) |
+| Spectrum | 1.024 MS/s, decimation 8 (128 kHz span), 4096 bins = 31.25 Hz |
+| CW | 15 WPM, "VVV DE HG0LAB TEST", 2 copies per decode |
+
+**Level calibration.** The raw table below uses the nominal 33.6 dB. At -110 dBm the CW peak was -31.1 dBFS here
+and -30.0 dBFS in System A (same gain, no attenuator), so the attenuator path is 1.1 dB more than nominal.
+The results use calibrated levels (nominal - 1.1 dB).
+
+## Results (calibrated levels at the LNA input)
+
+| Quantity | Result |
+|---|---|
+| MDS (3 dB SNR in a 31 Hz bin) | **-154.4 dBm** |
+| Implied noise density | -172.6 dBm/Hz (C/N0 tracks the level 1:1 from -111 to -151 dBm) |
+| CW decode, 15 WPM, perfect | down to **-142.1 dBm** (C/N0 31.5 dB-Hz) |
+| CW decode, 1 character error in 2 copies | -145.1 dBm (C/N0 29.0 dB-Hz) |
+| CW decode fails | -148.1 dBm (C/N0 26.6 dB-Hz) and below |
+| System NF check (AWGN noise rise) | 2.2 dB with nominal levels, 1.1 dB with the calibration above |
+| Frequency error | +151 Hz, +0.35 ppm (same as System A) |
+
+![Sensitivity and CW decode](plots.png)
+
+### Notes
+
+- The CW decoder works to about 29 dB-Hz. A human operator copies 15 WPM CW at about 20-23 dB-Hz,
+  so there is 6-9 dB to gain in the decoder (narrower matched filter, better envelope threshold).
+- For a satellite beacon: -145 dBm at the LNA input is the decode limit with this chain.
+- The 1.1 dB calibration and the earlier 2.0 vs 1.4 dB NF difference both point to the VSG60's absolute
+  level. A BB60C check of the generator levels will fix the last dB.
+
+## Raw output of lab.py (nominal levels)
+
+### Lab measurement 2026-11-02 10:44:28
 
 Generator: vsg60, 436.600000 MHz, attenuation 33.6 dB. Chain: VSG60A, 30 dB attenuator, 1.5 m cable (3.6 dB), Spacewalker LNA 434 MHz v1.4 (bias tee), RTL-SDR Blog V3, Xiaomi Mi 10. Levels at the LNA input (attenuator nominal 30 dB).
 

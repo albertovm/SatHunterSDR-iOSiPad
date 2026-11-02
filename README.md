@@ -27,9 +27,12 @@ VSG60 -> Spacewalker LNA 434 MHz -> RTL-SDR Blog V3 -> SatHunterSDR on a Xiaomi 
 |---|---|
 | System noise figure at 436.6 MHz | 2.0 dB |
 | Frequency error | +0.34 ppm |
-| Keyed CW at 15 WPM | decoded at -123 dBm (the generator's lowest level) |
+| Sensitivity (MDS, 3 dB SNR in 31 Hz) | -154.4 dBm |
+| Keyed CW at 15 WPM | decoded down to -145 dBm (C/N0 29 dB-Hz) |
 
 ![Gain sweep and level sweep](measurements/2026-11-02_1028_system-a/plots.png)
+
+![Sensitivity and CW decode](measurements/2026-11-02_1044_system-a2-mds/plots.png)
 
 ## Layout
 
