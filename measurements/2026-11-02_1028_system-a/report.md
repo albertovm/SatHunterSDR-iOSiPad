@@ -1,4 +1,52 @@
-# Lab measurement 2026-11-02 10:28:55
+# System A: VSG60 -> Spacewalker LNA -> RTL-SDR -> SatHunterSDR (Mi 10), 436.6 MHz
+
+Run: 2026-11-02 10:28-10:36, automated with `tools/lab/lab.py` (VSG60A over SCPI, phone over the lab link).
+
+## Setup
+
+| Item | Value |
+|---|---|
+| Generator | Signal Hound VSG60A (S/N 23041470), ARB mode, 100 kS/s waveforms, Auto Scale ON |
+| Cable | 1.5 m coax, 3.6 dB loss at 434 MHz (measured against a BB60C); no attenuator |
+| LNA | Spacewalker LNA 434 MHz v1.4 (Decent Labs), powered by the RTL-SDR bias tee; DC-blocked input |
+| Receiver | RTL-SDR Blog V3 (R820T), 1.024 MS/s |
+| Phone / app | Xiaomi Mi 10, USB OTG, SatHunterSDR v0.2.0-beta10-lab2 (debug mode, lab link) |
+| Reference plane | All levels are at the LNA input (generator level minus 3.6 dB) |
+
+## Results
+
+| Quantity | Result |
+|---|---|
+| System noise figure (AWGN noise rise, gain 12.5-37 dB) | **2.0 dB** (1.96-2.07 dB) |
+| System noise figure (from CW C/N0 at -110 dBm) | 1.4 dB (N0 = -110 - 62.6 = -172.6 dBm/Hz) |
+| Best RTL gain | 12.5 dB: NF within 0.1 dB of the best, most headroom |
+| Linearity at gain 12.5 dB | 1.00 dB/dB from -123 to -90 dBm |
+| ADC full scale at gain 12.5 dB | about -85 dBm CW at the LNA input |
+| Frequency error | +149 Hz = **+0.34 ppm** at 436.6 MHz (ppm correction 0) |
+| CW at -123 dBm | C/N0 49.8 dB-Hz, SNR 31.8 dB in a 31 Hz bin; decoded perfectly |
+| CW decode, 15 WPM | 100 % at -105, -115, -120 and -123 dBm (lowest level the VSG60 reaches) |
+| Extrapolated MDS (3 dB SNR, 31 Hz bin) | about -152 dBm |
+
+![Gain sweep and level sweep](plots.png)
+
+### Notes
+
+- The two noise figure methods differ by 0.6 dB. The AWGN figure relies on the VSG60 absolute level at -110 dBm
+  and on Auto Scale mapping the waveform peak to the set level (9.94 dB peak-to-average corrected); the CW
+  figure relies on the absolute level and the window noise bandwidth. Both are inside the VSG60 level accuracy.
+  A BB60C check of the AWGN level will settle it. The NF includes the LNA's SAW filter and the LNA input match.
+- Below 7.7 dB RTL gain the R820T noise starts to count (6.8 dB NF at 0 dB). Above 42 dB the ADC runs close to
+  full scale with the LNA's gain and the NF rises.
+- The sensitivity floor was not reached: the VSG60 stops at -120 dBm (-123.6 dBm at the LNA input). The next
+  run needs a 30-40 dB external attenuator to find the MDS and the CW decode threshold.
+- With the generator off a spur sits 18.6 kHz below 436.6 MHz (about 14 dB over the per-bin floor). It is
+  small against the AWGN and does not change the NF; its source is still to be found.
+
+![VSG60 playing the keyed CW waveform (lab.py, SCPI remote mode)](vsg60_keyed_cw.png)
+
+## Raw output of lab.py
+
+### Lab measurement 2026-11-02 10:28:55
 
 Generator: vsg60, 436.600000 MHz, attenuation 3.6 dB. Chain: VSG60A -> 1.5 m cable (3.6 dB at 434 MHz, measured vs BB60C) -> Spacewalker LNA 434 MHz v1.4 (bias tee powered) -> RTL-SDR Blog V3 (R820T) -> Xiaomi Mi 10 (USB OTG). Levels are at the LNA input.
 
@@ -44,7 +92,7 @@ Chosen gain for the level sweep: 12.5 dB (lowest gain within 0.3 dB of the best 
 
 Sensitivity (SNR 3 dB in a 31 Hz bin): not reached in the sweep
 
-Levels are at the receiver input (generator level minus --atten); the VSG60's absolute level is ±2 dB.
+Levels are at the receiver input (generator level minus --atten); the VSG60's absolute level is Â±2 dB.
 
 | CW level dBm | Decoded | OK | WPM |
 |---|---|---|---|

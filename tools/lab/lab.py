@@ -544,7 +544,7 @@ def main():
               "", "Levels are at the receiver input (generator level minus --atten); the VSG60's absolute level is ±2 dB.", ""]
     L += ["| CW level dBm | Decoded | OK | WPM |", "|---|---|---|---|"]
     L += [f"| {d['level_dbm'] if d['level_dbm'] is not None else 'demo'} | `{d['text']}` | {'yes' if d['ok'] else 'no'} | {d['wpm']:.1f} |" for d in res["cw"]]
-    with open(os.path.join(out, "report.md"), "w") as f:
+    with open(os.path.join(out, "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
     print(f"\nReport: {out}/report.md")
 

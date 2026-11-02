@@ -18,6 +18,19 @@ and decoders are small plugins that students can write.
 
 Coming next: decoder plugins (AX.25 / APRS first), the ESP-SDR wideband spectrum mode and firmware updater, rtl_tcp, more sources.
 
+## Measurements
+
+Receive chain measured in the lab ([all runs](measurements/README.md)):
+VSG60 -> Spacewalker LNA 434 MHz -> RTL-SDR Blog V3 -> SatHunterSDR on a Xiaomi Mi 10.
+
+| Quantity | Result |
+|---|---|
+| System noise figure at 436.6 MHz | 2.0 dB |
+| Frequency error | +0.34 ppm |
+| Keyed CW at 15 WPM | decoded at -123 dBm (the generator's lowest level) |
+
+![Gain sweep and level sweep](measurements/2026-11-02_1028_system-a/plots.png)
+
 ## Layout
 
 ```
