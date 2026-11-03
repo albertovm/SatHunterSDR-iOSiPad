@@ -11,7 +11,9 @@ fn main() {
     let chan: f64 = a.get(2).map(|s| s.parse().unwrap()).unwrap_or(12_500.0);
     let variant = a.get(3).cloned().unwrap_or("disc".into());
     let wn_hz: f64 = a.get(4).map(|s| s.parse().unwrap()).unwrap_or(3000.0);
-    let fs = 64_000.0;
+    let fs: f64 = std::env::var("FS").ok().and_then(|v| v.parse().ok()).unwrap_or(64_000.0);
+    let foff: f64 = std::env::var("FOFF").ok().and_then(|v| v.parse().ok()).unwrap_or(0.0); // signal offset from the VFO
+    let vfo: f64 = std::env::var("VFO").ok().and_then(|v| v.parse().ok()).unwrap_or(0.0); // VFO offset from the centre
     let env = |k: &str, d: f64| std::env::var(k).ok().and_then(|v| v.parse().ok()).unwrap_or(d);
     let def = sh_dsp::afsk::AfskParams::default();
     let prm = sh_dsp::afsk::AfskParams {
@@ -32,7 +34,7 @@ fn main() {
     let sig: Vec<Complex32> = audio
         .iter()
         .map(|&x| {
-            ph += 2.0 * std::f64::consts::PI * dev * (x / peak) as f64 / fs;
+            ph += 2.0 * std::f64::consts::PI * (dev * (x / peak) as f64 + vfo + foff) / fs;
             Complex32::new(ph.cos() as f32, ph.sin() as f32)
         })
         .collect();
@@ -79,7 +81,7 @@ fn main() {
             }
             d = AfskDecoder::with_params(fc, prm);
         } else {
-            let mut dm = Demodulator::new(Mode::Nfm, fs, 0.0, chan);
+            let mut dm = Demodulator::new(Mode::Nfm, fs, vfo, chan);
             for c in x.chunks(4096) {
                 dm.process(c, &mut au);
             }
