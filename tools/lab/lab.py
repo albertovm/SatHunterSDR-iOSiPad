@@ -320,6 +320,41 @@ class Vsg60Gen:
 # Measurement
 
 
+def cpu_load():
+    """CPU load of this PC in %, or None when it cannot be read (Windows only)."""
+    import subprocess
+    if os.name != "nt":
+        return None
+    try:
+        out = subprocess.run(["powershell", "-NoProfile", "-Command",
+                              "(Get-CimInstance Win32_Processor | Measure-Object LoadPercentage -Average).Average"],
+                             capture_output=True, text=True, timeout=20).stdout.strip()
+        return float(out.replace(",", "."))
+    except Exception:
+        return None
+
+
+def wait_idle(phone=None, limit=40.0, max_wait=1800):
+    """The VSG60 is fed over USB by this PC: under heavy load (a compile job) its output has gaps, which
+    ruins keyed and FM measurements (lab 2026-11-02/03). Wait until the load is below `limit` %.
+    Returns the load seen when going on."""
+    t0 = time.time()
+    while True:
+        c = cpu_load()
+        if c is None or c <= limit:
+            return c
+        msg = f"PC busy ({c:.0f} % CPU): waiting, the VSG60 output is not reliable now"
+        print("   " + msg)
+        if phone is not None:
+            try:
+                phone.log(msg)
+            except SystemExit:
+                pass
+        if time.time() - t0 > max_wait:
+            raise SystemExit("PC busy for too long, measurement stopped")
+        time.sleep(20)
+
+
 def mds_from_sweep(rows, key="peak_snr_db", at=3.0):
     """Level where the SNR crosses `at` dB (linear interpolation between sweep points)."""
     pts = sorted((r["level_dbm"], r[key]) for r in rows if r.get(key) is not None)

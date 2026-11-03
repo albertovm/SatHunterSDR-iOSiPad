@@ -18,7 +18,7 @@ import argparse, json, math, os, sys, time
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lab import Phone, Vsg60Gen, cw_keying  # noqa: E402
+from lab import Phone, Vsg60Gen, cw_keying, wait_idle, cpu_load  # noqa: E402
 
 
 def two_tone(rate, df, n=10_000):
@@ -135,6 +135,7 @@ def main():
                 phone.phase("APRS", k + 1, len(runs), f"NFM {bw / 1e3:g} kHz, {lv:.0f} dBm, {a.aprs_dev / 1e3:.1f} kHz deviation")
                 gen.play(a.freq, lv, f"sathunter_aprs_{int(a.aprs_dev)}.cf32", iq, rate)
                 time.sleep(1.0)
+                wait_idle(phone)
                 c0 = phone._req("GET", "/aprs?since=0")["count"]
                 t0 = time.time()
                 time.sleep(a.aprs_secs)
@@ -142,7 +143,7 @@ def main():
                 dt = time.time() - t0
                 good = [f for f in r["frames"] if "SatHunter lab packet" in f.get("info", "")]
                 expected = dt * per_s
-                row = {"bw_hz": bw, "level_dbm": lv, "decoded": len(good), "expected": expected, "success": min(1.0, len(good) / expected), "bad_crc_total": r["bad_crc"]}
+                row = {"cpu_pct_after": cpu_load(), "bw_hz": bw, "level_dbm": lv, "decoded": len(good), "expected": expected, "success": min(1.0, len(good) / expected), "bad_crc_total": r["bad_crc"]}
                 res["aprs"]["rows"].append(row)
                 phone.log(f"APRS {bw / 1e3:g} kHz {lv:.0f} dBm: {len(good)} of ~{expected:.0f} packets ({100 * row['success']:.0f} %)")
                 save()
@@ -162,6 +163,7 @@ def main():
                 for lv in lvls:
                     k += 1
                     phone.phase("Doppler CW", k, len(rates) * len(lvls), f"{r:.0f} Hz/s, {lv:.0f} dBm")
+                    wait_idle(phone)
                     gen.play(a.freq, lv, f"sathunter_chirp_{int(r)}_{int(a.arb_rate)}.cf32", iq, a.arb_rate)
                     time.sleep(max(8.0, 2.2 * msg_s))
                     c = phone.cw(max(8, int(2.2 * msg_s)))
