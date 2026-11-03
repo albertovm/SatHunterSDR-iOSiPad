@@ -165,6 +165,16 @@ fun SettingsScreen(
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Decoders")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("APRS / packet (AFSK 1200, AX.25)", fontSize = 14.sp)
+                Text("ISS digipeater on 145.825 MHz and APRS CubeSats, in NFM. The frames show in a panel on the receiver screen.", color = Dim, fontSize = 12.sp)
+            }
+            Switch(checked = st.aprs.on, onCheckedChange = { engine.aprs(it) })
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("Debug")
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {

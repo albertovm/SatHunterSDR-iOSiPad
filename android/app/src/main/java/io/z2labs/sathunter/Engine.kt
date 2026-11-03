@@ -41,6 +41,10 @@ data class LabState(
 /** IQ recording in progress */
 data class Rec(val name: String, val secs: Double, val bytes: Long, val dropped: Long)
 
+/** One decoded APRS / AX.25 frame */
+data class AprsFrame(val n: Long, val time: Double, val tnc2: String, val src: String, val info: String, val lat: Double?, val lon: Double?)
+data class AprsState(val on: Boolean = false, val count: Long = 0, val badCrc: Long = 0, val frames: List<AprsFrame> = emptyList())
+
 data class Status(
     val running: Boolean = false,
     val source: String = "demo",
@@ -79,6 +83,7 @@ data class Status(
     /** Update requests from the lab link (counter) and their channel */
     val updateReq: Long = 0,
     val updatePrerelease: Boolean = true,
+    val aprs: AprsState = AprsState(),
     /** null when the lab link is off */
     val lab: LabState? = null,
 )
@@ -308,6 +313,8 @@ class Engine(dataDir: String) {
     fun ppm(ppm: Double) = async("ppm", JSONObject().put("ppm", ppm))
     fun debugMode(on: Boolean) = async("debug_mode", JSONObject().put("on", on))
     fun labPin(pin: String) = async("lab_pin", JSONObject().put("pin", pin))
+    fun aprs(on: Boolean) = async("aprs", JSONObject().put("on", on))
+    fun aprsClear() = async("aprs_clear")
     fun decimation(factor: Int) = async("decimation", JSONObject().put("factor", factor))
     fun filter(f: FilterState) = async("filter", JSONObject().put("filter", f.toJson())) { refreshList() }
     fun favourite(norad: Long, on: Boolean) = async("favourite", JSONObject().put("norad", norad).put("on", on)) { refreshList() }
@@ -357,6 +364,21 @@ class Engine(dataDir: String) {
             labPin = j.optString("lab_pin"),
             updateReq = j.optLong("update_req", 0),
             updatePrerelease = j.optBoolean("update_prerelease", true),
+            aprs = j.optJSONObject("aprs")?.let { a ->
+                AprsState(
+                    on = a.optBoolean("on"), count = a.optLong("count"), badCrc = a.optLong("bad_crc"),
+                    frames = a.optJSONArray("frames")?.let { fa ->
+                        (0 until fa.length()).mapNotNull { k ->
+                            fa.optJSONObject(k)?.let { f ->
+                                AprsFrame(
+                                    f.optLong("n"), f.optDouble("time"), f.optString("tnc2"), f.optString("src"), f.optString("info"),
+                                    if (f.isNull("lat")) null else f.optDouble("lat"), if (f.isNull("lon")) null else f.optDouble("lon"),
+                                )
+                            }
+                        }
+                    } ?: emptyList(),
+                )
+            } ?: AprsState(),
             lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
                 val ph = l.optJSONObject("phase")
                 fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()

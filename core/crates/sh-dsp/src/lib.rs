@@ -3,6 +3,7 @@
 
 pub use rustfft::num_complex::Complex32;
 
+pub mod afsk;
 pub mod channel;
 pub mod cw;
 pub mod demod;

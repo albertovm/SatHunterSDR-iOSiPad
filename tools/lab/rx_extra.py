@@ -35,6 +35,19 @@ def keyed_chirp(text, wpm, rate, hz_per_s):
     return [complex(v) for v in env * np.exp(1j * ph)]
 
 
+def aprs_waveform(rate, dev, n_packets=10, gap_s=0.3):
+    """n_packets APRS UI frames (numbered), AFSK 1200 audio FM-modulated with `dev` peak deviation."""
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
+    from aprs_gen import ui_frame, hdlc_nrzi, afsk
+    audio = []
+    for k in range(n_packets):
+        raw = ui_frame("HG0LAB-1", "APRS", ["WIDE1-1"], f"!4729.87N/01902.41E>SatHunter lab packet {k:02d}".encode())
+        audio += afsk(hdlc_nrzi(raw, 40, 3), rate) + [0.0] * int(gap_s * rate)
+    a = np.array(audio)
+    ph = 2 * np.pi * dev * np.cumsum(a / max(1e-9, np.abs(a).max())) / rate
+    return [complex(v) for v in np.exp(1j * ph)], len(a) / rate
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--phone", required=True)
@@ -43,7 +56,7 @@ def main():
     ap.add_argument("--vsg-dir", default=r"C:\sathunter_lab")
     ap.add_argument("--atten", type=float, default=0.0)
     ap.add_argument("--freq", type=float, default=436.6e6)
-    ap.add_argument("--part", choices=["twotone", "doppler"], required=True)
+    ap.add_argument("--part", choices=["twotone", "doppler", "aprs"], required=True)
     ap.add_argument("--gains", default="12.5,29.7", help="twotone: RTL gains")
     ap.add_argument("--levels", default="-125,-120,-115,-110,-105,-100,-97,-94,-91,-88,-85,-82,-79",
                     help="twotone: level of each tone at the receiver input, dBm")
@@ -53,6 +66,9 @@ def main():
     ap.add_argument("--wpm", type=float, default=15)
     ap.add_argument("--arb-rate", type=float, default=25e3, help="doppler: waveform rate (long files at 100 kS/s crash the VSG software)")
     ap.add_argument("--cw-bw", type=float, default=2000.0, help="doppler: CW filter bandwidth, Hz")
+    ap.add_argument("--aprs-levels", default="-105,-110,-115,-118,-120,-122,-124,-126,-128", help="aprs: dBm")
+    ap.add_argument("--aprs-dev", type=float, default=3000.0, help="aprs: FM deviation, Hz")
+    ap.add_argument("--aprs-secs", type=float, default=30.0, help="aprs: listening time per level")
     ap.add_argument("--name", default=None)
     a = ap.parse_args()
 
@@ -98,6 +114,33 @@ def main():
                     save()
                 gen.off()
                 res["sweeps"].append({"gain_db": g, "rows": rows})
+        elif a.part == "aprs":
+            phone.cmd(cmd="mode", mode="NFM", bw=12500.0)
+            phone.cmd(cmd="gain", db=12.5)
+            phone.cmd(cmd="aprs", on=True)
+            phone.cmd(cmd="tune", hz=a.freq)
+            time.sleep(1.5)
+            rate = 50e3
+            iq, loop_s = aprs_waveform(rate, a.aprs_dev)
+            per_s = 10 / loop_s
+            res["aprs"] = {"deviation_hz": a.aprs_dev, "packets_per_loop": 10, "loop_s": loop_s, "rows": []}
+            lv_list = [float(x) for x in a.aprs_levels.split(",")]
+            for k, lv in enumerate(lv_list):
+                phone.phase("APRS", k + 1, len(lv_list), f"{lv:.0f} dBm, {a.aprs_dev / 1e3:.1f} kHz deviation")
+                gen.play(a.freq, lv, f"sathunter_aprs_{int(a.aprs_dev)}.cf32", iq, rate)
+                time.sleep(1.0)
+                c0 = phone._req("GET", "/aprs?since=0")["count"]
+                t0 = time.time()
+                time.sleep(a.aprs_secs)
+                r = phone._req("GET", f"/aprs?since={c0}")
+                dt = time.time() - t0
+                good = [f for f in r["frames"] if "SatHunter lab packet" in f.get("info", "")]
+                expected = dt * per_s
+                row = {"level_dbm": lv, "decoded": len(good), "expected": expected, "success": min(1.0, len(good) / expected), "bad_crc_total": r["bad_crc"]}
+                res["aprs"]["rows"].append(row)
+                phone.log(f"APRS {lv:.0f} dBm: {len(good)} of ~{expected:.0f} packets ({100 * row['success']:.0f} %)")
+                save()
+            gen.off()
         else:
             phone.cmd(cmd="mode", mode="CW", bw=a.cw_bw)
             phone.cmd(cmd="gain", db=12.5)

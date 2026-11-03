@@ -44,6 +44,8 @@ pub struct Config {
     pub debug_mode: bool,
     /// Lab link PIN (4-8 digits); empty = a new random PIN every time
     pub lab_pin: String,
+    /// APRS / AX.25 decoder (AFSK 1200) on the demodulated audio
+    pub aprs: bool,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
 }
@@ -78,6 +80,7 @@ impl Default for Config {
             decimation: 1,
             debug_mode: false,
             lab_pin: "1027".into(),
+            aprs: false,
             freqs: Default::default(),
         }
     }

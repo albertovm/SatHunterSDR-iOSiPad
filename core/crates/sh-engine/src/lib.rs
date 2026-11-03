@@ -91,6 +91,9 @@ struct Inner {
     decim: std::sync::atomic::AtomicUsize,
     /// Update requests (lab link / UI): the app reacts when the counter changes
     update_req: Mutex<(u64, bool)>,
+    /// APRS: the decoder (when on) and the frames decoded so far (total count, last ones)
+    aprs: Mutex<Option<sh_dsp::afsk::AfskDecoder>>,
+    aprs_frames: Mutex<(u64, VecDeque<Value>)>,
     quit: AtomicBool,
     time_shift: Mutex<(f64, f64)>, // (seconds added to the clock, LOS of the simulated pass)
     work: Mutex<Sender<Work>>,
@@ -196,6 +199,10 @@ enum Cmd {
     /// Fixed lab PIN (4-8 digits), empty = random each time
     LabPin { pin: String },
     LabStop,
+    /// APRS / AX.25 decoder (AFSK 1200 on the FM audio) on / off (remembered)
+    Aprs { on: bool },
+    /// Forget the decoded APRS frames
+    AprsClear,
     /// Ask the app to look for a newer release on GitHub and offer it (the app shows the
     /// system install dialog; Android does not allow a silent install)
     Update { prerelease: Option<bool> },
@@ -229,6 +236,8 @@ impl Engine {
             running: AtomicBool::new(false),
             decim: std::sync::atomic::AtomicUsize::new(1),
             update_req: Mutex::new((0, true)),
+            aprs: Mutex::new(None),
+            aprs_frames: Mutex::new((0, VecDeque::new())),
             quit: AtomicBool::new(false),
             time_shift: Mutex::new((0.0, 0.0)),
             work: Mutex::new(wtx),
@@ -566,6 +575,16 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             lab::set_pin(i, &pin);
             Ok(lab::status(i))
         }
+        Cmd::Aprs { on } => {
+            lock(&i.cfg).aprs = on;
+            i.save();
+            *lock(&i.aprs) = if on { Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE)) } else { None };
+            Ok(json!({ "aprs": on }))
+        }
+        Cmd::AprsClear => {
+            *lock(&i.aprs_frames) = (0, VecDeque::new());
+            Ok(json!({}))
+        }
         Cmd::Update { prerelease } => {
             let mut u = lock(&i.update_req);
             u.0 += 1;
@@ -843,6 +862,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
             if i.lab_on.load(Ordering::Relaxed) {
                 lab::feed(&i, b.center_hz, b.rate, &[], &audio);
             }
+            aprs_feed(&i, &audio, p.vfo_hz);
             let mut q = lock(&i.audio);
             q.extend(audio.iter());
             while q.len() > AUDIO_MAX {
@@ -1298,9 +1318,52 @@ fn status(i: &Inner) -> Value {
         "debug_mode": c.debug_mode,
         "lab_pin": c.lab_pin,
         "update_req": lock(&i.update_req).0,
+        "aprs": aprs_status(i, 20),
         "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
+}
+
+/// Run the APRS decoder on new audio; good frames go to the list with their time and frequency.
+fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
+    let mut g = lock(&i.aprs);
+    if g.is_none() && lock(&i.cfg).aprs {
+        *g = Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE)); // switched on in an earlier run
+    }
+    let Some(d) = g.as_mut() else { return };
+    d.process(audio);
+    if d.frames.is_empty() {
+        return;
+    }
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|t| t.as_secs_f64()).unwrap_or(0.0);
+    let mut q = lock(&i.aprs_frames);
+    while let Some(f) = d.frames.pop_front() {
+        q.0 += 1;
+        let n = q.0;
+        let pos = sh_plugin::runtime::aprs_position(&String::from_utf8_lossy(&f.info));
+        q.1.push_back(json!({
+            "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
+            "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),
+        }));
+        while q.1.len() > 200 {
+            q.1.pop_front();
+        }
+    }
+}
+
+/// APRS decoder state and the last `n` frames.
+pub(crate) fn aprs_status(i: &Inner, n: usize) -> Value {
+    let q = lock(&i.aprs_frames);
+    let bad = lock(&i.aprs).as_ref().map(|d| d.bad_crc).unwrap_or(0);
+    let skip = q.1.len().saturating_sub(n);
+    json!({ "on": lock(&i.cfg).aprs, "count": q.0, "bad_crc": bad, "frames": q.1.iter().skip(skip).cloned().collect::<Vec<_>>() })
+}
+
+/// Frames with a number above `since` (the lab link polls with the last number it saw).
+pub(crate) fn aprs_since(i: &Inner, since: u64) -> Value {
+    let q = lock(&i.aprs_frames);
+    let bad = lock(&i.aprs).as_ref().map(|d| d.bad_crc).unwrap_or(0);
+    json!({ "count": q.0, "bad_crc": bad, "frames": q.1.iter().filter(|f| f["n"].as_u64().unwrap_or(0) > since).cloned().collect::<Vec<_>>() })
 }
 
 fn sat_list(i: &Inner) -> Value {
