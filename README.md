@@ -29,7 +29,7 @@ VSG60 -> Spacewalker LNA 434 MHz -> RTL-SDR Blog V3 -> SatHunterSDR on a Xiaomi 
 | Frequency error | +0.34 ppm |
 | Sensitivity (MDS, 3 dB SNR in 31 Hz) | -154.4 dBm |
 | Keyed CW at 15 WPM | decoded down to -145 dBm (C/N0 29 dB-Hz) |
-| APRS (AFSK 1200, 3 kHz dev.) | 90 % packets at about -122 dBm |
+| APRS (AFSK 1200) | 90 % packets at -121.5 dBm (3 kHz dev.), -122.3 dBm (1 kHz dev., 6 kHz channel) |
 | Frequency error (after warm-up) | +0.09 ppm, the same at every sample rate |
 | Decimation alias rejection | > 48-58 dB in the central 84 % of the span |
 

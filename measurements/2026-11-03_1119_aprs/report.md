@@ -20,7 +20,7 @@ At each level the phone's decoder ran for 30 s; decoded = frames with a good CRC
 
 ## Findings
 
-1. **90 % packet success at about -122 dBm**, with a sharp edge (100 % at -120, 14 % at -124 dBm).
+1. **90 % packet success at about -121.5 dBm**, with a sharp edge (100 % at -120, 14 % at -124 dBm).
 2. That edge is the FM threshold of the 12.5 kHz channel: with the system noise of -172.6 dBm/Hz
    ([System A2](../2026-11-02_1044_system-a2-mds/report.md)) the carrier-to-noise in 12.5 kHz at -122 dBm is
    about 10 dB. The AFSK decoder is not the limit; a narrower channel is. For 3 kHz deviation the

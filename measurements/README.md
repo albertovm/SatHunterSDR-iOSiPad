@@ -14,12 +14,13 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-02 | [DSP check C](2026-11-02_1234_dsp-check-lab5/report.md) | after the fixes (lab5) | frequency error the same at every rate (+40 Hz, 0.09 ppm); AM and NFM fixed; RTL warm-up drift ~400 Hz |
 | 2026-11-02 | [Two-tone](2026-11-02_1337_twotone/report.md) | in-band intermodulation | no IM3 before ADC clipping (-85 dBm/tone at gain 12.5); ~66 dB spur-free range |
 | 2026-11-02 | [Doppler CW](2026-11-02_1424_doppler/report.md) | keyed CW with frequency ramps | decodes at 0-100 Hz/s down to -138 dBm; 170 Hz/s: 12-14 of 15 characters (2-3 kHz filter) |
-| 2026-11-03 | [APRS](2026-11-03_1119_aprs/report.md) | AFSK 1200 / AX.25, 3 kHz deviation, NFM 12.5 kHz | 90 % packets at about -122 dBm (FM threshold of the channel) |
+| 2026-11-03 | [APRS](2026-11-03_1119_aprs/report.md) | AFSK 1200 / AX.25, 3 kHz deviation, NFM 12.5 kHz | 90 % packets at about -121.5 dBm |
+| 2026-11-03 | [APRS 1 kHz dev.](2026-11-03_1128_aprs-1k/report.md) | 1 kHz deviation, NFM 6 / 9 / 12.5 kHz | 90 % at -122.3 / -121.3 / -120.8 dBm; limit is the FM-discriminator AFSK (Eb/N0 ~19 dB) |
 
 ## Planned
 
 - RTL warm-up drift vs time from a cold start (for the satellite campaign).
-- APRS with small deviation and narrower NFM channels.
+- APRS: an IQ-domain (coherent) AFSK detector, then the same sweep.
 - A whole simulated pass (monotonic Doppler S-curve, generator frequency stepped over SCPI) with TLE-style tracking.
 - BB60C check of the VSG60 absolute level (the last dB of the NF).
 - Spacewalker LNA 434 MHz alone (VSG60 -> LNA -> BB60C): gain and passband, out-of-band rejection, P1dB, IIP3, current.
