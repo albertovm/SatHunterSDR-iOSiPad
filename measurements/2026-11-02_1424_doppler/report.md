@@ -19,6 +19,28 @@ to about 170 Hz/s at the closest point; with TLE tracking only a few Hz/s remain
 OK = "VVV DE HG0LAB TEST" decoded complete (the first character of each copy is cut by the decode window).
 Levels at the LNA input (attenuation calibrated 34.7 dB).
 
+### Follow-up 2026-11-03: 3 kHz CW filter (v0.2.0-beta10-lab6)
+
+lab6 makes the lab decoder search the whole CW audio passband (beat note +- bandwidth/2) instead of a fixed
+200-3500 Hz. Scored as the characters of "VVVDEHG0LABTEST" (15) found in the best decoded copy
+(`best_copy_chars` in `results_all.json`):
+
+| Ramp | Filter | -130 dBm | -138 dBm |
+|---|---|---|---|
+| 0-100 Hz/s | 2 kHz | 15/15 | 15/15 |
+| 100 Hz/s | 3 kHz | 14/15 | 15/15 |
+| 170 Hz/s | 2 kHz | 12/15 | 12/15 |
+| 170 Hz/s | 3 kHz | 12/15 | 14/15 |
+
+With the 3 kHz filter the 170 Hz/s message stays inside the passband; the remaining errors sit at the start
+and end of each copy, where the test waveform jumps back by 2.35 kHz when it repeats (sawtooth). A real pass
+has no such jump. A clean 170 Hz/s test needs a monotonic ramp over a whole pass, which the VSG software
+cannot hold as one ARB file (it crashes on long waveforms); it can be done with the generator's frequency
+stepped over SCPI instead.
+
+Recommendation: keep the 2 kHz CW filter with TLE Doppler tracking (residual a few Hz/s); use 3 kHz only
+when tracking without TLEs.
+
 ## Findings
 
 1. The CW decoder follows ramps up to at least 100 Hz/s without loss, at 35 dB-Hz too: even an
