@@ -68,6 +68,7 @@ def main():
     ap.add_argument("--cw-bw", type=float, default=2000.0, help="doppler: CW filter bandwidth, Hz")
     ap.add_argument("--aprs-levels", default="-105,-110,-115,-118,-120,-122,-124,-126,-128", help="aprs: dBm")
     ap.add_argument("--aprs-dev", type=float, default=3000.0, help="aprs: FM deviation, Hz")
+    ap.add_argument("--aprs-bws", default="12500", help="aprs: NFM channel bandwidths, Hz")
     ap.add_argument("--aprs-secs", type=float, default=30.0, help="aprs: listening time per level")
     ap.add_argument("--name", default=None)
     a = ap.parse_args()
@@ -115,7 +116,6 @@ def main():
                 gen.off()
                 res["sweeps"].append({"gain_db": g, "rows": rows})
         elif a.part == "aprs":
-            phone.cmd(cmd="mode", mode="NFM", bw=12500.0)
             phone.cmd(cmd="gain", db=12.5)
             phone.cmd(cmd="aprs", on=True)
             phone.cmd(cmd="tune", hz=a.freq)
@@ -125,8 +125,14 @@ def main():
             per_s = 10 / loop_s
             res["aprs"] = {"deviation_hz": a.aprs_dev, "packets_per_loop": 10, "loop_s": loop_s, "rows": []}
             lv_list = [float(x) for x in a.aprs_levels.split(",")]
-            for k, lv in enumerate(lv_list):
-                phone.phase("APRS", k + 1, len(lv_list), f"{lv:.0f} dBm, {a.aprs_dev / 1e3:.1f} kHz deviation")
+            runs = [(float(bw), lv) for bw in a.aprs_bws.split(",") for lv in lv_list]
+            cur_bw = None
+            for k, (bw, lv) in enumerate(runs):
+                if bw != cur_bw:
+                    phone.cmd(cmd="mode", mode="NFM", bw=bw)
+                    cur_bw = bw
+                    time.sleep(1.0)
+                phone.phase("APRS", k + 1, len(runs), f"NFM {bw / 1e3:g} kHz, {lv:.0f} dBm, {a.aprs_dev / 1e3:.1f} kHz deviation")
                 gen.play(a.freq, lv, f"sathunter_aprs_{int(a.aprs_dev)}.cf32", iq, rate)
                 time.sleep(1.0)
                 c0 = phone._req("GET", "/aprs?since=0")["count"]
@@ -136,9 +142,9 @@ def main():
                 dt = time.time() - t0
                 good = [f for f in r["frames"] if "SatHunter lab packet" in f.get("info", "")]
                 expected = dt * per_s
-                row = {"level_dbm": lv, "decoded": len(good), "expected": expected, "success": min(1.0, len(good) / expected), "bad_crc_total": r["bad_crc"]}
+                row = {"bw_hz": bw, "level_dbm": lv, "decoded": len(good), "expected": expected, "success": min(1.0, len(good) / expected), "bad_crc_total": r["bad_crc"]}
                 res["aprs"]["rows"].append(row)
-                phone.log(f"APRS {lv:.0f} dBm: {len(good)} of ~{expected:.0f} packets ({100 * row['success']:.0f} %)")
+                phone.log(f"APRS {bw / 1e3:g} kHz {lv:.0f} dBm: {len(good)} of ~{expected:.0f} packets ({100 * row['success']:.0f} %)")
                 save()
             gen.off()
         else:
