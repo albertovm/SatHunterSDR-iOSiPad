@@ -215,9 +215,38 @@ pub fn aprs_position(info: &str) -> Option<(f64, f64)> {
     ((-90.0..=90.0).contains(&lat) && (-180.0..=180.0).contains(&lon)).then_some((lat, lon))
 }
 
+/// Tuning of the AFSK detector (the defaults are the measured best, see the lab reports).
+#[derive(Debug, Clone, Copy)]
+pub struct AfskParams {
+    /// Low-pass after mixing down by 1700 Hz: cut-off and transition, Hz
+    pub lp_cut: f64,
+    pub lp_trans: f64,
+    /// Smoothing of the frequency estimate, fraction of a bit
+    pub smooth: f64,
+    /// Clock recovery: how far a transition pulls the bit phase (0..1)
+    pub pll_gain: f64,
+    /// One-pole de-emphasis before the detector, corner in Hz (0 = off): whitens the FM
+    /// demodulator's noise, which rises with the audio frequency
+    pub deemph_hz: f64,
+    /// Repair frames with a bad CRC by flipping one bit or two adjacent bits (one NRZI line error)
+    /// when the addresses already parse; the CRC then has to match
+    pub fix_bits: bool,
+}
+
+impl Default for AfskParams {
+    fn default() -> Self {
+        // Simulated (examples/aprs_sim.rs, FM AFSK + white noise): the narrower low-pass and the
+        // bit repair move the 90 % packet point from about 50.2 to 49.4 dB-Hz C/N0
+        AfskParams { lp_cut: 650.0, lp_trans: 500.0, smooth: 0.5, pll_gain: 0.3, deemph_hz: 0.0, fix_bits: true }
+    }
+}
+
 /// Streaming AFSK1200 / AX.25 decoder.
 pub struct AfskDecoder {
     fs: f64,
+    prm: AfskParams,
+    de_a: f32,
+    de_y: f32,
     // FM discriminator around 1700 Hz
     nco_ph: f64,
     nco_step: f64,
@@ -234,6 +263,9 @@ pub struct AfskDecoder {
     prev_sign: bool,
     // NRZI / HDLC
     last_level: bool,
+    last_conf: f32,
+    /// Confidence of every data bit in `buf` (how far the detector was from the decision)
+    conf: Vec<f32>,
     ones: u32,
     shift: u8,
     nbits: u32,
@@ -243,27 +275,38 @@ pub struct AfskDecoder {
     pub frames: VecDeque<Ax25Frame>,
     /// Frames with a bad CRC (for statistics)
     pub bad_crc: u64,
+    /// Frames repaired by a bit flip
+    pub fixed: u64,
 }
 
 impl AfskDecoder {
     pub fn new(fs: f64) -> Self {
+        Self::with_params(fs, AfskParams::default())
+    }
+
+    pub fn with_params(fs: f64, prm: AfskParams) -> Self {
         // Low-pass of the mixed-down audio: the tones are at -500 / +500 Hz, the keying adds
         // sidebands up to ~1.2 kHz; the image at -3400 Hz must go
-        let taps = crate::filter::lowpass(1_100.0, 800.0, fs);
+        let taps = crate::filter::lowpass(prm.lp_cut, prm.lp_trans, fs);
         AfskDecoder {
             fs,
+            prm,
+            de_a: if prm.deemph_hz > 0.0 { (-2.0 * std::f64::consts::PI * prm.deemph_hz / fs).exp() as f32 } else { 0.0 },
+            de_y: 0.0,
             nco_ph: 0.0,
             nco_step: 2.0 * std::f64::consts::PI * (MARK + SPACE) / 2.0 / fs,
             hist: VecDeque::from(vec![Complex32::new(0.0, 0.0); taps.len()]),
             lp: taps,
             last: Complex32::new(1.0, 0.0),
             dsum: 0.0,
-            dwin_n: ((fs / BAUD) / 2.0).round().max(1.0) as usize,
+            dwin_n: ((fs / BAUD) * prm.smooth).round().max(1.0) as usize,
             dwin: VecDeque::new(),
             pll: 0.0,
             pll_step: BAUD / fs,
             prev_sign: false,
             last_level: false,
+            last_conf: 0.0,
+            conf: Vec::new(),
             ones: 0,
             shift: 0,
             nbits: 0,
@@ -271,6 +314,7 @@ impl AfskDecoder {
             in_frame: false,
             frames: VecDeque::new(),
             bad_crc: 0,
+            fixed: 0,
         }
     }
 
@@ -281,6 +325,12 @@ impl AfskDecoder {
     /// Feed audio samples; decoded frames collect in `frames`.
     pub fn process(&mut self, audio: &[f32]) {
         for &a in audio {
+            let a = if self.de_a > 0.0 {
+                self.de_y = self.de_a * self.de_y + (1.0 - self.de_a) * a;
+                self.de_y
+            } else {
+                a
+            };
             // mix down by 1700 Hz and low-pass
             let (s, c) = self.nco_ph.sin_cos();
             self.nco_ph += self.nco_step;
@@ -305,29 +355,33 @@ impl AfskDecoder {
             // DPLL: sample when the phase wraps; a transition pulls the phase towards 0.5
             if mark != self.prev_sign {
                 self.prev_sign = mark;
-                self.pll += (0.5 - self.pll) * 0.3;
+                self.pll += (0.5 - self.pll) * self.prm.pll_gain;
             }
             self.pll += self.pll_step;
             if self.pll >= 1.0 {
                 self.pll -= 1.0;
-                self.bit(mark);
+                let c = self.dsum.abs();
+                self.bit(mark, c);
             }
         }
     }
 
-    fn bit(&mut self, level: bool) {
-        // NRZI: no change = 1
+    fn bit(&mut self, level: bool, conf: f32) {
+        // NRZI: no change = 1; a data bit is as sure as the less sure of its two line bits
         let b = level == self.last_level;
         self.last_level = level;
+        let c = conf.min(self.last_conf);
+        self.last_conf = conf;
         if b {
             self.ones += 1;
             if self.ones > 6 {
                 // abort / idle
                 self.in_frame = false;
                 self.buf.clear();
+                self.conf.clear();
                 return;
             }
-            self.push(1);
+            self.push(1, c);
         } else {
             if self.ones == 6 {
                 // flag 01111110: close the frame before it, open a new one
@@ -341,14 +395,15 @@ impl AfskDecoder {
                 return;
             }
             self.ones = 0;
-            self.push(0);
+            self.push(0, c);
         }
     }
 
-    fn push(&mut self, bit: u8) {
+    fn push(&mut self, bit: u8, c: f32) {
         if !self.in_frame {
             return;
         }
+        self.conf.push(c);
         self.shift = (self.shift >> 1) | (bit << 7);
         self.nbits += 1;
         if self.nbits == 8 {
@@ -357,6 +412,7 @@ impl AfskDecoder {
             if self.buf.len() > 400 {
                 self.in_frame = false;
                 self.buf.clear();
+                self.conf.clear();
             }
         }
     }
@@ -375,15 +431,55 @@ impl AfskDecoder {
                         self.frames.pop_front();
                     }
                 }
+            } else if let Some(f) = self.prm.fix_bits.then(|| repair(&self.buf, &self.conf)).flatten() {
+                self.fixed += 1;
+                self.frames.push_back(f);
             } else {
                 self.bad_crc += 1;
             }
         }
         self.in_frame = true;
         self.buf.clear();
+        self.conf.clear();
         self.nbits = 0;
         self.shift = 0;
     }
+}
+
+/// Repair a frame with a bad CRC: flip one of the least sure bits, or it and its neighbour (one
+/// NRZI line error spoils two data bits). Only the 24 least sure positions are tried, so a wrong
+/// frame passes the CRC by chance with about 48 / 65536 probability; the addresses must parse
+/// before and after.
+const FIX_CANDIDATES: usize = 24;
+
+fn repair(buf: &[u8], conf: &[f32]) -> Option<Ax25Frame> {
+    let n = buf.len();
+    if !(18..=340).contains(&n) || conf.len() < n * 8 || Ax25Frame::parse(&buf[..n - 2]).is_none() {
+        return None;
+    }
+    let mut idx: Vec<usize> = (0..n * 8).collect();
+    idx.sort_by(|a, b| conf[*a].partial_cmp(&conf[*b]).unwrap_or(std::cmp::Ordering::Equal));
+    let mut b = buf.to_vec();
+    let check = |b: &[u8]| crc16(&b[..n - 2]) == (b[n - 2] as u16 | (b[n - 1] as u16) << 8);
+    for &k in idx.iter().take(FIX_CANDIDATES) {
+        for w in [1usize, 2] {
+            if k + w > n * 8 {
+                continue;
+            }
+            for j in k..k + w {
+                b[j / 8] ^= 1 << (j % 8);
+            }
+            if check(&b) {
+                if let Some(f) = Ax25Frame::parse(&b[..n - 2]) {
+                    return Some(f);
+                }
+            }
+            for j in k..k + w {
+                b[j / 8] ^= 1 << (j % 8);
+            }
+        }
+    }
+    None
 }
 
 #[cfg(test)]
