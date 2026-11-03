@@ -184,6 +184,37 @@ pub fn afsk_audio(levels: &[u8], fs: f64) -> Vec<f32> {
     out
 }
 
+/// Latitude, longitude from an APRS position report (uncompressed: `!` `=` or `/` `@` with a
+/// timestamp), None when the info field has no position.
+pub fn aprs_position(info: &str) -> Option<(f64, f64)> {
+    let b = info.as_bytes();
+    let start = match b.first()? {
+        b'!' | b'=' => 1,
+        b'/' | b'@' => 8, // 7-character timestamp
+        _ => return None,
+    };
+    let s = info.get(start..start + 19)?;
+    let (lat_s, rest) = (s.get(0..8)?, s.get(9..18)?);
+    let deg = |t: &str, d: usize| -> Option<f64> {
+        let v: f64 = t.get(0..d)?.parse().ok()?;
+        let m: f64 = t.get(d..d + 5)?.replace(' ', "0").parse().ok()?;
+        Some(v + m / 60.0)
+    };
+    let mut lat = deg(lat_s, 2)?;
+    match lat_s.as_bytes()[7] {
+        b'N' => {}
+        b'S' => lat = -lat,
+        _ => return None,
+    }
+    let mut lon = deg(rest, 3)?;
+    match rest.as_bytes()[8] {
+        b'E' => {}
+        b'W' => lon = -lon,
+        _ => return None,
+    }
+    ((-90.0..=90.0).contains(&lat) && (-180.0..=180.0).contains(&lon)).then_some((lat, lon))
+}
+
 /// Streaming AFSK1200 / AX.25 decoder.
 pub struct AfskDecoder {
     fs: f64,

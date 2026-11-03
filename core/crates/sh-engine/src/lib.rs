@@ -1318,7 +1318,7 @@ fn status(i: &Inner) -> Value {
         "debug_mode": c.debug_mode,
         "lab_pin": c.lab_pin,
         "update_req": lock(&i.update_req).0,
-        "aprs": aprs_status(i, 20),
+        "aprs": aprs_status(i, c.aprs, 20),
         "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
@@ -1326,8 +1326,9 @@ fn status(i: &Inner) -> Value {
 
 /// Run the APRS decoder on new audio; good frames go to the list with their time and frequency.
 fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
+    let want = lock(&i.cfg).aprs;
     let mut g = lock(&i.aprs);
-    if g.is_none() && lock(&i.cfg).aprs {
+    if g.is_none() && want {
         *g = Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE)); // switched on in an earlier run
     }
     let Some(d) = g.as_mut() else { return };
@@ -1340,7 +1341,7 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
     while let Some(f) = d.frames.pop_front() {
         q.0 += 1;
         let n = q.0;
-        let pos = sh_plugin::runtime::aprs_position(&String::from_utf8_lossy(&f.info));
+        let pos = sh_dsp::afsk::aprs_position(&String::from_utf8_lossy(&f.info));
         q.1.push_back(json!({
             "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
             "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),
@@ -1352,17 +1353,18 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
 }
 
 /// APRS decoder state and the last `n` frames.
-pub(crate) fn aprs_status(i: &Inner, n: usize) -> Value {
-    let q = lock(&i.aprs_frames);
+pub(crate) fn aprs_status(i: &Inner, on: bool, n: usize) -> Value {
+    // lock order everywhere: aprs, then aprs_frames
     let bad = lock(&i.aprs).as_ref().map(|d| d.bad_crc).unwrap_or(0);
+    let q = lock(&i.aprs_frames);
     let skip = q.1.len().saturating_sub(n);
-    json!({ "on": lock(&i.cfg).aprs, "count": q.0, "bad_crc": bad, "frames": q.1.iter().skip(skip).cloned().collect::<Vec<_>>() })
+    json!({ "on": on, "count": q.0, "bad_crc": bad, "frames": q.1.iter().skip(skip).cloned().collect::<Vec<_>>() })
 }
 
 /// Frames with a number above `since` (the lab link polls with the last number it saw).
 pub(crate) fn aprs_since(i: &Inner, since: u64) -> Value {
-    let q = lock(&i.aprs_frames);
     let bad = lock(&i.aprs).as_ref().map(|d| d.bad_crc).unwrap_or(0);
+    let q = lock(&i.aprs_frames);
     json!({ "count": q.0, "bad_crc": bad, "frames": q.1.iter().filter(|f| f["n"].as_u64().unwrap_or(0) > since).cloned().collect::<Vec<_>>() })
 }
 
