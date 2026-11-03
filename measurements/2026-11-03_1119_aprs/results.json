@@ -70,7 +70,15 @@
     "expected": 28.862289877902022,
     "success": 0.0,
     "bad_crc_total": 67
+   },
+   {
+    "level_dbm": -128.0,
+    "decoded": 0,
+    "expected": 28.959284779634444,
+    "success": 0.0,
+    "bad_crc_total": 89
    }
   ]
- }
+ },
+ "finished": "2026-11-03 11:25:37"
 }
