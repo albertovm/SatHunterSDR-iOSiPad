@@ -294,8 +294,10 @@ class Vsg60Gen:
     def tune(self, hz):
         """Retune only, no *OPC: with an ARB waveform playing, *OPC completes only at the end of the
         waveform period (13.5 s for a 13.8 s keyed message, measured 2026-11-04), while the new
-        frequency is applied in 0.02-0.35 s."""
+        frequency is applied in 0.02-0.35 s. The query paces it: unacknowledged writes 10 times a second
+        piled up and crashed the VSG software."""
         self.write(f":SOURce:FREQuency {hz:.0f}")
+        self.query(":SOURce:FREQuency?")
 
     def noise(self, hz, dbm_mean, bw):
         """Band-limited AWGN, flat over +-bw/2, mean power `dbm_mean` at the receiver input.
