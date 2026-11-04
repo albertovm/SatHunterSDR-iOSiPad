@@ -33,6 +33,9 @@ def main():
     ap.add_argument("--max-in", type=float, default=-12.0, help="highest level at the LNA input, dBm (its maximum is 0 dBm)")
     ap.add_argument("--f0", type=float, default=436.0e6)
     ap.add_argument("--parts", default="gain,p1db,ip3")
+    ap.add_argument("--freqs", help="gain part: MHz list or start:stop:step (default: the calibration frequencies)")
+    ap.add_argument("--pins", default="-60,-35,-20", help="gain part: input levels tried in turn until the output is 25 dB over the floor")
+    ap.add_argument("--rbw", type=float, default=300.0, help="gain part RBW, Hz (lower = lower floor)")
     ap.add_argument("--name", default="lna")
     ap.add_argument("--note", default="")
     a = ap.parse_args()
@@ -66,19 +69,27 @@ def main():
         # gain vs frequency: -60 dBm in; where the output is near the floor, -35 dBm in
         if "gain" in parts:
             res["gain"] = []
-            freqs = list(cf)
+            if a.freqs and ":" in a.freqs:
+                f0_, f1_, st_ = (float(x) for x in a.freqs.split(":"))
+                freqs = [x * 1e6 for x in np.arange(f0_, f1_ + st_ / 2, st_)]
+            elif a.freqs:
+                freqs = [float(x) * 1e6 for x in a.freqs.split(",")]
+            else:
+                freqs = list(cf)
             for f in freqs:
                 row = None
-                for pin in (-60.0, -35.0):
+                for pin in (float(x) for x in a.pins.split(",")):
                     vsg = pin + in_loss(f)
                     if vsg > VSG_MAX:
                         break
                     gen.cw(f, vsg)
                     time.sleep(0.15)
-                    p, fp = bb.peak(f, ref_dbm=min(10.0, pin + 50 - a.out_loss + 10))
-                    nz = bb.noise(f + 3e6, ref_dbm=min(10.0, pin + 50 - a.out_loss + 10))
+                    ref = min(10.0, pin + 50 - a.out_loss + 10)
+                    p, fp = bb.peak(f, span=50e3, rbw=a.rbw, ref_dbm=ref)
+                    nz = bb.noise(f + 20e3, span=20e3, rbw=a.rbw, ref_dbm=ref)  # beside the tone, same settings
                     pout = p + a.out_loss
-                    row = {"freq_hz": f, "pin_dbm": pin, "pout_dbm": pout, "gain_db": pout - pin, "snr_db": p - nz}
+                    row = {"freq_hz": f, "pin_dbm": pin, "pout_dbm": pout, "gain_db": pout - pin, "snr_db": p - nz,
+                           "peak_offset_hz": fp - f, "below_floor": p - nz < 6}
                     if p - nz > 25:
                         break
                 res["gain"].append(row)
