@@ -22,11 +22,12 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-04 | [Simulated LEO pass](2026-11-04_1331_pass-sim-leo-lab10/report.md) | STARS, 61°, up to 118 Hz/s | not valid at the closest point: the VSG60 cannot retune fast over SCPI (13.5 s per retune; writes interrupt the output) |
 | 2026-11-04 | [Fast pass, Doppler in the waveform](2026-11-04_1447_fast-pass/report.md) | CAPE-1, 79°, up to 116 Hz/s, independent SGP4 | carrier within ±9 Hz (1σ) of the VFO, CW decoded through TCA; phone orbit = SGP4 to 0.16 Hz |
 | 2026-11-04 | [Spacewalker LNA 434 MHz](2026-11-04_1530_spacewalker-lna/report.md) | VSG60 + BB60C, LNA alone | gain 45.6-51.2 dB in 435-438 MHz, passband ~425-444 MHz, rejection 72->80 dB out of band, IP1dB -29 dBm, IIP3 -18.4 dBm, 5 V 125 mA |
+| 2026-11-04 | [LNA transfer sweep](2026-11-04_1546_lna-comb/transfer.png) | VSG60 90-tone comb + BB60C | 380-490 MHz in 200 kHz steps; peak 50.9 dB at 438.5 MHz, 5.5 dB SAW-cascade ripple in 430-440 MHz |
 
 ## Planned
 
 - RTL warm-up drift vs time from a cold start (for the satellite campaign).
 - APRS: an IQ-domain (coherent) AFSK detector for several more dB.
 - BB60C check of the VSG60 absolute level (the last dB of the NF).
-- Spacewalker LNA: VNA S21/S11 to settle the passband ripple; noise figure with a noise source.
+- Spacewalker LNA: noise figure (gain method), reverse isolation, gain and current vs supply voltage, P1dB vs frequency; S11/S22 need a VNA or coupler.
 - Simulated satellite pass with Doppler.
