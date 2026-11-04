@@ -334,9 +334,9 @@ def cpu_load():
         return None
 
 
-def wait_idle(phone=None, limit=40.0, max_wait=1800):
+def wait_idle(phone=None, limit=70.0, max_wait=1800):
     """The VSG60 is fed over USB by this PC: under heavy load (a compile job) its output has gaps, which
-    ruins keyed and FM measurements (lab 2026-11-02/03). Wait until the load is below `limit` %.
+    ruins keyed and FM measurements (lab 2026-11-02/03, at 100 % CPU; 26-55 % with the VSG software and a browser is fine). Wait until the load is below `limit` %.
     Returns the load seen when going on."""
     t0 = time.time()
     while True:
