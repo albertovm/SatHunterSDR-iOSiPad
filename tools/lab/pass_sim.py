@@ -74,6 +74,37 @@ def main():
         with open(os.path.join(out, "results.json"), "w", encoding="utf-8") as f:
             json.dump(res, f, indent=1)
 
+    # The phone's /cw call takes ~10 s (and the lab link answers one request at a time), so the VSG is
+    # retuned by a thread from a quadratic fit of the last samples: it keeps following the Doppler while
+    # the main loop waits for a decode (lab 2026-11-04: without it the generator stood still for 15 s
+    # at the closest point of a LEO pass, 1.8 kHz off)
+    samples = []  # (wall time, satellite Hz)
+    lk = threading.Lock()
+    stop = threading.Event()
+    gen_lock = threading.Lock()
+    state = {"on": False}
+
+    def predict(t):
+        with lk:
+            pts = samples[-20:]
+        if len(pts) < 3:
+            return pts[-1][1] if pts else None
+        import numpy as np
+        tt = np.array([p[0] for p in pts]) - pts[-1][0]
+        ff = np.array([p[1] for p in pts])
+        c = np.polyfit(tt, ff, 2 if len(pts) >= 6 else 1)
+        return float(np.polyval(c, t - pts[-1][0]))
+
+    def tuner():
+        while not stop.is_set():
+            if state["on"]:
+                f = predict(time.time())
+                if f is not None:
+                    with gen_lock:
+                        gen.tune(f)
+            time.sleep(0.25)
+
+    th = threading.Thread(target=tuner, daemon=True)
     on = False
     loaded = False
     last_dec = time.time()
@@ -89,6 +120,8 @@ def main():
                 time.sleep(0.25)
                 continue
             f_sat = f_tx * (1 - look["range_rate_kms"] / C_KMS)
+            with lk:
+                samples.append((time.time(), f_sat))
             st = phone.status()
             vfo = st["vfo_hz"]
             row = {"t": time.time() - t0, "sim_now": d["now"], "el": look["el"], "az": look["az"], "range_rate_kms": look["range_rate_kms"],
@@ -96,15 +129,20 @@ def main():
             res["track"].append(row)
             if look["el"] >= a.min_el:
                 if not loaded:
-                    gen.keyed(f_sat, a.level, a.text, a.wpm)  # loads and turns on
+                    with gen_lock:
+                        gen.keyed(f_sat, a.level, a.text, a.wpm)  # loads and turns on
                     loaded = on = True
                     last_dec = time.time()
+                    th.start()
                 elif not on:
-                    gen.write(":OUTPut:STATe ON")
+                    with gen_lock:
+                        gen.write(":OUTPut:STATe ON")
                     on = True
-                gen.tune(f_sat)
+                state["on"] = True
             elif on:
-                gen.write(":OUTPut:STATe OFF")
+                state["on"] = False
+                with gen_lock:
+                    gen.write(":OUTPut:STATe OFF")
                 on = False
             if on and time.time() - last_dec >= a.decode_every:
                 c = phone.cw(int(a.decode_every) - 2)
@@ -116,7 +154,9 @@ def main():
                 save()
             time.sleep(0.25)
     finally:
-        gen.close()
+        stop.set()
+        with gen_lock:
+            gen.close()
         res["finished"] = time.strftime("%Y-%m-%d %H:%M:%S")
         save()
         try:
