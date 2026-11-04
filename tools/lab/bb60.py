@@ -53,6 +53,28 @@ class BB60:
                 best = (float(tmax[k]), start.value + k * bin_hz.value)
         return best
 
+    def trace(self, hz, span, rbw, ref_dbm=-20.0, sweeps=3, spur_reject=True):
+        """Frequencies (Hz) and levels (dBm, average detector, max over `sweeps` sweeps) of one span."""
+        import numpy as np
+        a, d = self.api, self.dev
+        self._ok(a.bbConfigureRefLevel(d, ctypes.c_double(ref_dbm)), "ref level")
+        self._ok(a.bbConfigureCenterSpan(d, ctypes.c_double(hz), ctypes.c_double(span)), "centre/span")
+        self._ok(a.bbConfigureSweepCoupling(d, ctypes.c_double(rbw), ctypes.c_double(rbw), ctypes.c_double(0.01),
+                                            ctypes.c_uint(BB_RBW_SHAPE_FLATTOP), ctypes.c_uint(BB_SPUR_REJECT if spur_reject else BB_NO_SPUR_REJECT)), "coupling")
+        self._ok(a.bbConfigureAcquisition(d, ctypes.c_uint(BB_AVERAGE), ctypes.c_uint(BB_LOG_SCALE)), "acquisition")
+        self._ok(a.bbInitiate(d, ctypes.c_uint(BB_SWEEPING), ctypes.c_uint(0)), "initiate")
+        n, bin_hz, start = ctypes.c_uint(0), ctypes.c_double(0), ctypes.c_double(0)
+        self._ok(a.bbQueryTraceInfo(d, ctypes.byref(n), ctypes.byref(bin_hz), ctypes.byref(start)), "trace info")
+        tmin = (ctypes.c_float * n.value)()
+        tmax = (ctypes.c_float * n.value)()
+        best = None
+        for _ in range(sweeps):
+            self._ok(a.bbFetchTrace_32f(d, ctypes.c_int(n.value), tmin, tmax), "fetch")
+            v = np.frombuffer(tmax, dtype=np.float32).copy()
+            best = v if best is None else np.maximum(best, v)
+        f = start.value + np.arange(n.value) * bin_hz.value
+        return f, best
+
     def noise(self, hz, span=200e3, rbw=1e3, ref_dbm=-20.0):
         """Median level in the span (dBm per RBW)."""
         a, d = self.api, self.dev
