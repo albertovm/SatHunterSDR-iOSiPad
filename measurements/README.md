@@ -20,12 +20,12 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-04 | [APRS v2, 1 kHz dev.](2026-11-04_1142_aprs-lab9-1k/report.md) | lab9, 1 kHz deviation, NFM 6 / 12.5 kHz | 90 % at -123.2 / -122.2 dBm (+0.9 / +1.4 dB) |
 | 2026-11-04 | [Simulated pass](2026-11-04_1204_pass-sim/report.md) | COSMOS 2491, 88° pass, VSG follows the Doppler, phone tracks | tracking within ±13 Hz, CW decoded 28 of 29 times at -130 dBm |
 | 2026-11-04 | [Simulated LEO pass](2026-11-04_1331_pass-sim-leo-lab10/report.md) | STARS, 61°, up to 118 Hz/s | not valid at the closest point: the VSG60 cannot retune fast over SCPI (13.5 s per retune; writes interrupt the output) |
+| 2026-11-04 | [Fast pass, Doppler in the waveform](2026-11-04_1447_fast-pass/report.md) | CAPE-1, 79°, up to 116 Hz/s, independent SGP4 | carrier within ±9 Hz (1σ) of the VFO, CW decoded through TCA; phone orbit = SGP4 to 0.16 Hz |
 
 ## Planned
 
 - RTL warm-up drift vs time from a cold start (for the satellite campaign).
 - APRS: an IQ-domain (coherent) AFSK detector for several more dB.
-- Fast pass with the Doppler inside the ARB waveform (SGP4-computed, triggered); TLE check against an independent SGP4.
 - BB60C check of the VSG60 absolute level (the last dB of the NF).
 - Spacewalker LNA 434 MHz alone (VSG60 -> LNA -> BB60C): gain and passband, out-of-band rejection, P1dB, IIP3, current.
 - Simulated satellite pass with Doppler.
