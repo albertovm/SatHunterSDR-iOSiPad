@@ -32,6 +32,8 @@ so levels are at the LNA's connectors. Raw data: this folder (P1dB, IIP3), [pass
 - The passband ripple is a property of the design, not of the measurement: the LNA is a cascade
   SAW - LNA - SAW - LNA - SAW, and the three filters' own ripple and their mismatch to the gain stages add
   up. The comb sweep below (200 kHz steps) and the CW points (1 MHz steps) agree to within about 1 dB.
+- Further tests (stability, P1dB vs frequency, IIP3 vs spacing, blocking, harmonics, spurs, NF estimate 1.7-3.0 dB):
+  [lna-extra](../2026-11-04_1556_lna-extra/report.md).
 - Noise figure was not measured here (no noise source); the whole receive chain with this LNA has a
   2.0 dB system noise figure ([System A](../2026-11-02_1028_system-a/report.md)).
 - With 45-50 dB of gain the RTL-SDR's ADC, not the LNA, limits the large-signal range of the chain:

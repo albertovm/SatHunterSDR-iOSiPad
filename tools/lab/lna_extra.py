@@ -228,28 +228,20 @@ def main():
             print(f"spur scan: {len(res['spur'])} peaks over floor + 10 dB", flush=True)
             save()
         if "nf" in parts:
+            nf_f = (430e6, 433e6, 436e6, 439e6, 441e6)
+            gains = {f: gain_at(f, -60.0)[0] for f in nf_f}  # each frequency's own gain (the passband ripple)
             gen.off()
             time.sleep(0.5)
-            g_cw = gain_at(a.f0, -60.0)[0]
-            gen.off()
-            time.sleep(0.5)
-            rows = []
-            for f in (430e6, 433e6, 436e6, 439e6, 441e6):
-                n_in = bb.noise_density(f, span=1e6, rbw=10e3, ref_dbm=-60)
-                rows.append({"freq_hz": f, "density_dbm_hz": n_in})
+            rows = [{"freq_hz": f, "gain_db": gains[f], "density_dbm_hz": bb.noise_density(f, span=1e6, rbw=10e3, ref_dbm=-60)} for f in nf_f]
             n_out = [bb.noise_density(f, span=1e6, rbw=10e3, ref_dbm=-60) for f in (400e6, 410e6, 460e6, 470e6)]
             floor = float(10 * np.log10(np.mean([10 ** (v / 10) for v in n_out])))
             for r in rows:
-                hump = r["density_dbm_hz"] - floor
-                r["hump_db"] = hump
-                if hump > 0.3:
-                    lna_out = 10 * math.log10(10 ** (r["density_dbm_hz"] / 10) - 10 ** (floor / 10)) + a.out_loss  # at the LNA output
-                    # LNA output noise = kT0 * F * G (input terminated at ~290 K) -> F = N / (kT0 G); the floor
-                    # measured out of band already holds the pad's own -174 dBm/Hz
-                    r["nf_db"] = lna_out - (-174.0) - g_cw
-                else:
-                    r["nf_db"] = None
-            res["nf"] = {"gain_436_db": g_cw, "floor_dbm_hz": floor, "floor_points": n_out, "rows": rows}
+                r["hump_db"] = r["density_dbm_hz"] - floor
+                # LNA output noise = k T0 F G with the input terminated at ~290 K (the 20 dB pad); the floor
+                # measured out of band already holds the analyser's noise and the output pad's own -174 dBm/Hz
+                r["nf_db"] = (10 * math.log10(10 ** (r["density_dbm_hz"] / 10) - 10 ** (floor / 10)) + a.out_loss + 174.0 - r["gain_db"]
+                              if r["hump_db"] > 0.3 else None)
+            res["nf"] = {"floor_dbm_hz": floor, "floor_points": n_out, "rows": rows}
             print("NF estimate:", [(r["freq_hz"] / 1e6, round(r["hump_db"], 2), r["nf_db"] and round(r["nf_db"], 2)) for r in rows], flush=True)
             save()
     finally:
