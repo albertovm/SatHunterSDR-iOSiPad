@@ -17,11 +17,12 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-03 | [APRS](2026-11-03_1119_aprs/report.md) | AFSK 1200 / AX.25, 3 kHz deviation, NFM 12.5 kHz | 90 % packets at about -121.5 dBm |
 | 2026-11-03 | [APRS 1 kHz dev.](2026-11-03_1128_aprs-1k/report.md) | 1 kHz deviation, NFM 6 / 9 / 12.5 kHz | 90 % at -122.3 / -121.3 / -120.8 dBm; limit is the FM-discriminator AFSK (Eb/N0 ~19 dB) |
 | 2026-11-03 | [APRS decoder v2](2026-11-03_1554_aprs-lab9-3k/report.md) | lab9: narrower detector filter, soft bit repair | 90 % at -122.5 dBm (+1.0 dB), 50 % at -124.5 dBm (+1.5 dB) |
+| 2026-11-04 | [APRS v2, 1 kHz dev.](2026-11-04_1142_aprs-lab9-1k/report.md) | lab9, 1 kHz deviation, NFM 6 / 12.5 kHz | 90 % at -123.2 / -122.2 dBm (+0.9 / +1.4 dB) |
 
 ## Planned
 
 - RTL warm-up drift vs time from a cold start (for the satellite campaign).
-- APRS: an IQ-domain (coherent) AFSK detector, then the same sweep.
+- APRS: an IQ-domain (coherent) AFSK detector for several more dB.
 - A whole simulated pass (monotonic Doppler S-curve, generator frequency stepped over SCPI) with TLE-style tracking.
 - BB60C check of the VSG60 absolute level (the last dB of the NF).
 - Spacewalker LNA 434 MHz alone (VSG60 -> LNA -> BB60C): gain and passband, out-of-band rejection, P1dB, IIP3, current.
