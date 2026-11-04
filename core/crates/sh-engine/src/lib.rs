@@ -24,7 +24,7 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread::JoinHandle;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 const AUDIO_MAX: usize = 48_000; // 1 s
 const ROWS_MAX: usize = 64;
@@ -45,6 +45,11 @@ struct DspParams {
     mode: Mode,
     bw: f64,
     vfo_hz: f64,
+    /// Doppler tracking: the VFO moves on at this rate (Hz/s) from `vfo_at`, so the tone glides
+    /// between the control ticks instead of stepping (lab 2026-11-04: 24-35 Hz steps every 200 ms
+    /// at the closest point of a LEO pass broke the CW decoding)
+    vfo_rate: f64,
+    vfo_at: Instant,
     fft_size: usize,
     fps: f64,
     squelch: Option<f32>,
@@ -221,6 +226,8 @@ impl Engine {
                 mode,
                 bw: cfg.bw,
                 vfo_hz: cfg.vfo_hz,
+                vfo_rate: 0.0,
+                vfo_at: Instant::now(),
                 fft_size: cfg.fft_size,
                 fps: cfg.fps,
                 squelch: cfg.squelch,
@@ -788,8 +795,23 @@ fn tune(i: &Inner, hz: f64) -> Result<(), String> {
         set_center(i, hz - 0.2 * rate)?;
     }
     lock(&i.cfg).vfo_hz = hz;
-    i.bump_params(|p| p.vfo_hz = hz);
+    i.bump_params(|p| {
+        p.vfo_hz = hz;
+        p.vfo_rate = 0.0;
+        p.vfo_at = Instant::now();
+    });
     Ok(())
+}
+
+/// Doppler tracking, every control tick: the DSP's VFO goes to the exact target and glides on at
+/// `rate` Hz/s until the next tick. (The configured VFO, which the UI shows and which tells the
+/// tracker that the user moved it, still steps by the tracker's step.)
+fn set_glide(i: &Inner, hz: f64, rate: f64) {
+    i.bump_params(|p| {
+        p.vfo_hz = hz;
+        p.vfo_rate = rate;
+        p.vfo_at = Instant::now();
+    });
 }
 
 fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
@@ -832,7 +854,8 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
                 r.push(&b.samples, b.center_hz, p.vfo_hz, sat);
             }
         }
-        let offset = p.vfo_hz - b.center_hz;
+        let glide = if p.vfo_rate != 0.0 { p.vfo_rate * p.vfo_at.elapsed().as_secs_f64().min(1.0) } else { 0.0 };
+        let offset = p.vfo_hz + glide - b.center_hz;
         if !matches!(&demod, Some((_, r, m, bw)) if *r == b.rate && *m == p.mode && *bw == p.bw) {
             demod = Some((Demodulator::new(p.mode, b.rate, offset, p.bw), b.rate, p.mode, p.bw));
         }
@@ -1192,6 +1215,13 @@ fn control(i: Arc<Inner>) {
             let c = lock(&i.cfg);
             (c.selected, c.station, c.vfo_hz)
         };
+        // tracking off (or no satellite): no glide, the DSP back on the configured VFO
+        if !lock(&i.sat).tracking && lock(&i.params).vfo_rate != 0.0 {
+            i.bump_params(|p| {
+                p.vfo_rate = 0.0;
+                p.vfo_hz = vfo;
+            });
+        }
         let sats = lock(&i.sat).sats.clone();
         let sat = sel.and_then(|n| sats.iter().find(|s| s.norad == n));
         let tx = selected_tx(&i);
@@ -1204,12 +1234,19 @@ fn control(i: Arc<Inner>) {
                 } else {
                     None
                 };
-                let retune = {
+                let (retune, rate) = {
                     let mut sst = lock(&i.sat);
                     if sst.tracking {
-                        sst.tracker.step(t.centre(), &look, aos_look.as_ref(), vfo)
+                        // Doppler rate from the look one second on (0 while waiting for AOS)
+                        let rate = if aos_look.is_none() {
+                            s.orbit.look(&st, now + 1.0).ok().map(|l1| sst.tracker.target(t.centre(), &l1, None) - sst.tracker.target(t.centre(), &look, None)).unwrap_or(0.0)
+                        } else {
+                            0.0
+                        };
+                        let step = sst.tracker.step(t.centre(), &look, aos_look.as_ref(), vfo);
+                        (step, aos_look.is_none().then(|| (sst.tracker.target(t.centre(), &look, None), rate)))
                     } else {
-                        None
+                        (None, None)
                     }
                 };
                 if let Some(f) = retune {
@@ -1217,6 +1254,9 @@ fn control(i: Arc<Inner>) {
                         i.note(format!("tracking: {e}"));
                         lock(&i.sat).tracking = false;
                     }
+                }
+                if let Some((f, r)) = rate {
+                    set_glide(&i, f, r);
                 }
                 let kind = {
                     let m = t.mode.to_uppercase();

@@ -102,7 +102,7 @@ def main():
                 if f is not None:
                     with gen_lock:
                         gen.tune(f)
-            time.sleep(0.25)
+            time.sleep(0.08)  # ~10 retunes a second: steps of ~12 Hz at 120 Hz/s
 
     th = threading.Thread(target=tuner, daemon=True)
     on = False
