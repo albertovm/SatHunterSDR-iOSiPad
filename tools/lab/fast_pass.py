@@ -74,7 +74,7 @@ def main():
     ap.add_argument("--norad", type=int, required=True)
     ap.add_argument("--level", type=float, default=-130.0)
     ap.add_argument("--window", type=float, default=60.0, help="seconds before and after the closest point")
-    ap.add_argument("--rate", type=float, default=20e3, help="ARB sample rate")
+    ap.add_argument("--rate", type=float, default=25e3, help="ARB sample rate (20 kS/s plays 16 %% slow on the VSG60; 25 and 50 kS/s are right)")
     ap.add_argument("--decode-every", type=float, default=25.0)
     ap.add_argument("--text", default="VVV DE HG0LAB TEST")
     ap.add_argument("--wpm", type=float, default=15)
@@ -177,8 +177,10 @@ def main():
             vfo = phone.status()["vfo_hz"]
             sim = d["now"]
             f_model = float(np.interp(sim, tt, f_mod))
+            m = phone.measure(f_model, 3000, 0.4)  # where the carrier really is (keyed: the key-down peaks)
             res["track"].append({"sim_now": sim, "el": (d.get("look") or {}).get("el"), "model_hz": f_model, "vfo_hz": vfo,
-                                 "phone_rx_hz": d.get("rx_hz"), "error_hz": f_model - vfo})
+                                 "phone_rx_hz": d.get("rx_hz"), "error_hz": f_model - vfo,
+                                 "measured_hz": m["peak_hz"], "measured_snr_db": m["peak_snr_db"]})
             if time.time() - last_dec >= a.decode_every:
                 c = phone.cw(int(a.decode_every) - 1)
                 ok = a.text.replace(" ", "") in c["text"].replace(" ", "")
@@ -187,7 +189,7 @@ def main():
                 phone.log(f"TCA{sim - p['tmax']:+.0f}s el {el:.0f}: {'OK ' if ok else 'BAD'} \"{c['text']}\"")
                 last_dec = time.time()
                 save()
-            time.sleep(0.5)
+            time.sleep(0.2)
     finally:
         try:
             gen.write(":OUTPut:STATe OFF")
