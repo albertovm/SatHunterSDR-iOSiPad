@@ -292,8 +292,10 @@ class Vsg60Gen:
         self._play(hz, dbm, name, iq, rate)
 
     def tune(self, hz):
+        """Retune only, no *OPC: with an ARB waveform playing, *OPC completes only at the end of the
+        waveform period (13.5 s for a 13.8 s keyed message, measured 2026-11-04), while the new
+        frequency is applied in 0.02-0.35 s."""
         self.write(f":SOURce:FREQuency {hz:.0f}")
-        self.opc()
 
     def noise(self, hz, dbm_mean, bw):
         """Band-limited AWGN, flat over +-bw/2, mean power `dbm_mean` at the receiver input.
