@@ -194,6 +194,15 @@
     "expected": 19.24574891846082,
     "success": 0.0519595264511003,
     "bad_crc_total": 271
+   },
+   {
+    "cpu_pct_after": 49.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -126.0,
+    "decoded": 0,
+    "expected": 19.24551047974486,
+    "success": 0.0,
+    "bad_crc_total": 363
    }
   ]
  }
