@@ -18,12 +18,13 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-03 | [APRS 1 kHz dev.](2026-11-03_1128_aprs-1k/report.md) | 1 kHz deviation, NFM 6 / 9 / 12.5 kHz | 90 % at -122.3 / -121.3 / -120.8 dBm; limit is the FM-discriminator AFSK (Eb/N0 ~19 dB) |
 | 2026-11-03 | [APRS decoder v2](2026-11-03_1554_aprs-lab9-3k/report.md) | lab9: narrower detector filter, soft bit repair | 90 % at -122.5 dBm (+1.0 dB), 50 % at -124.5 dBm (+1.5 dB) |
 | 2026-11-04 | [APRS v2, 1 kHz dev.](2026-11-04_1142_aprs-lab9-1k/report.md) | lab9, 1 kHz deviation, NFM 6 / 12.5 kHz | 90 % at -123.2 / -122.2 dBm (+0.9 / +1.4 dB) |
+| 2026-11-04 | [Simulated pass](2026-11-04_1204_pass-sim/report.md) | COSMOS 2491, 88° pass, VSG follows the Doppler, phone tracks | tracking within ±13 Hz, CW decoded 28 of 29 times at -130 dBm |
 
 ## Planned
 
 - RTL warm-up drift vs time from a cold start (for the satellite campaign).
 - APRS: an IQ-domain (coherent) AFSK detector for several more dB.
-- A whole simulated pass (monotonic Doppler S-curve, generator frequency stepped over SCPI) with TLE-style tracking.
+- Simulated pass of a 500 km LEO (up to ~170 Hz/s); TLE check against an independent SGP4.
 - BB60C check of the VSG60 absolute level (the last dB of the NF).
 - Spacewalker LNA 434 MHz alone (VSG60 -> LNA -> BB60C): gain and passband, out-of-band rejection, P1dB, IIP3, current.
 - Simulated satellite pass with Doppler.
