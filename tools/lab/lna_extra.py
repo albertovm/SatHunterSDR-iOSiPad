@@ -67,8 +67,9 @@ def main():
            "f0_hz": a.f0, "note": a.note}
 
     def save():
+        txt = json.dumps(res, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o))
         with open(os.path.join(out, "results.json"), "w", encoding="utf-8") as fh:
-            json.dump(res, fh, indent=1)
+            fh.write(txt)
 
     host, port = (a.vsg.split(":") + ["5124"])[:2]
     gen = Vsg60Gen(0.0, host, int(port), a.vsg_dir, None)
@@ -207,7 +208,7 @@ def main():
                     ref = ref_for(pin + 51)  # the fundamental is at the analyser input too: same ref level
                     v = bb.peak(n * a.f0, 50e3, 1e3, ref)[0] + a.out_loss
                     nz = bb.noise(n * a.f0 + 100e3, 50e3, 1e3, ref) + a.out_loss
-                    h[n] = {"dbm": v, "dbc": v - p1, "floor_dbm": nz, "under_floor": v - nz < 6}
+                    h[n] = {"dbm": v, "dbc": v - p1, "floor_dbm": nz, "under_floor": bool(v - nz < 6)}
                 res["harm"].append({"pin_dbm": pin, "pout_dbm": p1, "h2": h[2], "h3": h[3]})
                 print(f"harm in {pin:.0f}: out {p1:.1f} dBm, H2 {h[2]['dbc']:.0f} dBc{' (floor)' if h[2]['under_floor'] else ''}, "
                       f"H3 {h[3]['dbc']:.0f} dBc{' (floor)' if h[3]['under_floor'] else ''}", flush=True)
@@ -223,7 +224,7 @@ def main():
                 for k in np.where(v > fl + 10)[0]:
                     if v[k] == v[max(0, k - 20):k + 21].max():
                         res["spur"].append({"freq_hz": float(f[k]), "bb_dbm": float(v[k]), "floor_dbm": fl,
-                                            "at_lna_out_dbm": float(v[k]) + a.out_loss, "mult_80mhz": abs(f[k] / 80e6 - round(f[k] / 80e6)) * 80e6 < 50e3})
+                                            "at_lna_out_dbm": float(v[k]) + a.out_loss, "mult_80mhz": bool(abs(f[k] / 80e6 - round(f[k] / 80e6)) * 80e6 < 50e3)})
             print(f"spur scan: {len(res['spur'])} peaks over floor + 10 dB", flush=True)
             save()
         if "nf" in parts:
