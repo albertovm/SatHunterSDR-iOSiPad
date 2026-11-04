@@ -32,6 +32,7 @@ VSG60 -> Spacewalker LNA 434 MHz -> RTL-SDR Blog V3 -> SatHunterSDR on a Xiaomi 
 | APRS (AFSK 1200) | 90 % packets at -122.5 dBm (3 kHz dev.), -123.2 dBm (1 kHz dev., 6 kHz channel) |
 | Simulated pass (88°, Doppler tracking) | VFO within ±13 Hz of the satellite, CW decoded all pass long |
 | Fast LEO pass (116 Hz/s) | carrier within ±9 Hz (1σ), CW decoded through the closest point; orbit model = independent SGP4 to 0.16 Hz |
+| Spacewalker LNA 434 MHz | 45.6-51.2 dB gain in 435-438 MHz, > 72 dB out-of-band rejection, IIP3 -18.4 dBm |
 | Frequency error (after warm-up) | +0.09 ppm, the same at every sample rate |
 | Decimation alias rejection | > 48-58 dB in the central 84 % of the span |
 
