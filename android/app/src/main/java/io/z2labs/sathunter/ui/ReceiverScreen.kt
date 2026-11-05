@@ -93,6 +93,7 @@ private val Glass = Color(0xB30A0F16)
 @Composable
 fun ReceiverScreen(
     st: Status,
+    sstvPic: android.graphics.Bitmap? = null,
     detail: SatDetail?,
     pose: Pose,
     compassOn: Boolean,
@@ -375,6 +376,7 @@ fun ReceiverScreen(
             }
 
             st.lab?.let { LabConsole(it, Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = if (overlay) 64.dp else 6.dp)) }
+            if (st.sstv.on) SstvPanel(st.sstv, sstvPic, Modifier.align(Alignment.CenterEnd).padding(end = 6.dp))
             if (st.aprs.on) AprsPanel(st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp))
 
             if (radarOn && detail != null) {

@@ -182,6 +182,13 @@ fun SettingsScreen(
             }
             Switch(checked = st.pluginsOn, onCheckedChange = { engine.plugins(it) })
         }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("SSTV pictures (Robot 36, PD120)", fontSize = 14.sp)
+                Text("ISS SSTV events on 145.800 MHz, in NFM. The picture builds up in a panel on the receiver screen.", color = Dim, fontSize = 12.sp)
+            }
+            Switch(checked = st.sstv.on, onCheckedChange = { engine.sstv(it) })
+        }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("Screen")

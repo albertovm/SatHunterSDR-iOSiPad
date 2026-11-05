@@ -124,6 +124,7 @@ class MainActivity : ComponentActivity() {
         val st by engine.status.collectAsState()
         val list by engine.satList.collectAsState()
         val detail by engine.detail.collectAsState()
+        val sstvPic by engine.sstvPic.collectAsState()
         val error by engine.error.collectAsState()
         val pose by compass.pose.collectAsState()
         val gpsInfo by gps.info.collectAsState()
@@ -201,7 +202,7 @@ class MainActivity : ComponentActivity() {
             Box(Modifier.weight(1f).fillMaxHeight()) {
                 when (tab) {
                     0 -> ReceiverScreen(
-                        st = st, detail = detail, pose = pose, compassOn = compassOn, radarOn = radarOn, muted = muted,
+                        st = st, sstvPic = sstvPic, detail = detail, pose = pose, compassOn = compassOn, radarOn = radarOn, muted = muted,
                         volume = volume,
                         onVolume = { volume = it; muted = false; prefs.edit().putFloat("volume", it).apply() },
                         fullscreen = full,

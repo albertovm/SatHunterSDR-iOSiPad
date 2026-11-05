@@ -48,6 +48,8 @@ pub struct Config {
     pub aprs: bool,
     /// Decoder plugins (Luau) get the decoded frames
     pub plugins: bool,
+    /// SSTV decoder (Robot 36, PD120) on the demodulated audio
+    pub sstv: bool,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
 }
@@ -84,6 +86,7 @@ impl Default for Config {
             lab_pin: "1027".into(),
             aprs: false,
             plugins: true,
+            sstv: false,
             freqs: Default::default(),
         }
     }

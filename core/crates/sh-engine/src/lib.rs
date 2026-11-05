@@ -104,6 +104,9 @@ struct Inner {
     aprs_frames: Mutex<(u64, VecDeque<Value>)>,
     /// Decoder plugins, loaded on first use (lock after aprs / aprs_frames, never before)
     plugins: Mutex<Option<plugins::Host>>,
+    /// SSTV: the decoder (when on) and the finished pictures (total count, the last few)
+    sstv: Mutex<Option<sh_dsp::sstv::SstvDecoder>>,
+    sstv_pics: Mutex<(u64, VecDeque<sh_dsp::sstv::SstvImage>)>,
     quit: AtomicBool,
     time_shift: Mutex<(f64, f64)>, // (seconds added to the clock, LOS of the simulated pass)
     work: Mutex<Sender<Work>>,
@@ -217,6 +220,10 @@ enum Cmd {
     Plugins { on: bool },
     /// Plugin output after number `since` (text lines, values, map pins)
     PluginOut { since: Option<u64> },
+    /// SSTV decoder on / off
+    Sstv { on: bool },
+    /// A picture as base64 RGB: the one being received (`current`) or the last finished one
+    SstvImage { current: Option<bool> },
     /// Ask the app to look for a newer release on GitHub and offer it (the app shows the
     /// system install dialog; Android does not allow a silent install)
     Update { prerelease: Option<bool> },
@@ -255,6 +262,8 @@ impl Engine {
             aprs: Mutex::new(None),
             aprs_frames: Mutex::new((0, VecDeque::new())),
             plugins: Mutex::new(None),
+            sstv: Mutex::new(None),
+            sstv_pics: Mutex::new((0, VecDeque::new())),
             quit: AtomicBool::new(false),
             time_shift: Mutex::new((0.0, 0.0)),
             work: Mutex::new(wtx),
@@ -611,6 +620,15 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             Ok(json!({ "plugins": on }))
         }
         Cmd::PluginOut { since } => Ok(plugin_out(i, since.unwrap_or(0))),
+        Cmd::Sstv { on } => {
+            lock(&i.cfg).sstv = on;
+            i.save();
+            *lock(&i.sstv) = if on { Some(sh_dsp::sstv::SstvDecoder::new(sh_dsp::demod::AUDIO_RATE)) } else { None };
+            Ok(json!({ "sstv": on }))
+        }
+        Cmd::SstvImage { current } => sstv_image(i, current.unwrap_or(false)).map(|(img, n)| {
+            json!({ "n": n, "mode": img.mode.name(), "width": img.width, "height": img.height, "rows": img.rows, "rgb": base64(&img.rgb) })
+        }).ok_or_else(|| "no picture yet".to_string()),
         Cmd::Update { prerelease } => {
             let mut u = lock(&i.update_req);
             u.0 += 1;
@@ -905,6 +923,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
                 lab::feed(&i, b.center_hz, b.rate, &[], &audio);
             }
             aprs_feed(&i, &audio, p.vfo_hz);
+            sstv_feed(&i, &audio);
             let mut q = lock(&i.audio);
             q.extend(audio.iter());
             while q.len() > AUDIO_MAX {
@@ -1379,6 +1398,7 @@ fn status(i: &Inner) -> Value {
         "update_req": lock(&i.update_req).0,
         "aprs": aprs_status(i, c.aprs, 20),
         "plugins": plugin_status(i, c.plugins, 20),
+        "sstv": sstv_status(i, c.sstv),
         "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
@@ -1425,6 +1445,62 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
             host.ax25(f, norad, vfo_hz, now);
         }
     }
+}
+
+/// Run the SSTV decoder on new audio; finished pictures go to the list.
+fn sstv_feed(i: &Inner, audio: &[f32]) {
+    let want = lock(&i.cfg).sstv;
+    let mut g = lock(&i.sstv);
+    if g.is_none() && want {
+        *g = Some(sh_dsp::sstv::SstvDecoder::new(sh_dsp::demod::AUDIO_RATE));
+    }
+    let Some(d) = g.as_mut() else { return };
+    d.process(audio);
+    if d.done.is_empty() {
+        return;
+    }
+    let pics: Vec<_> = d.done.drain(..).collect();
+    drop(g);
+    let mut q = lock(&i.sstv_pics);
+    for p in pics {
+        q.0 += 1;
+        q.1.push_back(p);
+        while q.1.len() > 4 {
+            q.1.pop_front();
+        }
+    }
+}
+
+/// SSTV state: on, the picture being received (mode, rows), how many are finished.
+pub(crate) fn sstv_status(i: &Inner, on: bool) -> Value {
+    // lock order: sstv, then sstv_pics
+    let rx = lock(&i.sstv).as_ref().and_then(|d| d.current().map(|c| json!({ "mode": c.mode.name(), "rows": c.rows, "height": c.height, "syncs": c.syncs_found })));
+    let q = lock(&i.sstv_pics);
+    json!({ "on": on, "receiving": rx, "count": q.0, "last": q.1.back().map(|p| json!({ "mode": p.mode.name(), "rows": p.rows, "height": p.height })) })
+}
+
+/// The picture being received (`current`) or the last finished one, with its number (0 = in progress).
+pub(crate) fn sstv_image(i: &Inner, current: bool) -> Option<(sh_dsp::sstv::SstvImage, u64)> {
+    if current {
+        if let Some(c) = lock(&i.sstv).as_ref().and_then(|d| d.current().cloned()) {
+            return Some((c, 0));
+        }
+    }
+    let q = lock(&i.sstv_pics);
+    q.1.back().cloned().map(|p| (p, q.0))
+}
+
+fn base64(b: &[u8]) -> String {
+    const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut s = String::with_capacity(b.len() * 4 / 3 + 4);
+    for c in b.chunks(3) {
+        let n = (c[0] as u32) << 16 | (*c.get(1).unwrap_or(&0) as u32) << 8 | *c.get(2).unwrap_or(&0) as u32;
+        s.push(T[(n >> 18) as usize & 63] as char);
+        s.push(T[(n >> 12) as usize & 63] as char);
+        s.push(if c.len() > 1 { T[(n >> 6) as usize & 63] as char } else { '=' });
+        s.push(if c.len() > 2 { T[n as usize & 63] as char } else { '=' });
+    }
+    s
 }
 
 /// Plugin output after number `since`, and which plugins are loaded.
