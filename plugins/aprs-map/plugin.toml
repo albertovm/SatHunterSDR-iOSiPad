@@ -1,0 +1,8 @@
+id = "aprs-map"
+name = "APRS"
+version = "0.1"
+author = "SatHunterSDR"
+description = "Any APRS packet: who sent it, the message, and the position on the map. Used when no satellite-specific APRS plugin applies."
+level = "easy"
+chain = "afsk1200"
+modes = ["AFSK", "APRS"]

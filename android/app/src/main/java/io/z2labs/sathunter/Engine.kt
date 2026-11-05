@@ -84,6 +84,9 @@ data class Status(
     val updateReq: Long = 0,
     val updatePrerelease: Boolean = true,
     val aprs: AprsState = AprsState(),
+    /** Decoder plugins on, and their last output lines (text, map pins) */
+    val pluginsOn: Boolean = true,
+    val plugins: List<String> = emptyList(),
     /** null when the lab link is off */
     val lab: LabState? = null,
 )
@@ -315,6 +318,7 @@ class Engine(dataDir: String) {
     fun labPin(pin: String) = async("lab_pin", JSONObject().put("pin", pin))
     fun aprs(on: Boolean) = async("aprs", JSONObject().put("on", on))
     fun aprsClear() = async("aprs_clear")
+    fun plugins(on: Boolean) = async("plugins", JSONObject().put("on", on))
     fun decimation(factor: Int) = async("decimation", JSONObject().put("factor", factor))
     fun filter(f: FilterState) = async("filter", JSONObject().put("filter", f.toJson())) { refreshList() }
     fun favourite(norad: Long, on: Boolean) = async("favourite", JSONObject().put("norad", norad).put("on", on)) { refreshList() }
@@ -379,6 +383,18 @@ class Engine(dataDir: String) {
                     } ?: emptyList(),
                 )
             } ?: AprsState(),
+            pluginsOn = j.optJSONObject("plugins")?.optBoolean("on", true) ?: true,
+            plugins = j.optJSONObject("plugins")?.optJSONArray("out")?.let { a ->
+                (0 until a.length()).mapNotNull { k ->
+                    a.optJSONObject(k)?.let { o ->
+                        when (o.optString("kind")) {
+                            "text" -> o.optString("text")
+                            "map" -> "⌖ %.4f %.4f %s".format(o.optDouble("lat"), o.optDouble("lon"), o.optString("label"))
+                            else -> o.optString("line")
+                        }
+                    }
+                }
+            } ?: emptyList(),
             lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
                 val ph = l.optJSONObject("phase")
                 fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()

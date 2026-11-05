@@ -12,6 +12,7 @@
 //!   GET  /iq?secs=               `secs` of IQ as an SDR++ style WAV (binary)
 //!   GET  /audio?secs=            `secs` of demodulated audio, 16-bit mono WAV at 48 kHz
 //!   GET  /aprs?since=            APRS frames decoded after frame number `since` (decoder: cmd aprs)
+//!   GET  /plugins?since=         decoder-plugin output (text, values, map pins) after number `since`
 //!   POST /phase                  {"phase","step","total","detail"}: shown on the phone's console
 //!   POST /log                    {"line"}: a line on the phone's console
 //!   GET  /log                    the console lines
@@ -259,6 +260,7 @@ fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
         ("GET", "/iq") => return iq(i, rq, num("secs", 2.0).clamp(0.1, 30.0)),
         ("GET", "/audio") => return audio(i, rq, num("secs", 2.0).clamp(0.1, 20.0)),
         ("GET", "/aprs") => Ok(super::aprs_since(i, num("since", 0.0).max(0.0) as u64)),
+        ("GET", "/plugins") => Ok(super::plugin_out(i, num("since", 0.0).max(0.0) as u64)),
         ("POST", "/phase") => {
             let v: Value = serde_json::from_str(&body).unwrap_or(Value::Null);
             let p = v["phase"].as_str().unwrap_or("").to_string();

@@ -52,6 +52,8 @@ fun SettingsScreen(
     onCompass: (Boolean) -> Unit,
     gpsInfo: String,
     onFollowGps: (Boolean) -> Unit,
+    guardMin: Int = 2,
+    onGuard: (Int) -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp)) {
         Section("Receiver")
@@ -172,6 +174,24 @@ fun SettingsScreen(
                 Text("ISS digipeater on 145.825 MHz and APRS CubeSats, in NFM. The frames show in a panel on the receiver screen.", color = Dim, fontSize = 12.sp)
             }
             Switch(checked = st.aprs.on, onCheckedChange = { engine.aprs(it) })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Decoder plugins", fontSize = 14.sp)
+                Text("Small Luau scripts turn the decoded frames into readable lines and map positions (ISS APRS, generic APRS).", color = Dim, fontSize = 12.sp)
+            }
+            Switch(checked = st.pluginsOn, onCheckedChange = { engine.plugins(it) })
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Screen")
+        Text("Screen saver (protects an AMOLED screen during long passes and measurements)", fontSize = 14.sp)
+        Text("After this long without a touch the screen goes black and dim; a small summary (frequency, satellite, signal, lab phase, last decode, battery) moves around so no pixel stays lit. The receiver keeps running; tap to wake.",
+            color = Dim, fontSize = 12.sp)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            for ((m, label) in listOf(0 to "Off", 1 to "1 min", 2 to "2 min", 5 to "5 min", 10 to "10 min")) {
+                FilterChip(selected = guardMin == m, onClick = { onGuard(m) }, label = { Text(label) })
+            }
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))

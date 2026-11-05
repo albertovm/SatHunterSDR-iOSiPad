@@ -46,6 +46,8 @@ pub struct Config {
     pub lab_pin: String,
     /// APRS / AX.25 decoder (AFSK 1200) on the demodulated audio
     pub aprs: bool,
+    /// Decoder plugins (Luau) get the decoded frames
+    pub plugins: bool,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
 }
@@ -81,6 +83,7 @@ impl Default for Config {
             debug_mode: false,
             lab_pin: "1027".into(),
             aprs: false,
+            plugins: true,
             freqs: Default::default(),
         }
     }

@@ -375,7 +375,7 @@ fun ReceiverScreen(
             }
 
             st.lab?.let { LabConsole(it, Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = if (overlay) 64.dp else 6.dp)) }
-            if (st.aprs.on) AprsPanel(st.aprs, Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp))
+            if (st.aprs.on) AprsPanel(st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp))
 
             if (radarOn && detail != null) {
                 Radar(

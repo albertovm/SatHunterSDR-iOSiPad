@@ -2,8 +2,11 @@
 //! The UI (Android today, desktop later) talks to it with JSON commands and pulls spectrum rows
 //! and audio. Nothing in here panics on bad input; errors come back as {"ok": false, "error"}.
 
+#![recursion_limit = "256"]
+
 pub mod config;
 mod lab;
+mod plugins;
 pub mod record;
 pub mod sat;
 
@@ -99,6 +102,8 @@ struct Inner {
     /// APRS: the decoder (when on) and the frames decoded so far (total count, last ones)
     aprs: Mutex<Option<sh_dsp::afsk::AfskDecoder>>,
     aprs_frames: Mutex<(u64, VecDeque<Value>)>,
+    /// Decoder plugins, loaded on first use (lock after aprs / aprs_frames, never before)
+    plugins: Mutex<Option<plugins::Host>>,
     quit: AtomicBool,
     time_shift: Mutex<(f64, f64)>, // (seconds added to the clock, LOS of the simulated pass)
     work: Mutex<Sender<Work>>,
@@ -208,6 +213,10 @@ enum Cmd {
     Aprs { on: bool },
     /// Forget the decoded APRS frames
     AprsClear,
+    /// Decoder plugins on / off
+    Plugins { on: bool },
+    /// Plugin output after number `since` (text lines, values, map pins)
+    PluginOut { since: Option<u64> },
     /// Ask the app to look for a newer release on GitHub and offer it (the app shows the
     /// system install dialog; Android does not allow a silent install)
     Update { prerelease: Option<bool> },
@@ -245,6 +254,7 @@ impl Engine {
             update_req: Mutex::new((0, true)),
             aprs: Mutex::new(None),
             aprs_frames: Mutex::new((0, VecDeque::new())),
+            plugins: Mutex::new(None),
             quit: AtomicBool::new(false),
             time_shift: Mutex::new((0.0, 0.0)),
             work: Mutex::new(wtx),
@@ -590,8 +600,17 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
         }
         Cmd::AprsClear => {
             *lock(&i.aprs_frames) = (0, VecDeque::new());
+            if let Some(h) = lock(&i.plugins).as_mut() {
+                h.out = (0, VecDeque::new());
+            }
             Ok(json!({}))
         }
+        Cmd::Plugins { on } => {
+            lock(&i.cfg).plugins = on;
+            i.save();
+            Ok(json!({ "plugins": on }))
+        }
+        Cmd::PluginOut { since } => Ok(plugin_out(i, since.unwrap_or(0))),
         Cmd::Update { prerelease } => {
             let mut u = lock(&i.update_req);
             u.0 += 1;
@@ -1359,6 +1378,7 @@ fn status(i: &Inner) -> Value {
         "lab_pin": c.lab_pin,
         "update_req": lock(&i.update_req).0,
         "aprs": aprs_status(i, c.aprs, 20),
+        "plugins": plugin_status(i, c.plugins, 20),
         "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
@@ -1377,18 +1397,54 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
         return;
     }
     let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|t| t.as_secs_f64()).unwrap_or(0.0);
-    let mut q = lock(&i.aprs_frames);
-    while let Some(f) = d.frames.pop_front() {
-        q.0 += 1;
-        let n = q.0;
-        let pos = sh_dsp::afsk::aprs_position(&String::from_utf8_lossy(&f.info));
-        q.1.push_back(json!({
-            "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
-            "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),
-        }));
-        while q.1.len() > 200 {
-            q.1.pop_front();
+    let frames: Vec<sh_dsp::afsk::Ax25Frame> = d.frames.drain(..).collect();
+    drop(g);
+    {
+        let mut q = lock(&i.aprs_frames);
+        for f in &frames {
+            q.0 += 1;
+            let n = q.0;
+            let pos = sh_dsp::afsk::aprs_position(&String::from_utf8_lossy(&f.info));
+            q.1.push_back(json!({
+                "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
+                "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),
+            }));
+            while q.1.len() > 200 {
+                q.1.pop_front();
+            }
         }
+    }
+    let (on, norad) = {
+        let c = lock(&i.cfg);
+        (c.plugins, c.selected)
+    };
+    if on {
+        let mut h = lock(&i.plugins);
+        let host = h.get_or_insert_with(plugins::Host::load);
+        for f in &frames {
+            host.ax25(f, norad, vfo_hz, now);
+        }
+    }
+}
+
+/// Plugin output after number `since`, and which plugins are loaded.
+pub(crate) fn plugin_out(i: &Inner, since: u64) -> Value {
+    let on = lock(&i.cfg).plugins;
+    let mut h = lock(&i.plugins);
+    let mut v = if on { h.get_or_insert_with(plugins::Host::load).since(since) } else { json!({ "plugins": [], "errors": [], "count": 0, "out": [] }) };
+    v["on"] = on.into();
+    v
+}
+
+/// Plugin state and the last `n` outputs (no loading here: status is polled often).
+pub(crate) fn plugin_status(i: &Inner, on: bool, n: usize) -> Value {
+    let h = lock(&i.plugins);
+    match h.as_ref() {
+        Some(h) => {
+            let skip = h.out.1.len().saturating_sub(n);
+            json!({ "on": on, "loaded": h.ids(), "errors": h.errors, "count": h.out.0, "out": h.out.1.iter().skip(skip).cloned().collect::<Vec<_>>() })
+        }
+        None => json!({ "on": on, "loaded": [], "errors": [], "count": 0, "out": [] }),
     }
 }
 

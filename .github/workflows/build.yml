@@ -59,6 +59,14 @@ jobs:
             echo "::error title=Rust Android build::$msg"
             exit 1
           fi
+          # The Luau plugin runtime is C++: its libc++_shared.so goes into the APK next to the core
+          # (without it the app closes at start: lab7, 2026-11-03)
+          SYSROOT="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib"
+          for pair in arm64-v8a:aarch64-linux-android armeabi-v7a:arm-linux-androideabi x86_64:x86_64-linux-android; do
+            abi=${pair%%:*}; triple=${pair##*:}
+            cp "$SYSROOT/$triple/libc++_shared.so" "../android/app/src/main/jniLibs/$abi/"
+          done
+          ls -l ../android/app/src/main/jniLibs/*/
       - name: Build the APK
         working-directory: android
         env:
@@ -86,6 +94,12 @@ jobs:
             exit 1
           fi
           cp app/build/outputs/apk/release/app-release.apk ../SatHunterSDR.apk
+          # Every ABI must carry both native libraries
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            for lib in libsathunter.so libc++_shared.so; do
+              unzip -l ../SatHunterSDR.apk | grep -q "lib/$abi/$lib" || { echo "::error title=APK::lib/$abi/$lib missing"; exit 1; }
+            done
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: SatHunterSDR-apk
