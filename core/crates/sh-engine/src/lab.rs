@@ -49,7 +49,7 @@ pub(crate) struct Lab {
 }
 
 const TAP_ROWS: usize = 30 * 60; // ~60 s of rows at 30 fps
-const TAP_AUDIO: usize = 48_000 * 60;
+const TAP_AUDIO: usize = 48_000 * 125; // /audio?secs= up to 120 s (a whole SSTV picture)
 
 fn clock() -> String {
     let t = now_unix() as i64;
@@ -260,7 +260,7 @@ fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
         ("GET", "/measure") => measure(i, num("hz", f64::NAN), num("bw", 2000.0), num("secs", 2.0).clamp(0.2, 30.0)),
         ("GET", "/cw") => cw(i, num("secs", 20.0).clamp(2.0, 60.0)),
         ("GET", "/iq") => return iq(i, rq, num("secs", 2.0).clamp(0.1, 30.0)),
-        ("GET", "/audio") => return audio(i, rq, num("secs", 2.0).clamp(0.1, 20.0)),
+        ("GET", "/audio") => return audio(i, rq, num("secs", 2.0).clamp(0.1, 120.0)),
         ("GET", "/aprs") => Ok(super::aprs_since(i, num("since", 0.0).max(0.0) as u64)),
         ("GET", "/plugins") => Ok(super::plugin_out(i, num("since", 0.0).max(0.0) as u64)),
         ("GET", "/sstv") => Ok(super::sstv_status(i, lock(&i.cfg).sstv)),

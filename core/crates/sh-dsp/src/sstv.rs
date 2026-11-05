@@ -343,6 +343,12 @@ impl SstvDecoder {
     }
 
     fn start(&mut self, m: SstvMode) {
+        // a new VIS while a picture is coming in: keep the old one if it got far enough
+        if let Some(old) = self.cur.take() {
+            if old.rows * 2 >= old.height {
+                self.done.push_back(old);
+            }
+        }
         let (w, h) = m.size();
         self.mode = Some(m);
         self.period = 0;
@@ -422,7 +428,8 @@ impl SstvDecoder {
                 }
                 // the separator before the chroma says which one it is: 1500 Hz R-Y, 2300 Hz B-Y
                 let sep = self.mean(t0 + 0.1 * self.fs, 0.004 * self.fs).unwrap_or(BLACK);
-                let is_cb = sep > 1900.0;
+                // ... when it is clearly one or the other; otherwise the line number decides (even: R-Y)
+                let is_cb = if (sep - 1900.0).abs() > 250.0 { sep > 1900.0 } else { y % 2 == 1 };
                 let ch_full: Vec<u8> = (0..w).map(|x| ch[(x / 2).min(ch.len() - 1)]).collect();
                 if is_cb {
                     // B-Y line: completes the R-Y line before it, both get the pair's chroma
