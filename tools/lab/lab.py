@@ -12,7 +12,7 @@ This PC (same LAN, Python 3 only, no packages):
 
 Phases (the phone's console shows each): connect, setup, noise floor, frequency accuracy,
 level sweep (SNR, linearity, sensitivity), CW decode vs level. The report (report.md, CSV, JSON)
-goes to docs/lab/<date_time>/ so it can be committed and read by everyone (and by Claude).
+goes to measurements/<date_time>_<name>/ so it can be committed and read by everyone (and by Claude).
 
 --atten is the attenuation between the generator and the receiver input (cables, fixed and step
 attenuators, the 3-10 dB pad on the VSG60 output), so the levels in the report are at the receiver
@@ -397,7 +397,7 @@ def main():
     ap.add_argument("--nf-decimation", type=int, default=2)
     ap.add_argument("--name", default="lab", help="short run name for the report folder")
     ap.add_argument("--note", default="", help="free text for the report (antenna, cables, attenuators...)")
-    ap.add_argument("--out", help="report folder (default docs/lab/<date_time>)")
+    ap.add_argument("--out", help="report folder (default measurements/<date_time>_<name>)")
     a = ap.parse_args()
 
     phone = Phone(a.phone, a.pin, a.port)

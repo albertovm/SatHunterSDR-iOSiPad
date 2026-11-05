@@ -68,7 +68,7 @@ when the test frequency is not clean.
 
 ## The report
 
-`docs/lab/<date_time>/`: `report.md` (tables), `sweep.csv`, `results.json`. Commit and push it
+`measurements/<date_time>_<name>/`: `report.md` (tables), `sweep.csv`, `results.json`. Commit and push it
 (from the PC, author Zoltan Doczi): that is how the measurement reaches the other machines and
 the cloud Claude session, which cannot reach the LAN.
 
