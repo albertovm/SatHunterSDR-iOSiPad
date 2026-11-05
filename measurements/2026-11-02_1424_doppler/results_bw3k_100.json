@@ -1,0 +1,38 @@
+{
+ "started": "2026-11-03 10:17:55",
+ "part": "doppler",
+ "freq_hz": 436600000.0,
+ "atten_db": 34.7,
+ "phone": {
+  "source_status": "tuner r820t, 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "decimation": 8,
+  "ppm": -0.2,
+  "gain": 12.5
+ },
+ "doppler": [
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 3000.0,
+   "sweep_hz": 1384.0,
+   "text": "TVV DE HG0LAB TEST UVV DE HG0LAB TEST",
+   "ok": false,
+   "wpm": 15.201553043279665,
+   "cn0_dbhz": 42.199060807096544,
+   "drift_hz_s": 15.414871095218464
+  },
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 3000.0,
+   "sweep_hz": 1384.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LE EA B TEST",
+   "ok": false,
+   "wpm": 15.115585561943838,
+   "cn0_dbhz": 35.00942457674185,
+   "drift_hz_s": 21.429856243205915
+  }
+ ],
+ "finished": "2026-11-03 10:19:15"
+}

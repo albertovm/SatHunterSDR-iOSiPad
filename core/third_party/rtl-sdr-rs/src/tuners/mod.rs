@@ -39,6 +39,10 @@ pub trait Tuner: std::fmt::Debug + Send + Sync {
     fn set_freq(&mut self, handle: &Device, freq: u32) -> Result<()>;
     fn set_bandwidth(&mut self, handle: &Device, bw: u32, rate: u32) -> Result<()>;
     fn get_if_freq(&self) -> Result<u32>;
+    /// Actual LO minus the requested LO after the last set_freq (PLL resolution), Hz
+    fn get_lo_error(&self) -> f64 {
+        0.0
+    }
     fn get_xtal_freq(&self) -> Result<u32>;
     fn set_xtal_freq(&mut self, freq: u32) -> Result<()>;
     fn exit(&mut self, handle: &Device) -> Result<()>;

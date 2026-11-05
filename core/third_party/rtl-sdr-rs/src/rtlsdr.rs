@@ -176,17 +176,28 @@ impl RtlSdr {
             // TODO: figure out offset_freq, currently never set
             self.tuner.set_freq(&self.handle, freq - self.offset_freq)?;
             self.set_i2c_repeater(false)?;
+            // The PLL lands up to half a step off (R820T: ~110 Hz steps at 430 MHz): move the
+            // RTL2832's IF by the same amount (6.9 Hz steps), so the centre is where it was asked.
+            // With the LO above the signal, centre = LO - IF, so IF += LO error.
+            if Self::tuner_is_r82xx(self.tuner.get_info()?.id) {
+                let e = self.tuner.get_lo_error();
+                self.set_if_freq_f(self.tuner.get_if_freq()? as f64 + e)?;
+            }
         }
         self.freq = freq;
         Ok(())
     }
 
     pub fn set_if_freq(&self, freq: u32) -> Result<()> {
+        self.set_if_freq_f(freq as f64)
+    }
+
+    /// IF of the RTL2832's DDC in Hz (fractional: the register has 28.8 MHz / 2^22 steps).
+    pub fn set_if_freq_f(&self, freq: f64) -> Result<()> {
         // Get corrected clock value - start with default
         let rtl_xtal: u32 = DEF_RTL_XTAL_FREQ;
-        // Apply PPM correction
         let base = 1u32 << 22;
-        let if_freq: i32 = -(freq as f64 * base as f64 / rtl_xtal as f64) as i32;
+        let if_freq: i32 = -(freq * base as f64 / rtl_xtal as f64).round() as i32;
 
         let tmp = ((if_freq >> 16) as u16) & 0x3f;
         self.handle.demod_write_reg(1, 0x19, tmp, 1)?;

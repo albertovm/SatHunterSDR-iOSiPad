@@ -25,8 +25,25 @@ data class Marker(
     val selected: Boolean,
 )
 
+/** Lab link (debug mode): where the PC finds the phone, and what it is doing */
+data class LabState(
+    val port: Int,
+    val pin: String,
+    val ips: List<String>,
+    val phase: String,
+    val step: Int,
+    val total: Int,
+    val detail: String,
+    val client: String,
+    val log: List<String>,
+)
+
 /** IQ recording in progress */
 data class Rec(val name: String, val secs: Double, val bytes: Long, val dropped: Long)
+
+/** One decoded APRS / AX.25 frame */
+data class AprsFrame(val n: Long, val time: Double, val tnc2: String, val src: String, val info: String, val lat: Double?, val lon: Double?)
+data class AprsState(val on: Boolean = false, val count: Long = 0, val badCrc: Long = 0, val frames: List<AprsFrame> = emptyList())
 
 data class Status(
     val running: Boolean = false,
@@ -61,6 +78,14 @@ data class Status(
     val dropped: Long = 0,
     val markers: List<Marker> = emptyList(),
     val recording: Rec? = null,
+    val debugMode: Boolean = false,
+    val labPin: String = "",
+    /** Update requests from the lab link (counter) and their channel */
+    val updateReq: Long = 0,
+    val updatePrerelease: Boolean = true,
+    val aprs: AprsState = AprsState(),
+    /** null when the lab link is off */
+    val lab: LabState? = null,
 )
 
 data class PassInfo(
@@ -286,6 +311,10 @@ class Engine(dataDir: String) {
     fun centerTuning(on: Boolean) = async("center_tuning", JSONObject().put("on", on))
     fun biasTee(on: Boolean) = async("bias_tee", JSONObject().put("on", on))
     fun ppm(ppm: Double) = async("ppm", JSONObject().put("ppm", ppm))
+    fun debugMode(on: Boolean) = async("debug_mode", JSONObject().put("on", on))
+    fun labPin(pin: String) = async("lab_pin", JSONObject().put("pin", pin))
+    fun aprs(on: Boolean) = async("aprs", JSONObject().put("on", on))
+    fun aprsClear() = async("aprs_clear")
     fun decimation(factor: Int) = async("decimation", JSONObject().put("factor", factor))
     fun filter(f: FilterState) = async("filter", JSONObject().put("filter", f.toJson())) { refreshList() }
     fun favourite(norad: Long, on: Boolean) = async("favourite", JSONObject().put("norad", norad).put("on", on)) { refreshList() }
@@ -331,6 +360,34 @@ class Engine(dataDir: String) {
             altM = st?.optDouble("alt_m") ?: 120.0,
             locator = j.optString("locator"),
             followGps = j.optBoolean("follow_gps", true),
+            debugMode = j.optBoolean("debug_mode"),
+            labPin = j.optString("lab_pin"),
+            updateReq = j.optLong("update_req", 0),
+            updatePrerelease = j.optBoolean("update_prerelease", true),
+            aprs = j.optJSONObject("aprs")?.let { a ->
+                AprsState(
+                    on = a.optBoolean("on"), count = a.optLong("count"), badCrc = a.optLong("bad_crc"),
+                    frames = a.optJSONArray("frames")?.let { fa ->
+                        (0 until fa.length()).mapNotNull { k ->
+                            fa.optJSONObject(k)?.let { f ->
+                                AprsFrame(
+                                    f.optLong("n"), f.optDouble("time"), f.optString("tnc2"), f.optString("src"), f.optString("info"),
+                                    if (f.isNull("lat")) null else f.optDouble("lat"), if (f.isNull("lon")) null else f.optDouble("lon"),
+                                )
+                            }
+                        }
+                    } ?: emptyList(),
+                )
+            } ?: AprsState(),
+            lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
+                val ph = l.optJSONObject("phase")
+                fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()
+                LabState(
+                    port = l.optInt("port", 8765), pin = l.optString("pin"), ips = strs("ips"),
+                    phase = ph?.optString("phase") ?: "", step = ph?.optInt("step") ?: 0, total = ph?.optInt("total") ?: 0,
+                    detail = ph?.optString("detail") ?: "", client = l.optString("client"), log = strs("log"),
+                )
+            },
             recording = j.optJSONObject("recording")?.let { r ->
                 Rec(r.optString("name"), r.optDouble("secs", 0.0), r.optLong("bytes", 0), r.optLong("dropped", 0))
             },

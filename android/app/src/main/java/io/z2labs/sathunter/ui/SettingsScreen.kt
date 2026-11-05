@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import io.z2labs.sathunter.BuildConfig
 import io.z2labs.sathunter.Engine
 import io.z2labs.sathunter.Status
+import io.z2labs.sathunter.Updater
+import androidx.compose.runtime.collectAsState
 
 @Composable
 private fun Section(title: String) {
@@ -45,6 +47,7 @@ private fun Section(title: String) {
 fun SettingsScreen(
     st: Status,
     engine: Engine,
+    updater: Updater,
     compassOn: Boolean,
     onCompass: (Boolean) -> Unit,
     gpsInfo: String,
@@ -162,10 +165,53 @@ fun SettingsScreen(
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Decoders")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("APRS / packet (AFSK 1200, AX.25)", fontSize = 14.sp)
+                Text("ISS digipeater on 145.825 MHz and APRS CubeSats, in NFM. The frames show in a panel on the receiver screen.", color = Dim, fontSize = 12.sp)
+            }
+            Switch(checked = st.aprs.on, onCheckedChange = { engine.aprs(it) })
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Debug")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Debug mode (lab link)", fontSize = 14.sp)
+                Text(
+                    "Measurements over the LAN: a PC on the same Wi-Fi or USB Ethernet drives a signal generator and reads the receiver (tools/lab/lab.py). The lab console on the receiver screen shows the address and the PIN.",
+                    color = Dim, fontSize = 12.sp,
+                )
+            }
+            Switch(checked = st.debugMode, onCheckedChange = { engine.debugMode(it) })
+        }
+        var pin by remember(st.labPin) { mutableStateOf(st.labPin) }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(pin, { pin = it.filter(Char::isDigit).take(8) }, label = { Text("Lab PIN (4-8 digits, empty = random)") }, singleLine = true,
+                modifier = Modifier.weight(1f), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword))
+            Button(onClick = { engine.labPin(pin) }) { Text("Set") }
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("Radar")
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Compass (turn the radar with the phone, aim at the satellite)", Modifier.weight(1f), fontSize = 14.sp)
             Switch(checked = compassOn, onCheckedChange = onCompass)
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Updates")
+        val upd by updater.state.collectAsState()
+        var pre by remember { mutableStateOf(updater.includePrerelease) }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Beta and lab builds too", Modifier.weight(1f), fontSize = 14.sp)
+            Switch(checked = pre, onCheckedChange = { pre = it; updater.includePrerelease = it })
+        }
+        Text(updateText(upd), color = Dim, fontSize = 12.sp)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { updater.check(pre) }) { Text("Check now") }
+            (upd as? Updater.State.Available)?.let { a -> Button(onClick = { updater.install(a.rel) }) { Text("Install ${a.rel.tag}") } }
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))

@@ -1,3 +1,6 @@
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -14,9 +17,13 @@ android {
         applicationId = "io.z2labs.sathunter"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "0.2.0-beta9"
+        // CI: versionCode grows with every build (so a newer APK always installs over an older
+        // one, which the in-app updater needs), versionName is the release tag without the "v"
+        versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 10
+        versionName = System.getenv("VERSION_NAME")?.takeIf { it.isNotBlank() } ?: "0.2.0-dev"
         buildConfigField("String", "GIT_REV", "\"$gitRev\"")
+        val buildTime = Instant.now().truncatedTo(ChronoUnit.SECONDS).toString()
+        buildConfigField("String", "BUILD_TIME", "\"$buildTime\"")
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
     }
     buildFeatures {

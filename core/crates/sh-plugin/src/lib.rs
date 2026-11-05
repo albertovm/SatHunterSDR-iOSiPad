@@ -15,6 +15,8 @@
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
+pub mod runtime;
+
 #[derive(Debug, thiserror::Error)]
 pub enum PluginError {
     #[error("{0}: {1}")]
@@ -231,5 +233,35 @@ mod tests {
         let errs = c.validate(&root);
         assert!(errs.is_empty(), "{errs:?}");
         assert!(c.profiles.iter().any(|p| p.norad == 25544));
+    }
+
+    /// Every plugin in the repository loads, and the ones with frame tests (test/frames.txt,
+    /// one TNC2 line per frame) show exactly test/expected.txt.
+    #[test]
+    fn repository_plugins_pass_their_tests() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../plugins");
+        let mut ran = 0;
+        for e in std::fs::read_dir(&root).unwrap() {
+            let dir = e.unwrap().path();
+            if !dir.join("plugin.toml").is_file() {
+                continue;
+            }
+            let p = runtime::Plugin::load_dir(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
+            let (frames, expected) = (dir.join("test/frames.txt"), dir.join("test/expected.txt"));
+            if !frames.is_file() || !expected.is_file() {
+                continue;
+            }
+            let mut got = Vec::new();
+            got.extend(p.on_start("test", 0).unwrap().iter().map(|o| o.line()));
+            for line in std::fs::read_to_string(&frames).unwrap().lines().filter(|l| !l.trim().is_empty()) {
+                let f = runtime::Frame::from_tnc2(line).unwrap_or_else(|| panic!("{}: not a TNC2 line: {line}", dir.display()));
+                got.extend(p.on_frame(&f).unwrap().iter().map(|o| o.line()));
+            }
+            got.extend(p.on_end().unwrap().iter().map(|o| o.line()));
+            let want: Vec<String> = std::fs::read_to_string(&expected).unwrap().lines().filter(|l| !l.trim().is_empty()).map(|l| l.to_string()).collect();
+            assert_eq!(got, want, "{}", dir.display());
+            ran += 1;
+        }
+        assert!(ran >= 1, "no plugin frame test ran");
     }
 }

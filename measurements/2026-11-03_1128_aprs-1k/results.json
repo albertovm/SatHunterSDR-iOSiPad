@@ -1,0 +1,333 @@
+{
+ "started": "2026-11-03 11:28:49",
+ "part": "aprs",
+ "freq_hz": 436600000.0,
+ "atten_db": 34.7,
+ "phone": {
+  "source_status": "tuner r820t, 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "decimation": 8,
+  "ppm": -0.2,
+  "gain": 12.5
+ },
+ "aprs": {
+  "deviation_hz": 1000.0,
+  "packets_per_loop": 10,
+  "loop_s": 10.41912,
+  "rows": [
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -114.0,
+    "decoded": 19,
+    "expected": 19.244059939418108,
+    "success": 0.987317648137325,
+    "bad_crc_total": 4
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -116.0,
+    "decoded": 19,
+    "expected": 19.369016929225605,
+    "success": 0.9809480816412112,
+    "bad_crc_total": 6
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -118.0,
+    "decoded": 16,
+    "expected": 19.239041742641703,
+    "success": 0.8316422519390536,
+    "bad_crc_total": 17
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -119.0,
+    "decoded": 19,
+    "expected": 19.239458438324778,
+    "success": 0.9875537848899228,
+    "bad_crc_total": 19
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -120.0,
+    "decoded": 19,
+    "expected": 19.23553770036003,
+    "success": 0.9877550758378009,
+    "bad_crc_total": 21
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -121.0,
+    "decoded": 19,
+    "expected": 19.342063285892603,
+    "success": 0.982315057042436,
+    "bad_crc_total": 21
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -122.0,
+    "decoded": 19,
+    "expected": 19.236828061127117,
+    "success": 0.9876888195717833,
+    "bad_crc_total": 21
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -123.0,
+    "decoded": 13,
+    "expected": 19.217289587266954,
+    "success": 0.6764741687929591,
+    "bad_crc_total": 31
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -124.0,
+    "decoded": 4,
+    "expected": 19.249295522739775,
+    "success": 0.20779981248013357,
+    "bad_crc_total": 54
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -125.0,
+    "decoded": 0,
+    "expected": 19.248576316516875,
+    "success": 0.0,
+    "bad_crc_total": 82
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -126.0,
+    "decoded": 0,
+    "expected": 19.244677088378708,
+    "success": 0.0,
+    "bad_crc_total": 104
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -128.0,
+    "decoded": 0,
+    "expected": 19.520994380125273,
+    "success": 0.0,
+    "bad_crc_total": 115
+   },
+   {
+    "bw_hz": 6000.0,
+    "level_dbm": -130.0,
+    "decoded": 0,
+    "expected": 19.210933891167336,
+    "success": 0.0,
+    "bad_crc_total": 133
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -114.0,
+    "decoded": 19,
+    "expected": 19.242816259551272,
+    "success": 0.9873814593313103,
+    "bad_crc_total": 134
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -116.0,
+    "decoded": 19,
+    "expected": 19.252377377467756,
+    "success": 0.9868911058349018,
+    "bad_crc_total": 136
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -118.0,
+    "decoded": 19,
+    "expected": 19.235185305328766,
+    "success": 0.9877731718413125,
+    "bad_crc_total": 137
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -119.0,
+    "decoded": 19,
+    "expected": 19.235030388811776,
+    "success": 0.9877811272422796,
+    "bad_crc_total": 137
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -120.0,
+    "decoded": 19,
+    "expected": 19.233900894088183,
+    "success": 0.9878391338618119,
+    "bad_crc_total": 138
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -121.0,
+    "decoded": 19,
+    "expected": 19.259856618764463,
+    "success": 0.9865078632770666,
+    "bad_crc_total": 141
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -122.0,
+    "decoded": 13,
+    "expected": 19.237729414392152,
+    "success": 0.675755424144516,
+    "bad_crc_total": 154
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -123.0,
+    "decoded": 4,
+    "expected": 19.207351360901427,
+    "success": 0.2082535964923523,
+    "bad_crc_total": 174
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -124.0,
+    "decoded": 1,
+    "expected": 19.325730005021367,
+    "success": 0.05174448777563238,
+    "bad_crc_total": 200
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -125.0,
+    "decoded": 0,
+    "expected": 19.251446047742267,
+    "success": 0.0,
+    "bad_crc_total": 227
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -126.0,
+    "decoded": 0,
+    "expected": 19.233698152531236,
+    "success": 0.0,
+    "bad_crc_total": 248
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -128.0,
+    "decoded": 0,
+    "expected": 19.304773942058162,
+    "success": 0.0,
+    "bad_crc_total": 267
+   },
+   {
+    "bw_hz": 9000.0,
+    "level_dbm": -130.0,
+    "decoded": 0,
+    "expected": 19.33752288185989,
+    "success": 0.0,
+    "bad_crc_total": 280
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -114.0,
+    "decoded": 19,
+    "expected": 19.31252457329453,
+    "success": 0.9838175184135847,
+    "bad_crc_total": 280
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -116.0,
+    "decoded": 19,
+    "expected": 19.313835070920543,
+    "success": 0.983750763648538,
+    "bad_crc_total": 281
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -118.0,
+    "decoded": 19,
+    "expected": 19.33034637993095,
+    "success": 0.9829104779894725,
+    "bad_crc_total": 282
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -119.0,
+    "decoded": 19,
+    "expected": 19.315227260121986,
+    "success": 0.9836798575612516,
+    "bad_crc_total": 284
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -120.0,
+    "decoded": 19,
+    "expected": 19.237679072244827,
+    "success": 0.9876451274942133,
+    "bad_crc_total": 286
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -121.0,
+    "decoded": 17,
+    "expected": 19.239743329113043,
+    "success": 0.8835876710619145,
+    "bad_crc_total": 291
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -122.0,
+    "decoded": 15,
+    "expected": 19.33147656113837,
+    "success": 0.7759365898699203,
+    "bad_crc_total": 297
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -123.0,
+    "decoded": 4,
+    "expected": 19.240299381013028,
+    "success": 0.207896972951852,
+    "bad_crc_total": 321
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -124.0,
+    "decoded": 0,
+    "expected": 19.24381509351976,
+    "success": 0.0,
+    "bad_crc_total": 354
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -125.0,
+    "decoded": 0,
+    "expected": 19.31265225928638,
+    "success": 0.0,
+    "bad_crc_total": 383
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -126.0,
+    "decoded": 0,
+    "expected": 19.23742919213175,
+    "success": 0.0,
+    "bad_crc_total": 403
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -128.0,
+    "decoded": 0,
+    "expected": 19.24970237882133,
+    "success": 0.0,
+    "bad_crc_total": 414
+   },
+   {
+    "bw_hz": 12500.0,
+    "level_dbm": -130.0,
+    "decoded": 0,
+    "expected": 19.24720128941111,
+    "success": 0.0,
+    "bad_crc_total": 431
+   }
+  ]
+ },
+ "finished": "2026-11-03 11:49:15"
+}

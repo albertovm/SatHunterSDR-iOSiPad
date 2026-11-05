@@ -1,6 +1,10 @@
 package io.z2labs.sathunter.ui
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
@@ -145,16 +149,20 @@ fun ReceiverScreen(
     // Full screen: the floating controls fade out after a few seconds and come back on a touch
     var lastTouch by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var controlsVisible by remember { mutableStateOf(true) }
-    LaunchedEffect(lastTouch, fullscreen) {
+    // Landscape: a phone is ~360 dp high, the stacked bars left almost nothing for the plot.
+    // There the controls float over the waterfall, translucent, and dim when not touched.
+    val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val overlay = fullscreen || landscape
+    LaunchedEffect(lastTouch, overlay) {
         controlsVisible = true
-        if (fullscreen) {
-            delay(4000)
+        if (overlay) {
+            delay(if (fullscreen) 4000 else 5000)
             controlsVisible = false
         }
     }
 
     Column(Modifier.fillMaxSize()) {
-        if (!fullscreen) TopBar(st, shownVfo, muted, onMute, volume, onVolume, onPlay, onRecord, tuneTo) { onFullscreen(true) }
+        if (!overlay) TopBar(st, shownVfo, muted, onMute, volume, onVolume, onPlay, onRecord, tuneTo) { onFullscreen(true) }
 
         Box(
             Modifier.weight(1f).fillMaxWidth().onSizeChanged { areaH = it.height.coerceAtLeast(1) }.pointerInput(Unit) {
@@ -272,6 +280,15 @@ fun ReceiverScreen(
                     drawRoundRect(Color(0xCC0A0F16), Offset(left, top), Size(lw, txt.size.height.toFloat()), androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()))
                     drawText(txt, topLeft = Offset(left + 3.dp.toPx(), top))
                 }
+                // Decimated span: the outer 8 % on each side is not alias-free (the decimation
+                // filter keeps the central 84 %), shade it so an alias is not taken for a signal
+                if (s.decimation > 1) {
+                    val edgeL = x(shownCenter - 0.42 * s.specRate)
+                    val edgeR = x(shownCenter + 0.42 * s.specRate)
+                    val shade = Color(0x8C05080C)
+                    if (edgeL > 0f) drawRect(shade, Offset(0f, 0f), Size(edgeL, size.height))
+                    if (edgeR < w) drawRect(shade, Offset(edgeR, 0f), Size(w - edgeR, size.height))
+                }
                 // Divider between spectrum and waterfall
                 drawRect(Color(0xFF0A0E14), Offset(0f, specH - 1.5.dp.toPx()), Size(w, 3.dp.toPx()))
                 drawLine(Color(0xFF6B7F95), Offset(0f, specH), Offset(w, specH), 1.5.dp.toPx())
@@ -303,21 +320,31 @@ fun ReceiverScreen(
                 }
             }
 
-            if (fullscreen) {
-                // Floating frequency, transport and modes over the waterfall
-                Fade(controlsVisible, Modifier.align(Alignment.TopCenter)) {
+            if (overlay) {
+                // Floating frequency, transport and modes over the waterfall: full screen hides
+                // them after a while, landscape only dims them (they stay where the hand expects)
+                Floating(controlsVisible, hide = fullscreen, Modifier.align(if (fullscreen) Alignment.TopCenter else Alignment.TopEnd)) {
                     Column(
-                        Modifier.padding(top = 6.dp).width(320.dp).background(Glass, RoundedCornerShape(14.dp)).padding(horizontal = 8.dp, vertical = 4.dp),
+                        Modifier.padding(top = 6.dp, end = if (fullscreen) 0.dp else 6.dp).width(if (fullscreen) 320.dp else 300.dp)
+                            .background(GlassLight, RoundedCornerShape(14.dp)).padding(horizontal = 8.dp, vertical = 4.dp),
                     ) {
-                        FrequencyDisplay(shownVfo, tuneTo, Modifier.fillMaxWidth(), tubeHeight = 44.dp)
+                        FrequencyDisplay(shownVfo, tuneTo, Modifier.fillMaxWidth(), tubeHeight = if (fullscreen) 44.dp else 36.dp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.weight(1f)) { LevelLine(st, short = true) }
-                            Volume(muted, onMute, volume, onVolume, Modifier.width(120.dp))
+                            Volume(muted, onMute, volume, onVolume, Modifier.width(if (fullscreen) 120.dp else 100.dp))
                             RecordButton(st, onRecord, Modifier.size(36.dp))
                             PlayButton(st, onPlay, Modifier.size(36.dp))
+                            if (!fullscreen) {
+                                IconButton(onClick = { onFullscreen(true) }, modifier = Modifier.size(36.dp)) {
+                                    Icon(Icons.Filled.Fullscreen, contentDescription = "Full screen")
+                                }
+                            }
                         }
+                        st.recording?.let { RecLine(it) }
                     }
                 }
+            }
+            if (fullscreen) {
                 // Leaving full screen: its own big button in the corner, away from the others
                 Fade(controlsVisible, Modifier.align(Alignment.TopEnd)) {
                     FilledIconButton(
@@ -326,26 +353,57 @@ fun ReceiverScreen(
                         colors = IconButtonDefaults.filledIconButtonColors(containerColor = Glass),
                     ) { Icon(Icons.Filled.FullscreenExit, "Exit full screen", Modifier.size(36.dp)) }
                 }
-                Fade(controlsVisible, Modifier.align(Alignment.BottomCenter)) {
-                    Column(Modifier.padding(bottom = 8.dp).background(Glass, RoundedCornerShape(14.dp))) {
-                        DecimationRow(st, onDecimation, Modifier)
-                        ModeRow(st, onMode, Modifier)
+            }
+            if (overlay) {
+                Floating(controlsVisible, hide = fullscreen, Modifier.align(Alignment.BottomCenter)) {
+                    if (landscape) {
+                        // one row: span and modes side by side
+                        Row(
+                            Modifier.fillMaxWidth(0.96f).padding(bottom = 6.dp).background(GlassLight, RoundedCornerShape(14.dp)),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            DecimationRow(st, onDecimation, Modifier.weight(0.45f))
+                            ModeRow(st, onMode, Modifier.weight(0.55f))
+                        }
+                    } else {
+                        Column(Modifier.padding(bottom = 8.dp).background(GlassLight, RoundedCornerShape(14.dp))) {
+                            DecimationRow(st, onDecimation, Modifier)
+                            ModeRow(st, onMode, Modifier)
+                        }
                     }
                 }
             }
 
+            st.lab?.let { LabConsole(it, Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = if (overlay) 64.dp else 6.dp)) }
+            if (st.aprs.on) AprsPanel(st.aprs, Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp))
+
             if (radarOn && detail != null) {
                 Radar(
                     d = detail, pose = pose, compassOn = compassOn, onCompass = onCompass,
-                    sizeDp = if (radarLarge) 320.dp else 190.dp, onToggleSize = { radarLarge = !radarLarge },
+                    sizeDp = if (radarLarge) (if (landscape) 260.dp else 320.dp) else if (landscape) 150.dp else 190.dp,
+                    onToggleSize = { radarLarge = !radarLarge },
                 )
             }
         }
 
-        if (!fullscreen) {
+        if (!overlay) {
             DecimationRow(st, onDecimation, Modifier.fillMaxWidth().background(Panel))
             ModeRow(st, onMode, Modifier.fillMaxWidth().background(Panel))
         }
+    }
+}
+
+/** Translucent, so the waterfall shows through the floating controls */
+private val GlassLight = Color(0x8C0A0F16)
+
+/** Floating controls: hidden when idle (`hide`, full screen) or only dimmed (landscape). */
+@Composable
+private fun Floating(visible: Boolean, hide: Boolean, modifier: Modifier, content: @Composable () -> Unit) {
+    if (hide) {
+        Fade(visible, modifier, content)
+    } else {
+        val a by animateFloatAsState(if (visible) 1f else 0.35f, label = "dim")
+        Box(modifier.graphicsLayer { alpha = a }) { content() }
     }
 }
 

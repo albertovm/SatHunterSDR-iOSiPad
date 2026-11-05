@@ -1,0 +1,482 @@
+{
+ "started": "2026-11-02 10:44:28",
+ "generator": "vsg60",
+ "freq_hz": 436600000.0,
+ "atten_db": 33.6,
+ "note": "Chain: VSG60A, 30 dB attenuator, 1.5 m cable (3.6 dB), Spacewalker LNA 434 MHz v1.4 (bias tee), RTL-SDR Blog V3, Xiaomi Mi 10. Levels at the LNA input (attenuator nominal 30 dB).",
+ "phone": {
+  "source": "rtl",
+  "source_status": "tuner r820t, 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "gain": 12.5,
+  "ppm": 0.0,
+  "bias_tee": true,
+  "decimation": 8,
+  "bins": 4096
+ },
+ "noise": {
+  "bin_hz": 31.25,
+  "bw": 2000.0,
+  "center_hz": 436598520.0,
+  "channel_snr_db": -242.39785447428926,
+  "cn0_dbhz": 18.676548504133923,
+  "hz": 436600000.0,
+  "noise_dbfs_per_bin": -75.66394526554961,
+  "offset_hz": -636.507830798626,
+  "offset_ppm": -1.457874097110916,
+  "ok": true,
+  "peak_dbfs": -74.94619693485645,
+  "peak_hz": 436599363.4921692,
+  "peak_snr_db": 0.7177483306931693,
+  "rate": 128000.0,
+  "rows": 94,
+  "secs": 3.009892395
+ },
+ "frequency": {
+  "bin_hz": 31.25,
+  "bw": 5000.0,
+  "center_hz": 436598520.0,
+  "channel_snr_db": 25.625174878129215,
+  "cn0_dbhz": 62.497512256165024,
+  "hz": 436600000.0,
+  "noise_dbfs_per_bin": -75.65592959772628,
+  "offset_hz": 150.76391983032227,
+  "offset_ppm": 0.34531360474191997,
+  "ok": true,
+  "peak_dbfs": -31.117217515002004,
+  "peak_hz": 436600150.76391983,
+  "peak_snr_db": 44.538712082724274,
+  "rate": 128000.0,
+  "rows": 94,
+  "secs": 3.014344218
+ },
+ "nf_papr_db": 9.938847931768107,
+ "gain_sweep": [
+  {
+   "gain_db": 12.5,
+   "off_noise_dbfs": -69.01152274840663,
+   "bin_hz": 125.0,
+   "rise_db@-165": 6.860642594408719,
+   "nf_db@-165": 2.139357405591281,
+   "awgn_noise_dbfs@-165": -69.01561363853789,
+   "rise_db@-158": 13.709644797078557,
+   "nf_db@-158": 2.290355202921443,
+   "awgn_noise_dbfs@-158": -69.00707654017327,
+   "cw_peak_dbfs": -31.008810575954765,
+   "cw_cn0_dbhz": 61.98508562288072,
+   "cw_noise_dbfs": -69.01449611211511,
+   "nf_db": 2.214856304256362,
+   "nf_spread_db": 0.15099779733016216
+  }
+ ],
+ "best_gain_db": 12.5,
+ "sweep": [
+  {
+   "pass": 1,
+   "level_dbm": -110.0,
+   "peak_dbfs": -31.10710083111134,
+   "noise_dbfs_per_bin": -75.62694693678759,
+   "peak_snr_db": 44.519846105676244,
+   "channel_snr_db": 29.603454687443925,
+   "offset_hz": 150.63999372720718,
+   "cn0_dbhz": 62.478646279117,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -135.0,
+   "peak_dbfs": -56.13000277497925,
+   "noise_dbfs_per_bin": -75.67542132423397,
+   "peak_snr_db": 19.545418549254713,
+   "channel_snr_db": 4.598273284364778,
+   "offset_hz": 151.69811248779297,
+   "cn0_dbhz": 37.50421872269547,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -144.0,
+   "peak_dbfs": -64.92556856501913,
+   "noise_dbfs_per_bin": -75.66225602605874,
+   "peak_snr_db": 10.736687461039613,
+   "channel_snr_db": -4.5436932204055855,
+   "offset_hz": 151.12249791622162,
+   "cn0_dbhz": 28.695487634480365,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -150.0,
+   "peak_dbfs": -70.13296809105509,
+   "noise_dbfs_per_bin": -75.6626309799613,
+   "peak_snr_db": 5.529662888906225,
+   "channel_snr_db": -11.210658461380518,
+   "offset_hz": 148.25528234243393,
+   "cn0_dbhz": 23.48846306234698,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -153.0,
+   "peak_dbfs": -73.05023433171095,
+   "noise_dbfs_per_bin": -75.70598925125643,
+   "peak_snr_db": 2.6557549195454637,
+   "channel_snr_db": -16.006630780998666,
+   "offset_hz": 151.83122128248215,
+   "cn0_dbhz": 20.614555092986215,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -141.0,
+   "peak_dbfs": -61.958667859812664,
+   "noise_dbfs_per_bin": -75.69510895450121,
+   "peak_snr_db": 13.736441094688542,
+   "channel_snr_db": -1.2878772839196957,
+   "offset_hz": 148.67824470996857,
+   "cn0_dbhz": 31.695241268129294,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -130.0,
+   "peak_dbfs": -51.002047029456826,
+   "noise_dbfs_per_bin": -75.68166396953137,
+   "peak_snr_db": 24.67961694007455,
+   "channel_snr_db": 9.693939512623949,
+   "offset_hz": 149.5241648554802,
+   "cn0_dbhz": 42.6384171135153,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -138.0,
+   "peak_dbfs": -58.89184683234547,
+   "noise_dbfs_per_bin": -75.68604196027653,
+   "peak_snr_db": 16.794195127931047,
+   "channel_snr_db": 1.8663444704138052,
+   "offset_hz": 149.80047291517258,
+   "cn0_dbhz": 34.7529953013718,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -147.0,
+   "peak_dbfs": -67.48586567091107,
+   "noise_dbfs_per_bin": -75.67377445876733,
+   "peak_snr_db": 8.187908787856253,
+   "channel_snr_db": -7.129108333378519,
+   "offset_hz": 148.25119304656982,
+   "cn0_dbhz": 26.14670896129701,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -125.0,
+   "peak_dbfs": -46.120864670728984,
+   "noise_dbfs_per_bin": -75.69326782998304,
+   "peak_snr_db": 29.572403159254065,
+   "channel_snr_db": 14.577402882033013,
+   "offset_hz": 149.55632877349854,
+   "cn0_dbhz": 47.531203332694815,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 1,
+   "level_dbm": -120.0,
+   "peak_dbfs": -41.08600569823541,
+   "noise_dbfs_per_bin": -75.67756351571984,
+   "peak_snr_db": 34.591557817484414,
+   "channel_snr_db": 19.609060716211996,
+   "offset_hz": 149.55280178785324,
+   "cn0_dbhz": 52.550357990925164,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -147.0,
+   "peak_dbfs": -67.55991759591771,
+   "noise_dbfs_per_bin": -75.67603164791153,
+   "peak_snr_db": 8.116114051993819,
+   "channel_snr_db": -7.029338512480986,
+   "offset_hz": 146.70109236240387,
+   "cn0_dbhz": 26.074914225434572,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -110.0,
+   "peak_dbfs": -31.08365295124503,
+   "noise_dbfs_per_bin": -75.62737675048655,
+   "peak_snr_db": 44.54372379924152,
+   "channel_snr_db": 29.559503413889647,
+   "offset_hz": 149.2185559272766,
+   "cn0_dbhz": 62.50252397268227,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -125.0,
+   "peak_dbfs": -46.07589593243234,
+   "noise_dbfs_per_bin": -75.68202561585245,
+   "peak_snr_db": 29.606129683420114,
+   "channel_snr_db": 14.604942828432106,
+   "offset_hz": 149.08845859766006,
+   "cn0_dbhz": 47.56492985686087,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -138.0,
+   "peak_dbfs": -59.19648341955707,
+   "noise_dbfs_per_bin": -75.6785830538939,
+   "peak_snr_db": 16.482099634336834,
+   "channel_snr_db": 1.4366306011778638,
+   "offset_hz": 149.33241122961044,
+   "cn0_dbhz": 34.44089980777758,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -144.0,
+   "peak_dbfs": -64.8963064511085,
+   "noise_dbfs_per_bin": -75.68619557127269,
+   "peak_snr_db": 10.789889120164185,
+   "channel_snr_db": -4.250710933454627,
+   "offset_hz": 149.10270792245865,
+   "cn0_dbhz": 28.74868929360494,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -153.0,
+   "peak_dbfs": -71.68405552149835,
+   "noise_dbfs_per_bin": -75.69564635706286,
+   "peak_snr_db": 4.01159083556451,
+   "channel_snr_db": -14.075441667115083,
+   "offset_hz": 145.30605554580688,
+   "cn0_dbhz": 21.97039100900526,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -130.0,
+   "peak_dbfs": -51.04187351814338,
+   "noise_dbfs_per_bin": -75.71034220167354,
+   "peak_snr_db": 24.668468683530158,
+   "channel_snr_db": 9.63334818298477,
+   "offset_hz": 148.67781299352646,
+   "cn0_dbhz": 42.627268856970915,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -141.0,
+   "peak_dbfs": -62.14820773762752,
+   "noise_dbfs_per_bin": -75.6840996652482,
+   "peak_snr_db": 13.535891927620682,
+   "channel_snr_db": -1.5853777444992445,
+   "offset_hz": 148.2683773636818,
+   "cn0_dbhz": 31.494692101061435,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -150.0,
+   "peak_dbfs": -69.74978065733835,
+   "noise_dbfs_per_bin": -75.7002183565763,
+   "peak_snr_db": 5.9504376992379555,
+   "channel_snr_db": -9.163934433038486,
+   "offset_hz": 148.96259957551956,
+   "cn0_dbhz": 23.90923787267871,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -135.0,
+   "peak_dbfs": -56.08441977766031,
+   "noise_dbfs_per_bin": -75.68210874019134,
+   "peak_snr_db": 19.597688962531038,
+   "channel_snr_db": 4.562262848326208,
+   "offset_hz": 149.0592650771141,
+   "cn0_dbhz": 37.55648913597179,
+   "bin_hz": 31.25
+  },
+  {
+   "pass": 2,
+   "level_dbm": -120.0,
+   "peak_dbfs": -41.08259553546837,
+   "noise_dbfs_per_bin": -75.65318603922185,
+   "peak_snr_db": 34.57059050375347,
+   "channel_snr_db": 19.577115651042767,
+   "offset_hz": 148.84537893533707,
+   "cn0_dbhz": 52.52939067719423,
+   "bin_hz": 31.25
+  }
+ ],
+ "sweep_mean": [
+  {
+   "level_dbm": -110.0,
+   "passes": 2,
+   "peak_dbfs": -31.095376891178184,
+   "peak_snr_db": 44.53178495245888,
+   "cn0_dbhz": 62.490585125899635,
+   "offset_hz": 149.9292748272419,
+   "snr_spread_db": 0.023877693565275138,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -120.0,
+   "passes": 2,
+   "peak_dbfs": -41.08430061685189,
+   "peak_snr_db": 34.58107416061894,
+   "cn0_dbhz": 52.5398743340597,
+   "offset_hz": 149.19909036159515,
+   "snr_spread_db": 0.020967313730942294,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -125.0,
+   "passes": 2,
+   "peak_dbfs": -46.09838030158066,
+   "peak_snr_db": 29.58926642133709,
+   "cn0_dbhz": 47.54806659477784,
+   "offset_hz": 149.3223936855793,
+   "snr_spread_db": 0.03372652416604893,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -130.0,
+   "passes": 2,
+   "peak_dbfs": -51.021960273800104,
+   "peak_snr_db": 24.67404281180235,
+   "cn0_dbhz": 42.63284298524311,
+   "offset_hz": 149.10098892450333,
+   "snr_spread_db": 0.011148256544391444,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -135.0,
+   "passes": 2,
+   "peak_dbfs": -56.10721127631978,
+   "peak_snr_db": 19.571553755892875,
+   "cn0_dbhz": 37.53035392933363,
+   "offset_hz": 150.37868878245354,
+   "snr_spread_db": 0.0522704132763252,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -138.0,
+   "passes": 2,
+   "peak_dbfs": -59.04416512595127,
+   "peak_snr_db": 16.63814738113394,
+   "cn0_dbhz": 34.59694755457469,
+   "offset_hz": 149.5664420723915,
+   "snr_spread_db": 0.31209549359421374,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -141.0,
+   "passes": 2,
+   "peak_dbfs": -62.0534377987201,
+   "peak_snr_db": 13.636166511154613,
+   "cn0_dbhz": 31.594966684595363,
+   "offset_hz": 148.47331103682518,
+   "snr_spread_db": 0.20054916706786052,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -144.0,
+   "passes": 2,
+   "peak_dbfs": -64.91093750806382,
+   "peak_snr_db": 10.7632882906019,
+   "cn0_dbhz": 28.722088464042653,
+   "offset_hz": 150.11260291934013,
+   "snr_spread_db": 0.05320165912457142,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -147.0,
+   "passes": 2,
+   "peak_dbfs": -67.52289163341439,
+   "peak_snr_db": 8.152011419925035,
+   "cn0_dbhz": 26.11081159336579,
+   "offset_hz": 147.47614270448685,
+   "snr_spread_db": 0.07179473586243468,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -150.0,
+   "passes": 2,
+   "peak_dbfs": -69.94137437419673,
+   "peak_snr_db": 5.74005029407209,
+   "cn0_dbhz": 23.698850467512845,
+   "offset_hz": 148.60894095897675,
+   "snr_spread_db": 0.42077481033173036,
+   "bin_hz": 31.25
+  },
+  {
+   "level_dbm": -153.0,
+   "passes": 2,
+   "peak_dbfs": -72.36714492660465,
+   "peak_snr_db": 3.333672877554987,
+   "cn0_dbhz": 21.29247305099574,
+   "offset_hz": 148.56863841414452,
+   "snr_spread_db": 1.3558359160190463,
+   "bin_hz": 31.25
+  }
+ ],
+ "mds_dbm": null,
+ "cw": [
+  {
+   "level_dbm": -130.0,
+   "text": "AVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.353371242891962,
+   "cn0_dbhz": 41.432917057235436
+  },
+  {
+   "level_dbm": -135.0,
+   "text": "EVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.109112551249837,
+   "cn0_dbhz": 36.839652845942595
+  },
+  {
+   "level_dbm": -138.0,
+   "text": "AVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.2959028831563,
+   "cn0_dbhz": 34.365188240420565
+  },
+  {
+   "level_dbm": -141.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG0LAB TEST VVV",
+   "ok": true,
+   "wpm": 15.157012446522637,
+   "cn0_dbhz": 31.543170406694305
+  },
+  {
+   "level_dbm": -144.0,
+   "text": "TVV DE HG0LAB TEST VVV DE HG~LAB TEST V4V",
+   "ok": false,
+   "wpm": 15.072836932032855,
+   "cn0_dbhz": 29.022570265044315
+  },
+  {
+   "level_dbm": -147.0,
+   "text": "A4~ 6 HM ~LABEAEHNE EII5V DE HZ~LA~ REST V~IA",
+   "ok": false,
+   "wpm": 16.359016294015905,
+   "cn0_dbhz": 26.56425854830615
+  },
+  {
+   "level_dbm": -150.0,
+   "text": "",
+   "ok": false,
+   "wpm": 0.0,
+   "cn0_dbhz": 0.0
+  }
+ ],
+ "finished": "2026-11-02 10:51:38"
+}

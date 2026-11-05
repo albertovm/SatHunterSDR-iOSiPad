@@ -312,6 +312,8 @@ pub struct R82xx {
     pub info: TunerInfo,
     regs: [u8; NUM_CACHE_REGS],
     int_freq: u32,
+    /// Actual minus requested LO after the last set_pll, Hz
+    lo_error: f64,
     xtal_cap_sel: XtalCapValue,
     xtal: u32,
     use_predetect: bool,
@@ -357,6 +359,7 @@ impl R82xx {
             info,
             regs: REG_INIT,
             int_freq: 0,
+            lo_error: 0.0,
             xtal_cap_sel: XtalCapValue::XtalLowCap30p,
             xtal: 0,
             has_lock: false,
@@ -629,6 +632,10 @@ impl Tuner for R82xx {
         Ok(self.int_freq)
     }
 
+    fn get_lo_error(&self) -> f64 {
+        self.lo_error
+    }
+
     fn get_xtal_freq(&self) -> Result<u32> {
         Ok(self.xtal)
     }
@@ -705,7 +712,6 @@ impl R82xx {
         let freq_khz = (freq + 500) / 1000;
         info!("freq (kHz): {}", freq_khz);
         let pll_ref = self.xtal;
-        let pll_ref_khz = (self.xtal + 500) / 1000;
 
         let refdiv2 = 0;
         self.write_reg_mask(handle, 0x10, refdiv2, 0x10)?;
@@ -757,8 +763,18 @@ impl R82xx {
         info!("vco_freq: {}", vco_freq);
         let nint = (vco_freq / (2 * pll_ref as u64)) as u8;
         info!("nint: {}", nint);
-        // VCO contribution by SDM (kHz)
-        let mut vco_fra = ((vco_freq - 2 * pll_ref as u64 * nint as u64) / 1000) as u32;
+        // Fractional part for the sigma-delta modulator, in 1/65536 of 2 * pll_ref, rounded
+        // in Hz (the original code truncated it to whole kHz at the VCO: up to 1 kHz / mix_div
+        // of LO error, which changed with the IF and so with the sample rate)
+        let two_ref = 2 * pll_ref as u64;
+        let mut nint = nint;
+        let mut sdm: u32 = (((vco_freq - two_ref * nint as u64) * 65536 + two_ref / 2) / two_ref) as u32;
+        if sdm >= 65536 {
+            nint += 1;
+            sdm = 0;
+        }
+        let lo_actual = two_ref as f64 * (nint as f64 + sdm as f64 / 65536.0) / mix_div as f64;
+        self.lo_error = lo_actual - freq as f64;
 
         if nint > ((128 / vco_power_ref) - 1) {
             return Err(RtlsdrErr(format!(
@@ -781,25 +797,12 @@ impl R82xx {
         self.write_regs(handle, 0x14, &[ni.overflowing_add(si << 6).0])?;
 
         // pw_sdm
-        if vco_fra == 0 {
+        if sdm == 0 {
             self.write_reg_mask(handle, 0x12, 0x08, 0x08)?;
         } else {
             self.write_reg_mask(handle, 0x12, 0x00, 0x08)?;
         }
 
-        // SDM Calculator
-        let mut sdm = 0;
-        let mut n_sdm = 2;
-        while vco_fra > 1 {
-            if vco_fra > (2 * pll_ref_khz / n_sdm) {
-                sdm += 32768 / (n_sdm / 2);
-                vco_fra -= 2 * pll_ref_khz / n_sdm;
-                if n_sdm >= 0x8000 {
-                    break;
-                }
-            }
-            n_sdm <<= 1;
-        }
         self.write_regs(handle, 0x16, &[(sdm >> 8) as u8])?;
         self.write_regs(handle, 0x15, &[(sdm & 0xff) as u8])?;
         for i in 0..2 {

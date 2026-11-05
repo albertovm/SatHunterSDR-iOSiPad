@@ -11,3 +11,4 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 toml.workspace = true
 thiserror.workspace = true
+mlua = { version = "0.10", features = ["luau", "send"] }

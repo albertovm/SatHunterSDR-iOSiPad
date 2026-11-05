@@ -1,0 +1,171 @@
+{
+ "started": "2026-11-04 15:35:52",
+ "cal": "measurements\\2026-11-04_1523_path-cal\\results.json",
+ "out_loss_db": 30.5,
+ "note": "Spacewalker LNA 434 MHz v1.4, 5.0 V 125 mA",
+ "gain": [
+  {
+   "freq_hz": 50000000.0,
+   "pin_dbm": -35.0,
+   "pout_dbm": -56.86061096191406,
+   "gain_db": -21.860610961914062,
+   "snr_db": 18.160850524902344,
+   "peak_offset_hz": -1.496308520436287,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 100000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -51.92523956298828,
+   "gain_db": -31.92523956298828,
+   "snr_db": 10.854690551757812,
+   "peak_offset_hz": 348.5088947713375,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 145000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -51.77098846435547,
+   "gain_db": -31.77098846435547,
+   "snr_db": 11.015129089355469,
+   "peak_offset_hz": 5008.45434397459,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 200000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -53.18181610107422,
+   "gain_db": -33.18181610107422,
+   "snr_db": 10.4962158203125,
+   "peak_offset_hz": 14152.00616005063,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 300000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -51.92256164550781,
+   "gain_db": -31.922561645507812,
+   "snr_db": 10.951805114746094,
+   "peak_offset_hz": 70.06268680095673,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 350000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -42.54029083251953,
+   "gain_db": -22.54029083251953,
+   "snr_db": 20.555313110351562,
+   "peak_offset_hz": 57.67160141468048,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 380000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -49.730865478515625,
+   "gain_db": -29.730865478515625,
+   "snr_db": 13.627571105957031,
+   "peak_offset_hz": 61.68104350566864,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 400000000.0,
+   "pin_dbm": -35.0,
+   "pout_dbm": -27.818870544433594,
+   "gain_db": 7.181129455566406,
+   "snr_db": 50.98668670654297,
+   "peak_offset_hz": 45.280516028404236,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 415000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -53.289772033691406,
+   "gain_db": -33.289772033691406,
+   "snr_db": 9.821533203125,
+   "peak_offset_hz": 11567.672518968582,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 455000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -51.35498046875,
+   "gain_db": -31.35498046875,
+   "snr_db": 10.014274597167969,
+   "peak_offset_hz": 20709.21961390972,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 480000000.0,
+   "pin_dbm": -35.0,
+   "pout_dbm": -41.418731689453125,
+   "gain_db": -6.418731689453125,
+   "snr_db": 34.553253173828125,
+   "peak_offset_hz": 75.0458505153656,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 500000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -43.663536071777344,
+   "gain_db": -23.663536071777344,
+   "snr_db": 18.767120361328125,
+   "peak_offset_hz": 77.71881192922592,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 550000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -49.65447998046875,
+   "gain_db": -29.65447998046875,
+   "snr_db": 12.859359741210938,
+   "peak_offset_hz": 65.32772660255432,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 600000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -51.10227966308594,
+   "gain_db": -31.102279663085938,
+   "snr_db": 11.999374389648438,
+   "peak_offset_hz": 72.01013004779816,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 700000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -47.52783966064453,
+   "gain_db": -27.52783966064453,
+   "snr_db": 15.447441101074219,
+   "peak_offset_hz": 66.30144822597504,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 800000000.0,
+   "pin_dbm": -35.0,
+   "pout_dbm": -39.804603576660156,
+   "gain_db": -4.804603576660156,
+   "snr_db": 36.10327911376953,
+   "peak_offset_hz": 98.73974418640137,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 900000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -50.506797790527344,
+   "gain_db": -30.506797790527344,
+   "snr_db": 10.591018676757812,
+   "peak_offset_hz": -14364.673506736755,
+   "below_floor": false
+  },
+  {
+   "freq_hz": 1000000000.0,
+   "pin_dbm": -20.0,
+   "pout_dbm": -50.48759460449219,
+   "gain_db": -30.487594604492188,
+   "snr_db": 10.312065124511719,
+   "peak_offset_hz": -6054.341038107872,
+   "below_floor": false
+  }
+ ],
+ "finished": "2026-11-04 15:36:45"
+}

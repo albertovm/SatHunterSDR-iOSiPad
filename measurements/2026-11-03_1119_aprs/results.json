@@ -1,0 +1,84 @@
+{
+ "started": "2026-11-03 11:19:28",
+ "part": "aprs",
+ "freq_hz": 436600000.0,
+ "atten_db": 34.7,
+ "phone": {
+  "source_status": "tuner r820t, 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "decimation": 8,
+  "ppm": -0.2,
+  "gain": 12.5
+ },
+ "aprs": {
+  "deviation_hz": 3000.0,
+  "packets_per_loop": 10,
+  "loop_s": 10.41912,
+  "rows": [
+   {
+    "level_dbm": -105.0,
+    "decoded": 29,
+    "expected": 28.99735877448331,
+    "success": 1.0,
+    "bad_crc_total": 1
+   },
+   {
+    "level_dbm": -110.0,
+    "decoded": 29,
+    "expected": 29.014909420008014,
+    "success": 0.9994861462501161,
+    "bad_crc_total": 2
+   },
+   {
+    "level_dbm": -115.0,
+    "decoded": 30,
+    "expected": 29.883557909035993,
+    "success": 1.0,
+    "bad_crc_total": 2
+   },
+   {
+    "level_dbm": -118.0,
+    "decoded": 29,
+    "expected": 28.884379554491783,
+    "success": 1.0,
+    "bad_crc_total": 2
+   },
+   {
+    "level_dbm": -120.0,
+    "decoded": 29,
+    "expected": 28.970557301731994,
+    "success": 1.0,
+    "bad_crc_total": 3
+   },
+   {
+    "level_dbm": -122.0,
+    "decoded": 25,
+    "expected": 28.98297350588556,
+    "success": 0.8625754012066174,
+    "bad_crc_total": 8
+   },
+   {
+    "level_dbm": -124.0,
+    "decoded": 4,
+    "expected": 28.863928514797408,
+    "success": 0.13858127447722013,
+    "bad_crc_total": 37
+   },
+   {
+    "level_dbm": -126.0,
+    "decoded": 0,
+    "expected": 28.862289877902022,
+    "success": 0.0,
+    "bad_crc_total": 67
+   },
+   {
+    "level_dbm": -128.0,
+    "decoded": 0,
+    "expected": 28.959284779634444,
+    "success": 0.0,
+    "bad_crc_total": 89
+   }
+  ]
+ },
+ "finished": "2026-11-03 11:25:37"
+}
