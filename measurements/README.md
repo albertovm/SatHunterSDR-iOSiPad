@@ -24,6 +24,8 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-04 | [Spacewalker LNA 434 MHz](2026-11-04_1530_spacewalker-lna/report.md) | VSG60 + BB60C, LNA alone | gain 45.6-51.2 dB in 435-438 MHz, passband ~425-444 MHz, rejection 72->80 dB out of band, IP1dB -29 dBm, IIP3 -18.4 dBm, 5 V 125 mA |
 | 2026-11-04 | [LNA transfer sweep](2026-11-04_1546_lna-comb/transfer.png) | VSG60 90-tone comb + BB60C | 380-490 MHz in 200 kHz steps; peak 50.9 dB at 438.5 MHz, 5.5 dB SAW-cascade ripple in 430-440 MHz |
 | 2026-11-04 | [LNA further characterisation](2026-11-04_1556_lna-extra/report.md) | VSG60 + BB60C, LNA alone | gain stable 0.15 dB p-p over 10 min, OP1dB +15.5...+21 dBm (426-443 MHz), IIP3 -17...-19 dBm, no desense from -18 dBm blockers at +-15/18 MHz, harmonics < -64 dBc, no oscillation, NF estimate 1.7-3.0 dB |
+| 2026-11-05 | [Thru check](2026-11-05_0856_thru-check/report.md) | VSG60 + BB60C, no LNA | 0 dropouts in 5027 readings (the LNA-side dropouts are not the instruments); VSG60 two-tone IM3 -53...-59 dBc |
+| 2026-11-05 | [LNA supply sweep](2026-11-05_lna-supply-sweep/report.md) | VSG60 + BB60C, LNA at 4.5 / 5.0 / 5.5 V on the board | 117 / 131 / 146 mA; gain +0.7 dB, OP1dB +15.4...+16.2 dBm, OIP3 +26...+28 dBm; 1.7 Ω feed drop |
 
 ## Planned
 
