@@ -8,7 +8,7 @@ fn main() {
     let x: Vec<f32> = b[44..].chunks(2).map(|c| i16::from_le_bytes([c[0], c[1]]) as f32 / 32768.0).collect();
     let env = |k: &str, d: f64| std::env::var(k).ok().and_then(|v| v.parse().ok()).unwrap_or(d);
     let def = AfskParams::default();
-    let prm = AfskParams { lp_cut: env("LP", def.lp_cut), lp_trans: env("LPT", def.lp_trans), fix_bits: env("FIX", 1.0) > 0.0, ..def };
+    let prm = AfskParams { lp_cut: env("LP", def.lp_cut), lp_trans: env("LPT", def.lp_trans), fix_bits: env("FIX", 1.0) > 0.0, tones: env("TONES", 0.0) > 0.0, ..def };
     let mut d = AfskDecoder::with_params(fs, prm);
     for c in x.chunks(960) {
         d.process(c);

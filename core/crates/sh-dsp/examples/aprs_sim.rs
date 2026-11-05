@@ -18,7 +18,7 @@ fn main() {
     let def = sh_dsp::afsk::AfskParams::default();
     let prm = sh_dsp::afsk::AfskParams {
         lp_cut: env("LP", def.lp_cut), lp_trans: env("LPT", def.lp_trans), smooth: env("SM", def.smooth),
-        pll_gain: env("PG", def.pll_gain), deemph_hz: env("DE", def.deemph_hz), fix_bits: env("FIX", 0.0) > 0.0,
+        pll_gain: env("PG", def.pll_gain), deemph_hz: env("DE", def.deemph_hz), fix_bits: env("FIX", 0.0) > 0.0, tones: env("TONES", 0.0) > 0.0,
     };
     eprintln!("{prm:?}");
     let n_pk = std::env::var("NP").ok().and_then(|v| v.parse().ok()).unwrap_or(40usize);
