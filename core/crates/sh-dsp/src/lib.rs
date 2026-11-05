@@ -9,6 +9,7 @@ pub mod cw;
 pub mod demod;
 pub mod filter;
 pub mod spectrum;
+pub mod sstv;
 
 /// Numerically controlled oscillator (complex mixer). A rotating phasor (one complex multiply
 /// per sample) instead of a sin/cos per sample, renormalised now and then; f64 so the
