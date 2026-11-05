@@ -53,7 +53,7 @@ def main():
             v = np.array([x[1] for x in vals])
             med = float(np.median(v))
             drops = [{"t": t, "dbm": p} for t, p in vals if p < med - 3]
-            res["drop"] = {"vsg_dbm": a.level, "readings": len(vals), "median_dbm": med, "pp_db": float(v[v > med - 3].ptp()),
+            res["drop"] = {"vsg_dbm": a.level, "readings": len(vals), "median_dbm": med, "pp_db": float(np.ptp(v[v > med - 3])),
                            "dropouts": drops, "trace": vals}
             print(f"dropout watch: {len(vals)} readings, median {med:.2f} dBm, {len(drops)} dropouts", flush=True)
             save()
