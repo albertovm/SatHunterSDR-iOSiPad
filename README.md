@@ -18,6 +18,22 @@ and decoders are small plugins that students can write.
 
 Coming next: decoder plugins (AX.25 / APRS first), the ESP-SDR wideband spectrum mode and firmware updater, rtl_tcp, more sources.
 
+## How it works
+
+![SatHunterSDR block diagram](docs/img/sathunter-block-diagram.png)
+
+From the satellite to the screen: RF front end, the Rust core (sources, engine, DSP, orbits, plugins), the
+Android UI, and the lab instruments that replace the sky for repeatable tests. Details in
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+![A satellite pass replayed in the lab](docs/img/pass-simulation.png)
+
+A real pass (CAPE-1, 79°) replayed by a VSG60A with the Doppler from an independent SGP4: the phone follows the
+satellite within ±9 Hz (1σ) at 116 Hz/s and decodes its CW through the closest point at -130 dBm.
+
+**Summary for engineers** (3 pages: bugs found and fixed, lab and field results):
+[docs/report/SatHunterSDR-lab-field-summary.pdf](docs/report/SatHunterSDR-lab-field-summary.pdf)
+
 ## Measurements
 
 Receive chain measured in the lab ([all runs](measurements/README.md)):
@@ -32,7 +48,7 @@ VSG60 -> Spacewalker LNA 434 MHz -> RTL-SDR Blog V3 -> SatHunterSDR on a Xiaomi 
 | APRS (AFSK 1200) | 90 % packets at -122.5 dBm (3 kHz dev.), -123.2 dBm (1 kHz dev., 6 kHz channel) |
 | Simulated pass (88°, Doppler tracking) | VFO within ±13 Hz of the satellite, CW decoded all pass long |
 | Fast LEO pass (116 Hz/s) | carrier within ±9 Hz (1σ), CW decoded through the closest point; orbit model = independent SGP4 to 0.16 Hz |
-| Spacewalker LNA 434 MHz | 45.6-51.2 dB gain in 435-438 MHz, > 72 dB out-of-band rejection, IIP3 -18.4 dBm |
+| Spacewalker LNA 434 MHz ([full characterisation](docs/LNA-CHARACTERISATION.md)) | 45-51 dB gain in 425-444 MHz, NF 2-4 dB, > 72 dB out-of-band rejection, OP1dB +16...+21 dBm, IIP3 about -18 dBm, 131 mA at 5 V |
 | Frequency error (after warm-up) | +0.09 ppm, the same at every sample rate |
 | Decimation alias rejection | > 48-58 dB in the central 84 % of the span |
 
@@ -47,7 +63,9 @@ core/       Rust: sh-sat, sh-dsp, sh-sources, sh-plugin, sh-engine, sh-android (
 android/    Kotlin + Jetpack Compose app
 catalog/    satellite profiles (index.json)
 plugins/    decoder plugins (Luau), one folder each
-docs/       PLUGINS.md, Z2-SDR-DESKTOP-REWRITE.md
+docs/       ARCHITECTURE.md, LAB.md, LNA-CHARACTERISATION.md, MEASUREMENTS.md (field), PLUGINS.md, report/ (summary PDF)
+measurements/  lab runs: report.md, plots and raw data per run (index: measurements/README.md)
+tools/lab/  lab scripts (phone lab link, VSG60A, BB60C)
 ```
 
 ## Build

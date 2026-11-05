@@ -10,7 +10,7 @@
 |---|---|---|
 | Satellite | 70 cm / 2 m amateur and CubeSat beacons: CW, AFSK1200 / APRS, FM | Doppler at 435 MHz up to ±10 kHz, up to ~120 Hz/s at the closest point of a high LEO pass |
 | Antenna | yagi, turnstile or whip | - |
-| [Spacewalker LNA 434 v1.4](LNA-CHARACTERISATION.md) | SAW - LNA - SAW - LNA - SAW, powered over the coax | 45-51 dB gain in 425-444 MHz, NF ~2 dB, IIP3 about -19 dBm, OP1dB +16 dBm, > 72 dB out-of-band rejection |
+| [Spacewalker LNA 434 v1.4](LNA-CHARACTERISATION.md) | SAW - LNA - SAW - LNA - SAW, powered over the coax | 45-51 dB gain in 425-444 MHz, NF 2-4 dB, IIP3 about -18 dBm, OP1dB +16 dBm, > 72 dB out-of-band rejection |
 | Bias tee | 5 V to the LNA through the coax | 130 mA at 5.0 V on the board |
 | RTL-SDR Blog V3 | R820T2 tuner + RTL2832U, 8-bit IQ | 0.25-2.4 MS/s, gain 0-49.6 dB, TCXO (+0.09 ppm after warm-up, measured) |
 | USB OTG | IQ samples into the phone | - |

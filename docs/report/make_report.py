@@ -82,7 +82,7 @@ s.append(table([
     ["Lab", "Orbit model check", "phone vs independent SGP4: 0.16 Hz apart at 435 MHz"],
     ["Lab", "Frequency accuracy / decimation", "0.09 ppm at every sample rate; alias rejection > 48 dB in the central 84 % of the span"],
     ["Lab", "Spacewalker LNA 434 v1.4 (alone, 5.0 V, 131 mA)",
-     f"gain 45-51 dB in 425-444 MHz, NF {NF['range']} dB, OP1dB +15.5...+21 dBm, IIP3 about -18 dBm, "
+     f"gain 45-51 dB in 425-444 MHz, NF {NF['range']} dB (two methods, see p. 3), OP1dB +15.5...+21 dBm, IIP3 about -18 dBm, "
      "> 72 dB out-of-band rejection, gain stable 0.15 dB over 10 min, no oscillation"],
 ], [12 * mm, 62 * mm, W - 74 * mm]))
 s.append(PageBreak())
@@ -101,6 +101,7 @@ s.append(table([
     ["Lab: generator could not follow a LEO pass", "VSG60 retune over SCPI interrupts the output (up to 13.5 s); 20 kS/s ARB plays 16 % slow", "whole pass Doppler written into one ARB at 25 kS/s, started on the phone's simulated clock", "valid fast-pass test"],
     ["LNA: 0.22 V drop in the bias feed", "supply sweep: 5.22 V needed at the supply for 5.0 V on the board", "documented; compensate on long or thin feeds", "only 0.2 dB gain at 4.8 V"],
     ["LNA: 60 dB dropouts, rare", "1 in 315 readings, often at high drive; 0 in 5027 with the LNA out", "open: LNA, supply or bias-tee DC path", "readings re-checked"],
+    ["LNA noise figure: two methods disagree", "BB60C gain method 2.6-4.1 dB vs 2.0 dB for the whole chain (phone)", "both absolute references checked (input path measured, 50 Ω load = generator off); a calibrated noise source (Y-factor) is next", "quoted as 2-4 dB"],
     ["LNA: 5.5 dB passband ripple, dip at 436 MHz", "comb sweep in 200 kHz steps", "property of the SAW - LNA - SAW - LNA - SAW cascade; OP1dB is lowest (+15.5 dBm) at the dip", "feedback to the design"],
 ], [32 * mm, 45 * mm, 62 * mm, W - 139 * mm]))
 s.append(Spacer(1, 4))
@@ -119,7 +120,7 @@ lna = table([
     ["Gain 435-438 MHz", "45.3-50.4 dB"],
     ["Passband (-10 dB)", "425.1-443.7 MHz"],
     ["Out-of-band rejection", "72 to > 80 dB"],
-    ["Noise figure", f"{NF['range']} dB ({NF['f436']} at 436 MHz)"],
+    ["Noise figure", "2.6-4.1 dB (BB60C gain method, 50 Ω load); 2.0 dB from the chain; Y-factor next"],
     ["IP1dB / OP1dB", "-27...-32 / +15.5...+21 dBm"],
     ["IIP3 / OIP3, 436 MHz", "about -18 / +27 dBm"],
     ["Blocker ±15-18 MHz, -18 dBm", "< 0.25 dB desense"],

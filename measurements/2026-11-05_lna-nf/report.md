@@ -31,9 +31,9 @@ Gain during the run: 46.06 dB at 436 MHz (with the output-side assumption of thi
 
 1. With the 50 Ω load the result is the same as with the generator on the input (within 0.5 dB): the
    VSG60's output noise with RF off does not affect the measurement.
-2. By this method the LNA's NF is **2.6-4.1 dB** in 430-441 MHz, 3.7 dB at 436 MHz. It is highest where the
-   gain is lowest (the 436 MHz ripple dip), consistent with loss in front of the first transistor (the first
-   SAW) that varies across the band.
+2. By this method the LNA's NF is **2.6-4.1 dB** in 430-441 MHz, 3.7 dB at 436 MHz, varying by 1.5 dB across
+   the band like the gain ripple does (the input SAW's loss in front of the first transistor varies with
+   frequency).
 3. **This disagrees with the 2.0 dB system NF** measured on 2026-11-02 with the phone
    ([System A](../2026-11-02_1028_system-a/report.md)): the LNA alone cannot be noisier than the chain it
    leads. One of the two absolute references is off by about 1.5 dB: here the BB60C's noise-density reading

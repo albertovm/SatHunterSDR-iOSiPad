@@ -61,7 +61,7 @@ def main():
     group(1, 82, 178, 26, "RF front end", RF[1])
     box("sat", 3, 85, 26, 19, "Satellite", "70 cm / 2 m beacons:\nCW, AFSK1200 / APRS, FM ...\nDoppler at 435 MHz:\nup to ±10 kHz, 120 Hz/s", SKY)
     box("ant", 37, 87, 22, 15, "Antenna", "yagi / turnstile /\nwhip", RF)
-    box("lna", 67, 84, 40, 21, "Spacewalker LNA 434 v1.4", "SAW - LNA - SAW - LNA - SAW\ngain 45-51 dB (425-444 MHz)\nNF ~2 dB, IIP3 -19 dBm, OP1dB +16 dBm\n> 72 dB out-of-band rejection", RF)
+    box("lna", 67, 84, 40, 21, "Spacewalker LNA 434 v1.4", "SAW - LNA - SAW - LNA - SAW\ngain 45-51 dB (425-444 MHz)\nNF 2-4 dB, IIP3 -18 dBm, OP1dB +16 dBm\n> 72 dB out-of-band rejection", RF)
     box("bt", 115, 87, 20, 15, "Bias tee", "5 V, 130 mA\nto the LNA", RF)
     box("rtl", 143, 84, 33, 21, "RTL-SDR Blog V3", "R820T2 tuner + RTL2832U\n8-bit IQ, 0.25-2.4 MS/s\ngain 0-49.6 dB, TCXO", RF)
     arrow("sat", "r", "ant", "l", "radio", ls="--")
