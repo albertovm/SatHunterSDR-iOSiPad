@@ -30,6 +30,7 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-05 | [LNA reverse isolation](2026-11-05_1053_lna-reverse-s12/report.md) | LNA reversed, VSG60 + BB60C | S12 -74...-79 dB in the passband, -84...-106 dB out of band, -44 dB at 900 MHz |
 | 2026-11-05 | [RTL-SDR warm-up drift](2026-11-05_1148_rtl-drift-hub/report.md) | RTL-SDR V3 on a powered OTG hub, cold start, 90 min | 130 Hz (0.3 ppm) warm-up in 5 min at 436 MHz, then within ±8 Hz; plug in 5-10 min before AOS |
 | 2026-11-05 | [SSTV Robot 36](2026-11-05_sstv-summary/report.md) | VSG60 -> LNA -> RTL-SDR -> Mi 10 (lab11), NFM 12.5 kHz | clean picture down to -132 dBm, usable at -134 dBm, VIS lost at -138 dBm |
+| 2026-11-05 | [Decoder plugins live](2026-11-05_1425_plugins-live/report.md) | APRS from the VSG60, lab11 | 38 frames -> 76 plugin outputs (text + map pin), no errors; plugin runtime ships in the APK |
 
 ## Planned
 
