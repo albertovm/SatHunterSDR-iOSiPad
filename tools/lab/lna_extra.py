@@ -41,7 +41,8 @@ def main():
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--vsg-dir", default=r"C:\\sathunter_lab")
     ap.add_argument("--cal", help="path_cal results.json (default: newest)")
-    ap.add_argument("--out-loss", type=float, default=30.5)
+    ap.add_argument("--out-loss", type=float, default=30.5, help="output side now (pad + bias tee), dB")
+    ap.add_argument("--cal-out-loss", type=float, default=30.5, help="output side when the path calibration was made, dB")
     ap.add_argument("--f0", type=float, default=436e6)
     ap.add_argument("--parts", default="stab,p1db,ip3,block,harm,spur,nf")
     ap.add_argument("--stab-mins", type=float, default=10)
@@ -59,7 +60,7 @@ def main():
     cf = np.array([p["freq_hz"] for p in cal["points"]]); cl = np.array([p["loss_db"] for p in cal["points"]])
 
     def in_loss(f):
-        return float(np.interp(f, cf, cl)) - a.out_loss
+        return float(np.interp(f, cf, cl)) - a.cal_out_loss
 
     out = os.path.join(root, "measurements", time.strftime("%Y-%m-%d_%H%M") + "_" + a.name)
     os.makedirs(out, exist_ok=True)
