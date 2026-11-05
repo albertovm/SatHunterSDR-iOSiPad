@@ -51,7 +51,7 @@ def main():
             m = ph.measure(a.freq, 3000, 2)
             res["rows"].append({"t": t - t0, "unix": t, "offset_hz": m["offset_hz"], "ppm": m["offset_hz"] / a.freq * 1e6,
                                 "snr_db": m.get("peak_snr_db"), "bin_hz": m.get("bin_hz")})
-            print(f"{(t - t0) / 60:6.1f} min: {m['offset_hz']:+8.1f} Hz ({m['offset_hz'] / a.freq * 1e6:+.3f} ppm), SNR {m.get("peak_snr_db", 0):.0f} dB", flush=True)
+            print(f"{(t - t0) / 60:6.1f} min: {m['offset_hz']:+8.1f} Hz ({m['offset_hz'] / a.freq * 1e6:+.3f} ppm), SNR {m.get('peak_snr_db', 0):.0f} dB", flush=True)
             save()
             time.sleep(max(0.0, a.every - (time.time() - t)))
     finally:
