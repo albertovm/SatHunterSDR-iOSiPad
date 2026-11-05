@@ -27,11 +27,12 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-05 | [Thru check](2026-11-05_0856_thru-check/report.md) | VSG60 + BB60C, no LNA | 0 dropouts in 5027 readings (the LNA-side dropouts are not the instruments); VSG60 two-tone IM3 -53...-59 dBc |
 | 2026-11-05 | [LNA supply sweep](2026-11-05_lna-supply-sweep/report.md) | VSG60 + BB60C, LNA at 4.5 / 5.0 / 5.5 V on the board | 117 / 131 / 146 mA; gain +0.7 dB, OP1dB +15.4...+16.2 dBm, OIP3 +26...+28 dBm; 1.7 Ω feed drop |
 | 2026-11-05 | [LNA noise figure](2026-11-05_lna-nf/report.md) | BB60C gain method, no output pad, 50 Ω load on the input | 2.6-4.1 dB (3.7 dB at 436 MHz); disagrees with the 2.0 dB chain NF by ~1.5 dB: Y-factor with a noise source next |
+| 2026-11-05 | [LNA reverse isolation](2026-11-05_1053_lna-reverse-s12/report.md) | LNA reversed, VSG60 + BB60C | S12 -74...-79 dB in the passband, -84...-106 dB out of band, -44 dB at 900 MHz |
 
 ## Planned
 
 - RTL warm-up drift vs time from a cold start (for the satellite campaign).
 - APRS: an IQ-domain (coherent) AFSK detector for several more dB.
 - BB60C check of the VSG60 absolute level (the last dB of the NF).
-- Spacewalker LNA: Y-factor NF with a calibrated noise source; reverse isolation (S12); the source of the rare dropouts (LNA, supply, bias tee); S11/S22 need a VNA or coupler.
+- Spacewalker LNA: Y-factor NF with a calibrated noise source; the source of the rare dropouts (LNA, supply, bias tee); S11/S22 need a VNA or coupler.
 - Simulated satellite pass with Doppler.

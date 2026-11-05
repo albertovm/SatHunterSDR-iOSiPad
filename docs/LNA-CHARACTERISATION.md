@@ -24,6 +24,7 @@ the scripts are in [tools/lab](../tools/lab) (see [LAB.md](LAB.md#rf-instruments
 | IIP3 vs spacing (436 MHz, -40 dBm/tone) | 20 kHz -18.9, 100 kHz -18.8, 1 MHz -21.8, 4 MHz -25.0 dBm | extra |
 | Close-in blocking (418 / 421 / 451 / 454 MHz) | < 0.25 dB desense up to a -18 dBm blocker | extra |
 | Harmonics (2f, 3f) | < -64 dBc (analyser-limited) | extra |
+| Reverse isolation S12 | -74 ... -79 dB in the passband, -84 ... -106 dB out of band, -44 dB at 900 MHz | [S12](../measurements/2026-11-05_1053_lna-reverse-s12/report.md) |
 | Stability | no oscillation 20 MHz - 3 GHz with no input; gain 0.15 dB peak to peak over 10 min, ±0.01 dB over 5 min | extra, NF |
 | Supply (on the board) | 4.5 V 117 mA / 5.0 V 131 mA / 5.5 V 146 mA; gain +0.7 dB, OP1dB +0.8 dB from 4.5 to 5.5 V | supply |
 
@@ -60,6 +61,6 @@ VSG60A ── 20 dB ── long coax ── LNA ── bias tee ── 30 dB ─
 ## Still to do
 
 - Y-factor NF with a calibrated noise source.
-- Reverse isolation (S12), S11 / S22 (VNA or a directional coupler).
+- S11 / S22 (VNA or a directional coupler) for a full stability factor.
 - Find the dropouts.
 - Temperature: gain and NF over -20 ... +50 °C.

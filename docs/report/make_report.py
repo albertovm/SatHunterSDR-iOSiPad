@@ -83,7 +83,7 @@ s.append(table([
     ["Lab", "Frequency accuracy / decimation", "0.09 ppm at every sample rate; alias rejection > 48 dB in the central 84 % of the span"],
     ["Lab", "Spacewalker LNA 434 v1.4 (alone, 5.0 V, 131 mA)",
      f"gain 45-51 dB in 425-444 MHz, NF {NF['range']} dB (two methods, see p. 3), OP1dB +15.5...+21 dBm, IIP3 about -18 dBm, "
-     "> 72 dB out-of-band rejection, gain stable 0.15 dB over 10 min, no oscillation"],
+     "> 72 dB out-of-band rejection, reverse isolation 74-79 dB, gain stable 0.15 dB over 10 min, no oscillation"],
 ], [12 * mm, 62 * mm, W - 74 * mm]))
 s.append(PageBreak())
 
@@ -125,6 +125,7 @@ lna = table([
     ["IIP3 / OIP3, 436 MHz", "about -18 / +27 dBm"],
     ["Blocker ±15-18 MHz, -18 dBm", "< 0.25 dB desense"],
     ["Harmonics (2f, 3f)", "< -64 dBc"],
+    ["Reverse isolation, passband", "-74...-79 dB"],
     ["4.5 / 5.0 / 5.5 V on the board", "117 / 131 / 146 mA"],
 ], [33 * mm, W * 0.37 - 35 * mm])
 two = Table([[img("docs/report/lna.png", W * 0.62), lna]], colWidths=[W * 0.63, W * 0.37])
