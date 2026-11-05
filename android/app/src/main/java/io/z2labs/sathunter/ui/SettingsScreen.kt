@@ -240,6 +240,18 @@ fun SettingsScreen(
             Button(onClick = { updater.check(pre) }) { Text("Check now") }
             (upd as? Updater.State.Available)?.let { a -> Button(onClick = { updater.install(a.rel) }) { Text("Install ${a.rel.tag}") } }
         }
+        // Unattended (lab) updates: Android 12+ installs updates of this app without the dialog;
+        // reopening it afterwards needs "Display over other apps"
+        val ctx = androidx.compose.ui.platform.LocalContext.current
+        val overlay = android.provider.Settings.canDrawOverlays(ctx)
+        Text(
+            if (overlay) "Unattended updates: the app reopens itself after an update." else "Unattended updates: allow \"Display over other apps\" so the app reopens itself after an update (lab runs overnight).",
+            color = Dim, fontSize = 12.sp,
+        )
+        if (!overlay) Button(onClick = {
+            ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:${ctx.packageName}"))
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+        }) { Text("Allow reopening") }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("About")

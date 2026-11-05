@@ -4,6 +4,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- In-app update from the GitHub releases (the user confirms each install) -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Android 12+: updates of itself without the confirmation dialog, when this app installed the
+         current version (the lab updates the phone overnight with nobody to tap Install) -->
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
+    <!-- Only to reopen the app right after a silent self-update ("Display over other apps", granted
+         by the user in Settings; without it the app simply stays closed until opened) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- Ground station position from GPS (asked when used) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -37,5 +43,10 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <receiver android:name=".UpdateReceiver" android:exported="false" />
+        <receiver android:name=".ReplacedReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
