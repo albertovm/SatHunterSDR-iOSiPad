@@ -22,6 +22,7 @@ def main():
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--vsg-dir", default=r"C:\sathunter_lab")
     ap.add_argument("--level", type=float, default=-10.0, help="VSG60 output level, dBm")
+    ap.add_argument("--ref", type=float, help="BB60C reference level, dBm (default: level - 20); lower for a high-loss path")
     ap.add_argument("--freqs", help="comma separated MHz (default 50-1000 MHz, 10 MHz steps around 434)")
     ap.add_argument("--name", default="path-cal")
     ap.add_argument("--note", default="")
@@ -42,9 +43,10 @@ def main():
         for f in freqs:
             gen.cw(f, a.level)
             time.sleep(0.2)
-            p, fp = bb.peak(f, ref_dbm=a.level - 20)
-            nz = bb.noise(f + 5e6, ref_dbm=a.level - 20)
-            row = {"freq_hz": f, "bb_dbm": p, "bb_peak_hz": fp, "loss_db": a.level - p, "noise_dbm_per_khz": nz}
+            ref = a.ref if a.ref is not None else a.level - 20
+            p, fp = bb.peak(f, span=20e3, rbw=300, ref_dbm=ref)
+            nz = bb.noise(f + 5e6, span=20e3, rbw=300, ref_dbm=ref)
+            row = {"freq_hz": f, "bb_dbm": p, "bb_peak_hz": fp, "loss_db": a.level - p, "noise_dbm_300hz": nz, "margin_db": p - nz}
             res["points"].append(row)
             print(f"{f / 1e6:7.1f} MHz: {p:7.2f} dBm at the BB60C, path loss {a.level - p:6.2f} dB (peak {fp - f:+.0f} Hz)", flush=True)
         gen.off()
