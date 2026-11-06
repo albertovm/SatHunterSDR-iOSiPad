@@ -23,14 +23,15 @@ the Android UI, and the lab instruments that replace the sky for repeatable test
 - **Doppler tracking**: tunes to the selected downlink and follows it, gliding between updates (±9 Hz at 116 Hz/s). Your own retuning is kept as an offset (linear transponders).
 - **Radar**: the whole pass with AOS/LOS times, the satellite, others overhead. A compass mode follows the phone; aim mode guides you to the satellite.
 - **Receiver**: GPU spectrum and waterfall, NFM / WFM / AM / USB / LSB / CW, pinch zoom, drag to tune, full-screen mode with floating controls that fade away; satellite labels on the waterfall at their Doppler-shifted frequency.
-- **Decoders**: CW, APRS / AX.25 (AFSK1200) with a frame list, SSTV (Robot 36, PD120), Luau decoder plugins.
+- **Decoders**: CW, APRS / AX.25 (AFSK1200, three merged detectors) with a frame list, SSTV (Robot 36, PD120), Luau decoder plugins; checked in CI on real SatNOGS recordings.
+- **World map** (offline): your station, the satellite's footprint and ground track, the APRS stations heard, with distances.
 - **SDRs**: RTL-SDR (bias tee, ppm correction) and ESP32-S3 (ESP-SDR firmware, 2204–2804 MHz, smooth in-stream tuning), plug and play over USB OTG.
 - **IQ recorder**: SDR++ compatible WAV with the receiver settings and the satellite inside.
 - **Updates**: the app finds new GitHub releases and installs them.
 - **Demo source**: FM broadcast, airband, APRS, a CW beacon, ISM bursts and the selected satellite at its real Doppler frequency, with "Simulate this pass now".
 - **Lab link**: a LAN API that turns the phone into a measuring receiver for scripts ([docs/LAB.md](docs/LAB.md)).
 
-Coming next: decoder plugins (Luau runtime), the ESP-SDR wideband spectrum mode and firmware updater, rtl_tcp, more sources.
+Coming next: 9k6 telemetry (G3RUH FSK, GMSK), the ESP-SDR wideband spectrum mode and firmware updater, rtl_tcp, more sources.
 
 ## Results at a glance
 
