@@ -97,12 +97,17 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         engine.startPolling()
         if (prefs.getBoolean("compass", true)) compass.start()
         if (engine.status.value.followGps && hasLocation()) gps.start()
     }
 
     override fun onPause() {
+        // Something else in front (an install / Play Protect dialog, another app): let the screen
+        // time out as usual; our screen saver cannot draw over it (2026-11-05: a pending install
+        // dialog kept the AMOLED lit all night)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         engine.stopPolling()
         compass.stop()
         gps.stop()
