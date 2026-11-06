@@ -245,7 +245,8 @@ fun SettingsScreen(
         val ctx = androidx.compose.ui.platform.LocalContext.current
         val overlay = android.provider.Settings.canDrawOverlays(ctx)
         Text(
-            if (overlay) "Unattended updates: the app reopens itself after an update." else "Unattended updates: allow \"Display over other apps\" so the app reopens itself after an update (lab runs overnight).",
+            if (!updater.silentWorks) "Updates need a tap on Install on this phone (it refuses installs without confirmation)."
+            else if (overlay) "Unattended updates: the app reopens itself after an update." else "Unattended updates: allow \"Display over other apps\" so the app reopens itself after an update (lab runs overnight).",
             color = Dim, fontSize = 12.sp,
         )
         if (!overlay) Button(onClick = {

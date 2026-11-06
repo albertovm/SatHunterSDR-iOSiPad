@@ -101,7 +101,13 @@ class Updater(private val ctx: Context) {
             try {
                 val pi = ctx.packageManager.packageInstaller
                 val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-                if (Build.VERSION.SDK_INT >= 31) params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
+                // Ask for no confirmation where Android allows it (12+), unless that already failed
+                // on this phone: MIUI aborts such sessions with "Permission denied" (Mi 10,
+                // 2026-11-06), then the normal confirmed install is used
+                if (Build.VERSION.SDK_INT >= 31 && !prefs.getBoolean("silent_failed", false)) {
+                    params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
+                }
+                lastRel = rel
                 val id = pi.createSession(params)
                 pi.openSession(id).use { s ->
                     val c = URL(rel.apkUrl).openConnection() as HttpURLConnection
@@ -139,9 +145,20 @@ class Updater(private val ctx: Context) {
         }
     }
 
-    fun failed(msg: String) {
-        _state.value = State.Failed(msg)
+    private var lastRel: Release? = null
+
+    fun failed(status: Int, msg: String) {
+        // A silent install refused by the system: remember it and install again the normal way
+        val silent = Build.VERSION.SDK_INT >= 31 && !prefs.getBoolean("silent_failed", false)
+        if (silent && status == PackageInstaller.STATUS_FAILURE_ABORTED) {
+            prefs.edit().putBoolean("silent_failed", true).apply()
+            lastRel?.let { install(it); return }
+        }
+        _state.value = State.Failed("install failed ($status): $msg")
     }
+
+    /** False when this phone refused an update without confirmation (MIUI). */
+    val silentWorks: Boolean get() = Build.VERSION.SDK_INT >= 31 && !prefs.getBoolean("silent_failed", false)
 
     companion object {
         const val REPO = "z2labs/SatHunter-SDR"
@@ -161,9 +178,7 @@ class UpdateReceiver : BroadcastReceiver() {
                 ctx.startActivity(confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             }
             PackageInstaller.STATUS_SUCCESS -> {}
-            else -> Updater.instance?.failed(
-                "install failed ($status): " + (intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE) ?: ""),
-            )
+            else -> Updater.instance?.failed(status, intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE) ?: "")
         }
     }
 }
