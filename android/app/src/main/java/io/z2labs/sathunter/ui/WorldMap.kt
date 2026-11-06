@@ -150,7 +150,7 @@ fun WorldMap(st: Status, detail: SatDetail?, modifier: Modifier = Modifier) {
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, z, _ ->
                     val k = zoom * size.width / 360.0
-                    zoom = (zoom * z).coerceIn(1f, 40f)
+                    zoom = (zoom * z).coerceIn(1f, 30f)
                     val (lon, lat) = center
                     center = Pair(lon - pan.x / k, (lat + pan.y / k).coerceIn(-85.0, 85.0))
                 }
@@ -172,26 +172,35 @@ fun WorldMap(st: Status, detail: SatDetail?, modifier: Modifier = Modifier) {
         // graticule
         for (g in -180 until 180 step 30) for (c in copies) {
             val gx = x(near(g.toDouble()) + c)
-            drawLine(Grid, Offset(gx, y(90.0)), Offset(gx, y(-90.0)), 1f)
+            if (gx in 0f..size.width) drawLine(Grid, Offset(gx, y(90.0).coerceAtLeast(0f)), Offset(gx, y(-90.0).coerceAtMost(size.height)), 1f)
         }
         for (g in -60..60 step 30) drawLine(Grid, Offset(0f, y(g.toDouble())), Offset(size.width, y(g.toDouble())), 1f)
 
-        // land
+        // land: every ring clipped to the screen first. A path much larger than the screen (zoomed
+        // in) makes the renderer rasterise it whole, which froze the app (lab16)
         val base = near(0.0)
+        val path = Path()
+        val m = 4f
+        val box = floatArrayOf(-m, -m, size.width + m, size.height + m)
         for (c in copies) {
-            val path = Path()
             for (r in land) {
-                path.moveTo(x(r[0] + base + c), y(r[1].toDouble()))
+                val n = r.size / 2
+                val px = FloatArray(n) { x(r[2 * it] + base + c) }
+                val py = FloatArray(n) { y(r[2 * it + 1].toDouble()) }
+                if (px.max() < box[0] || px.min() > box[2] || py.max() < box[1] || py.min() > box[3]) continue
+                val poly = clipPolygon(px, py, box)
+                if (poly.size < 6) continue
+                path.moveTo(poly[0], poly[1])
                 var j = 2
-                while (j < r.size) {
-                    path.lineTo(x(r[j] + base + c), y(r[j + 1].toDouble()))
+                while (j < poly.size) {
+                    path.lineTo(poly[j], poly[j + 1])
                     j += 2
                 }
                 path.close()
             }
-            drawPath(path, LandFill)
-            drawPath(path, LandEdge, style = Stroke(1f))
         }
+        drawPath(path, LandFill)
+        drawPath(path, LandEdge, style = Stroke(1f))
 
         // satellite: footprint, ground track, position
         detail?.let { d ->
@@ -237,27 +246,89 @@ private fun DrawScope.line(
     width: Float,
 ) {
     if (pts.size < 2) return
-    val path = Path()
+    // segment by segment, each clipped to the screen (no huge paths, see the land above)
+    val w = size.width
+    val h = size.height
+    val shifts = listOf(-360.0, 0.0, 360.0).map { x(it) - x(0.0) }
     var prevLon = near(pts[0].second)
-    path.moveTo(x(prevLon), y(pts[0].first))
+    var x0 = x(prevLon)
+    var y0 = y(pts[0].first)
     for (k in 1 until pts.size) {
-        // keep the line continuous in longitude, then draw it once more 360° away if it runs off
+        // keep the line continuous in longitude; the copies 360° away cover the wrap
         var lon = pts[k].second
         while (lon - prevLon > 180) lon -= 360
         while (lon - prevLon < -180) lon += 360
-        path.lineTo(x(lon), y(pts[k].first))
+        val x1 = x(lon)
+        val y1 = y(pts[k].first)
+        for (dx in shifts) {
+            clipSegment(x0 + dx, y0, x1 + dx, y1, w, h)?.let { (a, b) -> drawLine(color, a, b, width) }
+        }
         prevLon = lon
-    }
-    for (c in listOf(-360.0, 0.0, 360.0)) {
-        val dx = (x(c) - x(0.0))
-        translateBy(dx) { drawPath(path, color, style = Stroke(width)) }
+        x0 = x1
+        y0 = y1
     }
 }
 
-private inline fun DrawScope.translateBy(dx: Float, block: DrawScope.() -> Unit) {
-    drawContext.transform.translate(dx, 0f)
-    block()
-    drawContext.transform.translate(-dx, 0f)
+/** Liang-Barsky: the part of a segment inside the screen, or null. */
+private fun clipSegment(x0: Float, y0: Float, x1: Float, y1: Float, w: Float, h: Float): Pair<Offset, Offset>? {
+    val dx = x1 - x0
+    val dy = y1 - y0
+    var t0 = 0f
+    var t1 = 1f
+    val p = floatArrayOf(-dx, dx, -dy, dy)
+    val q = floatArrayOf(x0, w - x0, y0, h - y0)
+    for (i in 0..3) {
+        if (p[i] == 0f) {
+            if (q[i] < 0) return null
+        } else {
+            val t = q[i] / p[i]
+            if (p[i] < 0) { if (t > t1) return null; if (t > t0) t0 = t } else { if (t < t0) return null; if (t < t1) t1 = t }
+        }
+    }
+    return Pair(Offset(x0 + t0 * dx, y0 + t0 * dy), Offset(x0 + t1 * dx, y0 + t1 * dy))
+}
+
+/** Sutherland-Hodgman: a polygon clipped to the box (x0, y0, x1, y1), as x, y pairs. */
+private fun clipPolygon(px: FloatArray, py: FloatArray, box: FloatArray): FloatArray {
+    var xs = px.toList()
+    var ys = py.toList()
+    for (edge in 0..3) {
+        if (xs.isEmpty()) break
+        val nx = ArrayList<Float>(xs.size + 4)
+        val ny = ArrayList<Float>(xs.size + 4)
+        fun inside(x: Float, y: Float) = when (edge) {
+            0 -> x >= box[0]
+            1 -> x <= box[2]
+            2 -> y >= box[1]
+            else -> y <= box[3]
+        }
+        fun cross(ax: Float, ay: Float, bx: Float, by: Float): Pair<Float, Float> {
+            val t = when (edge) {
+                0 -> (box[0] - ax) / (bx - ax)
+                1 -> (box[2] - ax) / (bx - ax)
+                2 -> (box[1] - ay) / (by - ay)
+                else -> (box[3] - ay) / (by - ay)
+            }
+            return Pair(ax + t * (bx - ax), ay + t * (by - ay))
+        }
+        for (i in xs.indices) {
+            val ax = xs[(i + xs.size - 1) % xs.size]
+            val ay = ys[(i + ys.size - 1) % ys.size]
+            val bx = xs[i]
+            val by = ys[i]
+            val ain = inside(ax, ay)
+            val bin = inside(bx, by)
+            if (bin) {
+                if (!ain) cross(ax, ay, bx, by).let { nx.add(it.first); ny.add(it.second) }
+                nx.add(bx); ny.add(by)
+            } else if (ain) {
+                cross(ax, ay, bx, by).let { nx.add(it.first); ny.add(it.second) }
+            }
+        }
+        xs = nx
+        ys = ny
+    }
+    return FloatArray(xs.size * 2) { if (it % 2 == 0) xs[it / 2] else ys[it / 2] }
 }
 
 /** The point at angular distance `lam` (radians) and bearing `brg` (degrees) from (lat, lon). */
