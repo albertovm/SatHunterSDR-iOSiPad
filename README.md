@@ -23,7 +23,7 @@ the Android UI, and the lab instruments that replace the sky for repeatable test
 - **Doppler tracking**: tunes to the selected downlink and follows it, gliding between updates (±9 Hz at 116 Hz/s). Your own retuning is kept as an offset (linear transponders).
 - **Radar**: the whole pass with AOS/LOS times, the satellite, others overhead. A compass mode follows the phone; aim mode guides you to the satellite.
 - **Receiver**: GPU spectrum and waterfall, NFM / WFM / AM / USB / LSB / CW, pinch zoom, drag to tune, full-screen mode with floating controls that fade away; satellite labels on the waterfall at their Doppler-shifted frequency.
-- **Decoders**: CW, APRS / AX.25 (AFSK1200) with a frame list.
+- **Decoders**: CW, APRS / AX.25 (AFSK1200) with a frame list, SSTV (Robot 36, PD120), Luau decoder plugins.
 - **SDRs**: RTL-SDR (bias tee, ppm correction) and ESP32-S3 (ESP-SDR firmware, 2204–2804 MHz, smooth in-stream tuning), plug and play over USB OTG.
 - **IQ recorder**: SDR++ compatible WAV with the receiver settings and the satellite inside.
 - **Updates**: the app finds new GitHub releases and installs them.
@@ -45,6 +45,7 @@ plots and raw data in [measurements/](measurements/README.md); field notes are i
 | Lab | Sensitivity (MDS, 3 dB SNR in 31 Hz) | -154.4 dBm |
 | Lab | Keyed CW at 15 WPM | decoded down to -145 dBm (C/N0 29 dB-Hz) |
 | Lab | APRS (AFSK1200) | 90 % packets at -122.5 dBm (3 kHz dev.), -123.2 dBm (1 kHz dev., 6 kHz channel) |
+| Lab | SSTV Robot 36 / PD120 | clean to -132 dBm, recognisable to -136 dBm ([lab15](measurements/2026-11-06_0941_sstv-robot36-lab15/report.md)); PD120 decoded at -134 dBm ([report](measurements/2026-11-06_0832_sstv-pd120/report.md)) |
 | Lab | Simulated pass, 88°, generator following the Doppler | VFO within ±13 Hz, CW decoded 28 of 29 times at -130 dBm |
 | Lab | Replayed LEO pass, 79°, 116 Hz/s | carrier within ±9 Hz (1σ), CW decoded through the closest point |
 | Lab | Frequency error (after warm-up) | +0.09 ppm, the same at every sample rate |
@@ -81,6 +82,10 @@ the APRS decoder was limited by its FM-discriminator detector; both were fixed a
 APRS packet success vs level, decoder v2 ([report](measurements/2026-11-03_1554_aprs-lab9-3k/report.md)):
 
 ![APRS](measurements/2026-11-03_1554_aprs-lab9-3k/plots.png)
+
+SSTV Robot 36 at the sensitivity limit, with line-sync re-acquisition ([report](measurements/2026-11-06_0941_sstv-robot36-lab15/report.md)):
+
+![SSTV](measurements/2026-11-06_0941_sstv-robot36-lab15/pictures.png)
 
 ### Spacewalker LNA 434 MHz
 
