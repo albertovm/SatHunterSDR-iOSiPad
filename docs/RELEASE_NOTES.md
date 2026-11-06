@@ -1,4 +1,4 @@
-# SatHunterSDR 0.2.0 beta 9
+# SatHunterSDR 0.2.0 beta 11
 
 Android satellite-hunting SDR receiver. Install the APK below (allow installs from your browser or
 file manager when asked).
@@ -6,6 +6,33 @@ file manager when asked).
 **Coming from beta 1 or beta 2: uninstall the old app once** (Android says it "conflicts with an
 existing package"). Those builds had a throw-away signature; from beta 3 on every APK is signed
 with the same Z2Labs key and installs over the previous one.
+
+## New in beta 11
+
+Decoders, a world map and a lot of lab work: the receive chain, the Spacewalker LNA and every decoder
+measured with a Signal Hound VSG60A / BB60C (results in measurements/ and docs/).
+
+- **APRS / AX.25** (AFSK 1200): frame list on the receiver, 90 % packets at about -122.5 dBm in the
+  lab. Three detectors run on the same audio and each frame is shown once; on real SatNOGS
+  recordings it decodes as many frames as the stations' own decoders or more (ISS 2/2, PCSAT 21/15).
+- **Terrestrial APRS mode** (Settings): the local APRS network on 144.800 MHz (or 144.390, 145.175,
+  ...), Doppler tracking off, every station on the map. Handy for testing on the ground.
+- **SSTV** (Robot 36, PD120) for ISS events: the picture builds up in a panel and can be saved.
+  Clean to -132 dBm, recognisable to -136 dBm; decodes an RS18S picture SatNOGS lost.
+- **World map** (offline, Natural Earth): your station, the satellite's footprint and ground track,
+  the APRS stations heard with their distance. From the Satellites tab (Map) or a tap on the APRS
+  panel.
+- **Decoder plugins** (Luau): iss-aprs and a generic aprs-map plugin turn frames into readable lines
+  and map positions; switch in Settings.
+- **AMOLED screen saver**: after 0/1/2/5/10 minutes without a touch the screen dims to a small
+  drifting summary (frequency, satellite, signal, last decode); a tap wakes it. The screen is kept
+  on only while the app is in front.
+- **Updates**: on Android 12+ the app can update itself without the Install dialog; where the
+  system refuses (MIUI) it falls back to the normal dialog and remembers that. "Allow reopening"
+  in Settings brings the app back after an update.
+- **Receiver fixes**: RTL-SDR (R820T) tuning error removed (PLL fraction in Hz, the rest corrected
+  in the RTL IF); Doppler tracking glides between updates instead of stepping; AM audio bandwidth
+  and the NFM deviation reference fixed.
 
 ## New in beta 9
 
