@@ -145,8 +145,21 @@ def main():
     ap.add_argument("--name", default="aprs-ground")
     ap.add_argument("--start", type=float, help="switch the terrestrial APRS mode on at this frequency (Hz)")
     ap.add_argument("--out")
+    ap.add_argument("--report", metavar="DIR", help="only write the report of an earlier (stopped) run in DIR")
     a = ap.parse_args()
     ph = Phone(a.ip, a.pin)
+    if a.report:
+        frames = [json.loads(l) for l in open(os.path.join(a.report, "frames.jsonl"), encoding="utf-8") if l.strip()]
+        rows = []
+        for r in csv.DictReader(open(os.path.join(a.report, "status.csv"))):
+            if r["t"] == "t":
+                continue
+            rows.append({"t": float(r["t"]), "level_db": float(r["level_db"]) if r["level_db"] else None,
+                         "bad_crc": int(float(r["bad_crc"])), "dropped": int(float(r["dropped"])), "count": int(float(r["count"]))})
+        st0 = ph.status()
+        report(a.report, frames, rows, st0, time.strftime("%Y-%m-%d %H:%M", time.localtime(rows[0]["t"])))
+        print("report:", os.path.join(a.report, "report.md"))
+        return
     if a.start:
         ph.cmd(cmd="ground_aprs", on=True, hz=a.start)
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
