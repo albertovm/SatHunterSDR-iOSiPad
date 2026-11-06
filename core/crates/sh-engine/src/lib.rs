@@ -1745,6 +1745,12 @@ mod tests {
         write_iss(&d);
         Config { update_days: 0.0, ..Config::default() }.save(&d.join("config.json"));
         let e = Engine::new(&d);
+        for _ in 0..200 {
+            if cmd(&e, r#"{"cmd":"sat_list"}"#)["rows"].as_array().map(|r| !r.is_empty()).unwrap_or(false) {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
         cmd(&e, r#"{"cmd":"source","id":"demo"}"#);
         cmd(&e, r#"{"cmd":"sat_select","norad":25544}"#);
         assert_eq!(cmd(&e, r#"{"cmd":"ground_aprs","on":true}"#)["ok"], true);
@@ -1753,7 +1759,8 @@ mod tests {
         assert_eq!(st["mode"], "NFM");
         assert_eq!(st["aprs"]["on"], true);
         assert_eq!(st["ground_aprs"]["on"], true);
-        assert_eq!(cmd(&e, r#"{"cmd":"sat_detail"}"#)["tracking"], false);
+        let det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
+        assert_eq!(det["tracking"], false, "{det}");
         // another frequency, remembered
         cmd(&e, r#"{"cmd":"ground_aprs","on":true,"hz":144390000}"#);
         assert_eq!(cmd(&e, r#"{"cmd":"status"}"#)["vfo_hz"].as_f64(), Some(144.39e6));
@@ -1940,7 +1947,7 @@ mod tests {
         let e = Engine::new(&d);
         // Wait for the pass list
         let mut list = Value::Null;
-        for _ in 0..50 {
+        for _ in 0..200 {
             list = cmd(&e, r#"{"cmd":"sat_list"}"#);
             if list["rows"].as_array().map(|r| !r.is_empty()).unwrap_or(false) {
                 break;
@@ -1950,9 +1957,18 @@ mod tests {
         assert_eq!(list["rows"][0]["norad"], 25544, "{list}");
         cmd(&e, r#"{"cmd":"start"}"#);
         cmd(&e, r#"{"cmd":"sat_select","norad":25544,"tx":"lin"}"#);
-        std::thread::sleep(Duration::from_millis(800));
-        let det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
-        assert_eq!(det["tracking"], true);
+        // the tracker picks it up within a cycle (longer on a loaded CI machine)
+        let mut det = Value::Null;
+        for _ in 0..40 {
+            std::thread::sleep(Duration::from_millis(100));
+            det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
+            if det["tracking"] == true && det["rx_hz"].is_number() {
+                std::thread::sleep(Duration::from_millis(300));
+                det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
+                break;
+            }
+        }
+        assert_eq!(det["tracking"], true, "{det}");
         let rx = det["rx_hz"].as_f64().unwrap();
         assert!((rx - 435_780_000.0).abs() < 12_000.0, "rx {rx}");
         let st = cmd(&e, r#"{"cmd":"status"}"#);
