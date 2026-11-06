@@ -1518,9 +1518,9 @@ pub(crate) fn plugin_status(i: &Inner, on: bool, n: usize) -> Value {
     match h.as_ref() {
         Some(h) => {
             let skip = h.out.1.len().saturating_sub(n);
-            json!({ "on": on, "loaded": h.ids(), "errors": h.errors, "count": h.out.0, "out": h.out.1.iter().skip(skip).cloned().collect::<Vec<_>>() })
+            json!({ "on": on, "loaded": h.ids(), "errors": h.errors, "count": h.out.0, "out": h.out.1.iter().skip(skip).cloned().collect::<Vec<_>>(), "pins": h.pins })
         }
-        None => json!({ "on": on, "loaded": [], "errors": [], "count": 0, "out": [] }),
+        None => json!({ "on": on, "loaded": [], "errors": [], "count": 0, "out": [], "pins": [] }),
     }
 }
 
@@ -1603,6 +1603,9 @@ fn sat_detail(i: &Inner) -> Value {
         "tx": txs,
         "selected_tx": tx.map(|t| t.uuid.clone()),
         "look": look.map(|l| json!({"az": l.az, "el": l.el, "range_km": l.range_km, "range_rate_kms": l.range_rate_kms})),
+        "sub": sat.orbit.subpoint(now).ok().map(|(lat, lon, h)| json!({"lat": lat, "lon": lon, "alt_km": h})),
+        // ground track for the map: 15 min back, 90 min ahead, 30 s steps
+        "ground": (-30..=180).filter_map(|k| sat.orbit.subpoint(now + 30.0 * k as f64).ok().map(|(a, b, _)| [(a * 100.0).round() / 100.0, (b * 100.0).round() / 100.0])).collect::<Vec<_>>(),
         "pass": s.sel_pass,
         "track": s.track,
         "others": s.others,

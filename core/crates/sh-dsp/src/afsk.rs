@@ -236,13 +236,17 @@ pub struct AfskParams {
     /// (two sliding correlators). Simulated: no better than the discriminator (49 dB-Hz: 65 %
     /// vs 85 %, 50 dB-Hz: 95 % both), kept as an option for real audio with twist
     pub tones: bool,
+    /// Run two more detectors beside this one (the tone detector, and the discriminator with a
+    /// wide low-pass) and merge their frames: real recordings differ in twist, de-emphasis and
+    /// audio bandwidth, and each detector wins on some of them (SatNOGS test vectors, testdata/)
+    pub multi: bool,
 }
 
 impl Default for AfskParams {
     fn default() -> Self {
         // Simulated (examples/aprs_sim.rs, FM AFSK + white noise): the narrower low-pass and the
         // bit repair move the 90 % packet point from about 50.2 to 49.4 dB-Hz C/N0
-        AfskParams { lp_cut: 650.0, lp_trans: 500.0, smooth: 0.5, pll_gain: 0.3, deemph_hz: 0.0, fix_bits: true, tones: false }
+        AfskParams { lp_cut: 650.0, lp_trans: 500.0, smooth: 0.5, pll_gain: 0.3, deemph_hz: 0.0, fix_bits: true, tones: false, multi: true }
     }
 }
 
@@ -288,6 +292,11 @@ pub struct AfskDecoder {
     pub bad_crc: u64,
     /// Frames repaired by a bit flip
     pub fixed: u64,
+    /// The extra detectors (`multi`), and the frames seen lately (sample count, raw) so a frame
+    /// two detectors decode is reported once
+    alt: Vec<AfskDecoder>,
+    seen: VecDeque<(u64, Vec<u8>)>,
+    samples: u64,
 }
 
 impl AfskDecoder {
@@ -331,6 +340,41 @@ impl AfskDecoder {
             frames: VecDeque::new(),
             bad_crc: 0,
             fixed: 0,
+            alt: if prm.multi {
+                let one = AfskParams { multi: false, ..prm };
+                vec![
+                    AfskDecoder::with_params(fs, AfskParams { tones: true, ..one }),
+                    AfskDecoder::with_params(fs, AfskParams { lp_cut: 3000.0, ..one }),
+                ]
+            } else {
+                Vec::new()
+            },
+            seen: VecDeque::new(),
+            samples: 0,
+        }
+    }
+
+    /// Frames from all detectors in this chunk: each new one once (same bytes within 1 s = same frame).
+    fn merge(&mut self, before: usize) {
+        let window = self.fs as u64;
+        let now = self.samples;
+        while self.seen.front().is_some_and(|(t, _)| now.saturating_sub(*t) > window) {
+            self.seen.pop_front();
+        }
+        let mine: Vec<Ax25Frame> = self.frames.drain(before.min(self.frames.len())..).collect();
+        let mut alt: Vec<Ax25Frame> = Vec::new();
+        for d in &mut self.alt {
+            alt.extend(d.frames.drain(..));
+        }
+        for f in mine.into_iter().chain(alt) {
+            if self.seen.iter().any(|(_, r)| *r == f.raw) {
+                continue;
+            }
+            self.seen.push_back((now, f.raw.clone()));
+            self.frames.push_back(f);
+        }
+        while self.frames.len() > 100 {
+            self.frames.pop_front();
         }
     }
 
@@ -340,6 +384,20 @@ impl AfskDecoder {
 
     /// Feed audio samples; decoded frames collect in `frames`.
     pub fn process(&mut self, audio: &[f32]) {
+        let before = self.frames.len();
+        self.run(audio);
+        self.samples += audio.len() as u64;
+        if self.alt.is_empty() {
+            return;
+        }
+        for d in &mut self.alt {
+            d.run(audio);
+            self.fixed += std::mem::take(&mut d.fixed);
+        }
+        self.merge(before);
+    }
+
+    fn run(&mut self, audio: &[f32]) {
         for &a in audio {
             let a = if self.de_a > 0.0 {
                 self.de_y = self.de_a * self.de_y + (1.0 - self.de_a) * a;
@@ -478,7 +536,7 @@ impl AfskDecoder {
             if crc16(body) == got {
                 if let Some(f) = Ax25Frame::parse(body) {
                     self.frames.push_back(f);
-                    while self.frames.len() > 100 {
+                    while !self.prm.multi && self.frames.len() > 100 {
                         self.frames.pop_front();
                     }
                 }

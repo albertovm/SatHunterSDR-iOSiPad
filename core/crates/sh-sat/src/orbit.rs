@@ -105,6 +105,22 @@ impl Orbit {
         Ok((r, v))
     }
 
+    /// Sub-satellite point: geodetic latitude, longitude (degrees, -180..180) and height (km).
+    pub fn subpoint(&self, unix: f64) -> Result<(f64, f64, f64), OrbitError> {
+        let (r, _) = self.ecef(unix)?;
+        let e2 = WGS84_F * (2.0 - WGS84_F);
+        let p = (r[0] * r[0] + r[1] * r[1]).sqrt();
+        let lon = r[1].atan2(r[0]);
+        let mut lat = r[2].atan2(p * (1.0 - e2));
+        let mut h = 0.0;
+        for _ in 0..5 {
+            let n = WGS84_A / (1.0 - e2 * lat.sin().powi(2)).sqrt();
+            h = p / lat.cos() - n;
+            lat = r[2].atan2(p * (1.0 - e2 * n / (n + h)));
+        }
+        Ok((lat / DEG, lon / DEG, h))
+    }
+
     /// Look angles, range and range rate at a unix time.
     pub fn look(&self, st: &Station, unix: f64) -> Result<Look, OrbitError> {
         let (r, v) = self.ecef(unix)?;
@@ -139,5 +155,19 @@ mod tests {
         assert!((l.az - 314.49797).abs() < 0.02, "az {}", l.az);
         assert!((l.el - -69.39707).abs() < 0.02, "el {}", l.el);
         assert!((l.range_rate_kms - -2.392072).abs() < 0.002, "rr {}", l.range_rate_kms);
+    }
+
+    #[test]
+    fn iss_subpoint_is_sane() {
+        let o = Orbit::from_tle(ISS1, ISS2).unwrap();
+        for k in 0..100 {
+            let (lat, lon, h) = o.subpoint(1791950400.0 + 60.0 * k as f64).unwrap();
+            assert!(lat.abs() <= 51.9 && (-180.0..=180.0).contains(&lon) && (380.0..440.0).contains(&h), "{lat} {lon} {h}");
+        }
+        // the station directly below sees it at 90 degrees elevation
+        let t = 1791950400.0 + 1234.0;
+        let (lat, lon, _) = o.subpoint(t).unwrap();
+        let l = o.look(&Station { lat, lon, alt_m: 0.0 }, t).unwrap();
+        assert!(l.el > 89.9, "el {}", l.el);
     }
 }

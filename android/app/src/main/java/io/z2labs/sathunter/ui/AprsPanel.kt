@@ -1,6 +1,7 @@
 package io.z2labs.sathunter.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -22,10 +23,14 @@ private val Pkt = Color(0xFFFFC857)
 
 /** The last APRS / AX.25 frames, newest at the bottom. */
 @Composable
-fun AprsPanel(a: AprsState, modifier: Modifier = Modifier, plugin: List<String> = emptyList()) {
+fun AprsPanel(a: AprsState, modifier: Modifier = Modifier, plugin: List<String> = emptyList(), pins: Int = 0, onMap: (() -> Unit)? = null) {
     val fmt = SimpleDateFormat("HH:mm:ss", Locale.US)
-    Column(modifier.widthIn(max = 360.dp).background(Color(0xCC0A0F16), RoundedCornerShape(10.dp)).padding(8.dp)) {
-        Text("APRS  ${a.count} frames" + if (a.badCrc > 0) ", ${a.badCrc} bad CRC" else "", color = Pkt, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+    val tap = if (onMap != null) Modifier.clickable { onMap() } else Modifier
+    Column(modifier.widthIn(max = 360.dp).background(Color(0xCC0A0F16), RoundedCornerShape(10.dp)).then(tap).padding(8.dp)) {
+        Text(
+            "APRS  ${a.count} frames" + (if (a.badCrc > 0) ", ${a.badCrc} bad CRC" else "") + (if (onMap != null) "   ⌖ $pins · map" else ""),
+            color = Pkt, fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+        )
         if (a.frames.isEmpty()) {
             Text("listening (NFM, AFSK 1200)...", color = Dim, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
         }

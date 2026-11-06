@@ -46,6 +46,9 @@ data class AprsFrame(val n: Long, val time: Double, val tnc2: String, val src: S
 /** SSTV decoder: on, the picture being received, how many finished */
 data class SstvState(val on: Boolean = false, val mode: String? = null, val rows: Int = 0, val height: Int = 0, val count: Long = 0)
 
+/** A station on the map (from a decoder plugin or a decoded APRS position) */
+data class Pin(val lat: Double, val lon: Double, val label: String, val time: Double)
+
 data class AprsState(val on: Boolean = false, val count: Long = 0, val badCrc: Long = 0, val frames: List<AprsFrame> = emptyList())
 
 data class Status(
@@ -90,6 +93,8 @@ data class Status(
     /** Decoder plugins on, and their last output lines (text, map pins) */
     val pluginsOn: Boolean = true,
     val plugins: List<String> = emptyList(),
+    /** Map pins from the plugins, latest per station */
+    val pins: List<Pin> = emptyList(),
     val sstv: SstvState = SstvState(),
     /** null when the lab link is off */
     val lab: LabState? = null,
@@ -189,6 +194,9 @@ data class SatDetail(
     val rxHz: Double,
     val now: Double,
     val simulated: Boolean,
+    /** Sub-satellite point (lat, lon, height km) and the ground track (lat, lon), -15 ... +90 min */
+    val sub: Triple<Double, Double, Double>? = null,
+    val ground: List<Pair<Double, Double>> = emptyList(),
 )
 
 /** Talks to the Rust engine: commands, and polled state for the UI. */
@@ -425,6 +433,11 @@ class Engine(dataDir: String) {
                     }
                 }
             } ?: emptyList(),
+            pins = j.optJSONObject("plugins")?.optJSONArray("pins")?.let { a ->
+                (0 until a.length()).mapNotNull { k ->
+                    a.optJSONObject(k)?.let { o -> Pin(o.optDouble("lat"), o.optDouble("lon"), o.optString("label"), o.optDouble("time")) }
+                }
+            } ?: emptyList(),
             lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
                 val ph = l.optJSONObject("phase")
                 fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()
@@ -553,6 +566,10 @@ class Engine(dataDir: String) {
             rxHz = j.optDouble("rx_hz", 0.0),
             now = j.optDouble("now"),
             simulated = j.optBoolean("simulated"),
+            sub = j.optJSONObject("sub")?.let { Triple(it.optDouble("lat"), it.optDouble("lon"), it.optDouble("alt_km")) },
+            ground = j.optJSONArray("ground")?.let { a ->
+                (0 until a.length()).mapNotNull { k -> a.optJSONArray(k)?.let { Pair(it.optDouble(0), it.optDouble(1)) } }
+            } ?: emptyList(),
         )
     }
 

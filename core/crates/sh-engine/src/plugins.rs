@@ -21,7 +21,11 @@ pub struct Host {
     pub errors: Vec<String>,
     /// (number of the last output, the last outputs)
     pub out: (u64, VecDeque<Value>),
+    /// Map pins, the latest per label (station), oldest first
+    pub pins: VecDeque<Value>,
 }
+
+const KEEP_PINS: usize = 200;
 
 impl Host {
     pub fn load() -> Host {
@@ -33,7 +37,7 @@ impl Host {
                 Err(e) => errors.push(e.to_string()),
             }
         }
-        Host { plugins, errors, out: (0, VecDeque::new()) }
+        Host { plugins, errors, out: (0, VecDeque::new()), pins: VecDeque::new() }
     }
 
     pub fn ids(&self) -> Vec<String> {
@@ -114,6 +118,13 @@ impl Host {
                 v["height"] = height.into();
             }
         }
+        if v["kind"] == "map" {
+            self.pins.retain(|p| p["label"] != v["label"]);
+            self.pins.push_back(json!({ "lat": v["lat"], "lon": v["lon"], "label": v["label"], "time": time, "plugin": id }));
+            while self.pins.len() > KEEP_PINS {
+                self.pins.pop_front();
+            }
+        }
         self.out.1.push_back(v);
         while self.out.1.len() > KEEP {
             self.out.1.pop_front();
@@ -122,7 +133,7 @@ impl Host {
 
     pub fn since(&self, since: u64) -> Value {
         json!({
-            "plugins": self.ids(), "errors": self.errors, "count": self.out.0,
+            "plugins": self.ids(), "errors": self.errors, "count": self.out.0, "pins": self.pins,
             "out": self.out.1.iter().filter(|v| v["n"].as_u64().unwrap_or(0) > since).cloned().collect::<Vec<_>>(),
         })
     }
@@ -157,5 +168,10 @@ mod tests {
         assert!(outs.iter().all(|o| o["plugin"] == "aprs-map"));
         let pin = outs.iter().find(|o| o["kind"] == "map").unwrap();
         assert!((pin["lat"].as_f64().unwrap() - 47.497833).abs() < 1e-5);
+        // one pin per station, the latest
+        let pins = h.since(0)["pins"].as_array().unwrap().clone();
+        assert_eq!(pins.len(), 1);
+        assert_eq!(pins[0]["label"], "HA5ABC-7");
+        assert_eq!(pins[0]["time"], 3.0);
     }
 }
