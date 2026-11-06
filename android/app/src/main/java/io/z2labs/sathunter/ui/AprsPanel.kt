@@ -23,10 +23,13 @@ private val Pkt = Color(0xFFFFC857)
 
 /** The last APRS / AX.25 frames, newest at the bottom. */
 @Composable
-fun AprsPanel(a: AprsState, modifier: Modifier = Modifier, plugin: List<String> = emptyList(), pins: Int = 0, onMap: (() -> Unit)? = null) {
+fun AprsPanel(a: AprsState, modifier: Modifier = Modifier, plugin: List<String> = emptyList(), pins: Int = 0, onMap: (() -> Unit)? = null, groundHz: Double? = null) {
     val fmt = SimpleDateFormat("HH:mm:ss", Locale.US)
     val tap = if (onMap != null) Modifier.clickable { onMap() } else Modifier
     Column(modifier.widthIn(max = 360.dp).background(Color(0xCC0A0F16), RoundedCornerShape(10.dp)).then(tap).padding(8.dp)) {
+        if (groundHz != null) {
+            Text("TERRESTRIAL APRS %.3f MHz · no tracking".format(groundHz / 1e6), color = SatYellow, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+        }
         Text(
             "APRS  ${a.count} frames" + (if (a.badCrc > 0) ", ${a.badCrc} bad CRC" else "") + (if (onMap != null) "   ⌖ $pins · map" else ""),
             color = Pkt, fontSize = 11.sp, fontFamily = FontFamily.Monospace,

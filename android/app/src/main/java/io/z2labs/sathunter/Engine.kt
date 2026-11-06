@@ -95,6 +95,9 @@ data class Status(
     val plugins: List<String> = emptyList(),
     /** Map pins from the plugins, latest per station */
     val pins: List<Pin> = emptyList(),
+    /** Terrestrial APRS mode (fixed frequency, no tracking) and its frequency */
+    val groundAprs: Boolean = false,
+    val groundAprsHz: Double = 144.8e6,
     val sstv: SstvState = SstvState(),
     /** null when the lab link is off */
     val lab: LabState? = null,
@@ -333,6 +336,7 @@ class Engine(dataDir: String) {
     fun aprsClear() = async("aprs_clear")
     fun plugins(on: Boolean) = async("plugins", JSONObject().put("on", on))
     fun sstv(on: Boolean) = async("sstv", JSONObject().put("on", on))
+    fun groundAprs(on: Boolean, hz: Double? = null) = async("ground_aprs", JSONObject().put("on", on).apply { if (hz != null) put("hz", hz) })
 
     /** The SSTV picture being received (or the last one), refreshed by the poller while SSTV is on. */
     private val _sstvPic = MutableStateFlow<android.graphics.Bitmap?>(null)
@@ -433,6 +437,8 @@ class Engine(dataDir: String) {
                     }
                 }
             } ?: emptyList(),
+            groundAprs = j.optJSONObject("ground_aprs")?.optBoolean("on") ?: false,
+            groundAprsHz = j.optJSONObject("ground_aprs")?.optDouble("hz", 144.8e6) ?: 144.8e6,
             pins = j.optJSONObject("plugins")?.optJSONArray("pins")?.let { a ->
                 (0 until a.length()).mapNotNull { k ->
                     a.optJSONObject(k)?.let { o -> Pin(o.optDouble("lat"), o.optDouble("lon"), o.optString("label"), o.optDouble("time")) }

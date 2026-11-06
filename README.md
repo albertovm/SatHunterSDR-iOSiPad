@@ -25,6 +25,7 @@ the Android UI, and the lab instruments that replace the sky for repeatable test
 - **Receiver**: GPU spectrum and waterfall, NFM / WFM / AM / USB / LSB / CW, pinch zoom, drag to tune, full-screen mode with floating controls that fade away; satellite labels on the waterfall at their Doppler-shifted frequency.
 - **Decoders**: CW, APRS / AX.25 (AFSK1200, three merged detectors) with a frame list, SSTV (Robot 36, PD120), Luau decoder plugins; checked in CI on real SatNOGS recordings.
 - **World map** (offline): your station, the satellite's footprint and ground track, the APRS stations heard, with distances.
+- **Terrestrial APRS mode** (Settings): the local APRS network on 144.800 MHz (or 144.390 / 145.175 ...), tracking off, every station on the map; for testing the decoder and the map on the ground.
 - **SDRs**: RTL-SDR (bias tee, ppm correction) and ESP32-S3 (ESP-SDR firmware, 2204–2804 MHz, smooth in-stream tuning), plug and play over USB OTG.
 - **IQ recorder**: SDR++ compatible WAV with the receiver settings and the satellite inside.
 - **Updates**: the app finds new GitHub releases and installs them.

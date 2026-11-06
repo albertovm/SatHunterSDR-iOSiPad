@@ -50,6 +50,11 @@ pub struct Config {
     pub plugins: bool,
     /// SSTV decoder (Robot 36, PD120) on the demodulated audio
     pub sstv: bool,
+    /// Terrestrial APRS mode: fixed frequency, no Doppler tracking, the generic APRS plugins
+    /// (for testing the decoder and the map on the local APRS network)
+    pub ground_aprs: bool,
+    /// Its frequency: 144.800 MHz (Europe), 144.390 (North America), 145.175 (Australia) ...
+    pub ground_aprs_hz: f64,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
 }
@@ -87,6 +92,8 @@ impl Default for Config {
             aprs: false,
             plugins: true,
             sstv: false,
+            ground_aprs: false,
+            ground_aprs_hz: 144.800e6,
             freqs: Default::default(),
         }
     }

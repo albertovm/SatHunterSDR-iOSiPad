@@ -216,6 +216,9 @@ enum Cmd {
     Aprs { on: bool },
     /// Forget the decoded APRS frames
     AprsClear,
+    /// Terrestrial APRS mode: on = Doppler tracking off, NFM 12.5 kHz on `hz` (default the last
+    /// one, 144.800 MHz), the APRS decoder on; off = back to the satellites (tracking on)
+    GroundAprs { on: bool, hz: Option<f64> },
     /// Decoder plugins on / off
     Plugins { on: bool },
     /// Plugin output after number `since` (text lines, values, map pins)
@@ -606,6 +609,10 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             i.save();
             *lock(&i.aprs) = if on { Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE)) } else { None };
             Ok(json!({ "aprs": on }))
+        }
+        Cmd::GroundAprs { on, hz } => {
+            ground_aprs(i, on, hz)?;
+            Ok(json!({ "ground_aprs": on, "hz": lock(&i.cfg).ground_aprs_hz }))
         }
         Cmd::AprsClear => {
             *lock(&i.aprs_frames) = (0, VecDeque::new());
@@ -1059,7 +1066,46 @@ fn select(i: &Inner, norad: u64, tx: Option<String>) {
     set_tracking(i, true);
 }
 
+fn ground_aprs(i: &Inner, on: bool, hz: Option<f64>) -> Result<(), String> {
+    {
+        let mut c = lock(&i.cfg);
+        c.ground_aprs = on;
+        if let Some(h) = hz.filter(|h| (50e6..1.3e9).contains(h)) {
+            c.ground_aprs_hz = h;
+        }
+        if on {
+            c.aprs = true;
+        }
+    }
+    if on {
+        set_tracking(i, false);
+        let hz = lock(&i.cfg).ground_aprs_hz;
+        let bw = 12_500.0;
+        {
+            let mut c = lock(&i.cfg);
+            c.mode = Mode::Nfm.name().into();
+            c.bw = bw;
+        }
+        i.bump_params(|p| {
+            p.mode = Mode::Nfm;
+            p.bw = bw;
+        });
+        if lock(&i.aprs).is_none() {
+            *lock(&i.aprs) = Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE));
+        }
+        tune(i, hz)?;
+    } else if lock(&i.cfg).selected.is_some() {
+        set_tracking(i, true);
+    }
+    i.save();
+    Ok(())
+}
+
 fn set_tracking(i: &Inner, on: bool) {
+    if on {
+        // a satellite again: the terrestrial APRS mode ends
+        lock(&i.cfg).ground_aprs = false;
+    }
     let auto = lock(&i.cfg).auto_demod;
     {
         let mut st = lock(&i.sat);
@@ -1397,6 +1443,7 @@ fn status(i: &Inner) -> Value {
         "lab_pin": c.lab_pin,
         "update_req": lock(&i.update_req).0,
         "aprs": aprs_status(i, c.aprs, 20),
+        "ground_aprs": json!({ "on": c.ground_aprs, "hz": c.ground_aprs_hz }),
         "plugins": plugin_status(i, c.plugins, 20),
         "sstv": sstv_status(i, c.sstv),
         "update_prerelease": lock(&i.update_req).1,
@@ -1436,7 +1483,8 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
     }
     let (on, norad) = {
         let c = lock(&i.cfg);
-        (c.plugins, c.selected)
+        // terrestrial APRS: the generic plugins, whatever satellite is selected
+        (c.plugins, if c.ground_aprs { None } else { c.selected })
     };
     if on {
         let mut h = lock(&i.plugins);
@@ -1688,6 +1736,31 @@ mod tests {
         let st = cmd(&e, r#"{"cmd":"status"}"#);
         assert_eq!(st["vfo_hz"].as_f64(), Some(102e6));
         assert_eq!(st["center_tuning"], true);
+    }
+
+    #[test]
+    fn ground_aprs_mode_tunes_and_stops_tracking() {
+        let d = tmpdir("gaprs");
+        write_iss(&d);
+        Config { update_days: 0.0, ..Config::default() }.save(&d.join("config.json"));
+        let e = Engine::new(&d);
+        cmd(&e, r#"{"cmd":"source","id":"demo"}"#);
+        cmd(&e, r#"{"cmd":"sat_select","norad":25544}"#);
+        assert_eq!(cmd(&e, r#"{"cmd":"ground_aprs","on":true}"#)["ok"], true);
+        let st = cmd(&e, r#"{"cmd":"status"}"#);
+        assert_eq!(st["vfo_hz"].as_f64(), Some(144.8e6));
+        assert_eq!(st["mode"], "NFM");
+        assert_eq!(st["aprs"]["on"], true);
+        assert_eq!(st["ground_aprs"]["on"], true);
+        assert_eq!(cmd(&e, r#"{"cmd":"sat_detail"}"#)["tracking"], false);
+        // another frequency, remembered
+        cmd(&e, r#"{"cmd":"ground_aprs","on":true,"hz":144390000}"#);
+        assert_eq!(cmd(&e, r#"{"cmd":"status"}"#)["vfo_hz"].as_f64(), Some(144.39e6));
+        // tracking a satellite again ends the mode
+        cmd(&e, r#"{"cmd":"sat_track","on":true}"#);
+        let st = cmd(&e, r#"{"cmd":"status"}"#);
+        assert_eq!(st["ground_aprs"]["on"], false);
+        assert_eq!(st["ground_aprs"]["hz"].as_f64(), Some(144.39e6));
     }
 
     #[test]

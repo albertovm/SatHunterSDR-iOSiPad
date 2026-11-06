@@ -3,6 +3,7 @@ package io.z2labs.sathunter.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -188,6 +189,24 @@ fun SettingsScreen(
                 Text("ISS SSTV events on 145.800 MHz, in NFM. The picture builds up in a panel on the receiver screen.", color = Dim, fontSize = 12.sp)
             }
             Switch(checked = st.sstv.on, onCheckedChange = { engine.sstv(it) })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Terrestrial APRS mode", fontSize = 14.sp, color = if (st.groundAprs) SatYellow else Color.Unspecified)
+                Text(
+                    "For testing: the local APRS network on a fixed frequency, Doppler tracking off, all stations on the map. " +
+                        "Tracking a satellite again ends it.",
+                    color = Dim, fontSize = 12.sp,
+                )
+            }
+            Switch(checked = st.groundAprs, onCheckedChange = { engine.groundAprs(it) })
+        }
+        if (st.groundAprs) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                for ((hz, name) in listOf(144.800e6 to "144.800 Europe", 144.390e6 to "144.390 N. America", 145.175e6 to "145.175 Australia", 144.640e6 to "144.640 China", 145.825e6 to "145.825 ISS / sats")) {
+                    FilterChip(selected = kotlin.math.abs(st.groundAprsHz - hz) < 1.0, onClick = { engine.groundAprs(true, hz) }, label = { Text(name) })
+                }
+            }
         }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))

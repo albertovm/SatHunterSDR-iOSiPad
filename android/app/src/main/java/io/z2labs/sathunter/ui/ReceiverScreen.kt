@@ -380,11 +380,11 @@ fun ReceiverScreen(
             if (st.sstv.on) SstvPanel(st.sstv, sstvPic, Modifier.align(Alignment.CenterEnd).padding(end = 6.dp))
             if (st.aprs.on) {
                 AprsPanel(
-                    st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), pins = mapPins(st).size, onMap = { mapOpen = true },
+                    st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), pins = mapPins(st).size, onMap = { mapOpen = true }, groundHz = if (st.groundAprs) st.groundAprsHz else null,
                     modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp),
                 )
             }
-            if (mapOpen) MapDialog(st, detail) { mapOpen = false }
+            if (mapOpen) MapDialog(st, if (st.groundAprs) null else detail) { mapOpen = false }
 
             if (radarOn && detail != null) {
                 Radar(
