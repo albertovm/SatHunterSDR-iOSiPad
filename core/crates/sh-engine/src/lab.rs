@@ -8,6 +8,7 @@
 //!   GET  /status                 the engine status
 //!   POST /cmd                    any engine command (the app's JSON API)
 //!   GET  /measure?hz=&bw=&secs=  channel at `hz`: peak level, noise floor, SNR, frequency offset
+//!   GET  /spectrum?secs=         the spectrum the app shows, averaged over `secs`: centre, rate, dB per bin
 //!   GET  /cw?secs=               CW decode of the last `secs` of demodulated audio
 //!   GET  /iq?secs=               `secs` of IQ as an SDR++ style WAV (binary)
 //!   GET  /audio?secs=            `secs` of demodulated audio, 16-bit mono WAV at 48 kHz
@@ -258,6 +259,7 @@ fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
             Err(e) => Err(format!("bad command: {e}")),
         },
         ("GET", "/measure") => measure(i, num("hz", f64::NAN), num("bw", 2000.0), num("secs", 2.0).clamp(0.2, 30.0)),
+        ("GET", "/spectrum") => spectrum(i, num("secs", 1.0).clamp(0.2, 30.0)),
         ("GET", "/cw") => cw(i, num("secs", 20.0).clamp(2.0, 60.0)),
         ("GET", "/iq") => return iq(i, rq, num("secs", 2.0).clamp(0.1, 30.0)),
         ("GET", "/audio") => return audio(i, rq, num("secs", 2.0).clamp(0.1, 120.0)),
@@ -311,6 +313,27 @@ fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
 }
 
 /// Average the spectrum over `secs` (fresh rows only) and measure the channel at `hz`.
+/// The display spectrum (power average of the rows over `secs`), as the app draws it.
+fn spectrum(i: &Inner, secs: f64) -> Result<Value, String> {
+    if !i.running.load(Ordering::SeqCst) {
+        return Err("the receiver is not running".into());
+    }
+    lock(&i.tap).rows.clear();
+    std::thread::sleep(Duration::from_secs_f64(secs));
+    let rows: Vec<(f64, f64, Vec<f32>)> = lock(&i.tap).rows.iter().cloned().collect();
+    let Some((c, rate, last)) = rows.last().cloned() else { return Err("no spectrum rows (receiver stalled?)".into()) };
+    let n = last.len();
+    let same: Vec<&Vec<f32>> = rows.iter().filter(|r| (r.0 - c).abs() < 0.5 && r.1 == rate && r.2.len() == n).map(|r| &r.2).collect();
+    let mut avg = vec![0.0f64; n];
+    for r in &same {
+        for (a, v) in avg.iter_mut().zip(r.iter()) {
+            *a += 10f64.powf(*v as f64 / 10.0);
+        }
+    }
+    let db: Vec<f64> = avg.iter().map(|a| ((10.0 * (a / same.len() as f64).max(1e-30).log10()) * 100.0).round() / 100.0).collect();
+    Ok(json!({ "center_hz": c, "rate": rate, "bins": n, "rows": same.len(), "db": db }))
+}
+
 fn measure(i: &Inner, hz: f64, bw: f64, secs: f64) -> Result<Value, String> {
     if !i.running.load(Ordering::SeqCst) {
         return Err("the receiver is not running".into());
