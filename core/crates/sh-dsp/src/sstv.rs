@@ -229,6 +229,8 @@ pub struct SstvDecoder {
     next_sync: f64,
     period_samples: f64,
     period: usize,
+    /// Scan periods in a row without a sync where expected
+    missed: usize,
     cur: Option<SstvImage>,
     /// Robot 36: the previous line's luminance and chroma (R-Y)
     y_prev: Vec<u8>,
@@ -256,6 +258,7 @@ impl SstvDecoder {
             next_sync: 0.0,
             period_samples: 0.0,
             period: 0,
+            missed: 0,
             cur: None,
             y_prev: Vec::new(),
             chroma_prev: Vec::new(),
@@ -352,6 +355,7 @@ impl SstvDecoder {
         let (w, h) = m.size();
         self.mode = Some(m);
         self.period = 0;
+        self.missed = 0;
         self.period_samples = m.period() * self.fs;
         // the VIS stop bit ended about now (1 ms resolution)
         self.next_sync = self.n as f64;
@@ -387,8 +391,11 @@ impl SstvDecoder {
         let sync_len = m.sync() * self.fs;
         let step = (self.fs / 4000.0).max(1.0);
         let mut best = (f64::MAX, self.next_sync);
-        let mut t = self.next_sync - 0.008 * self.fs;
-        while t <= self.next_sync + 0.008 * self.fs {
+        // after 3 periods without a sync the lock is lost (a bad start, a fade, a dropped
+        // block): search the whole period once to find the syncs again
+        let reach = if self.missed >= 3 { 0.45 * self.period_samples } else { 0.008 * self.fs };
+        let mut t = self.next_sync - reach;
+        while t <= self.next_sync + reach {
             if let Some(v) = self.mean(t, sync_len) {
                 if v < best.0 {
                     best = (v, t);
@@ -400,8 +407,10 @@ impl SstvDecoder {
         // a 2nd-order loop on the sync times: fast for the first periods, then it trusts its
         // prediction (and learns the sender's clock) so one noisy sync cannot shift a line
         let err = best.1 - self.next_sync;
+        let relock = found && self.missed >= 3;
+        self.missed = if found { 0 } else { self.missed + 1 };
         let t0 = if found {
-            if self.period < 4 {
+            if self.period < 4 || relock {
                 self.next_sync + 0.7 * err
             } else {
                 self.period_samples += 0.01 * err;

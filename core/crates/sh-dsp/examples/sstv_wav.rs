@@ -21,14 +21,17 @@ fn main() {
         dec.get_or_insert_with(|| SstvDecoder::new(fs)).process(&s);
     }
     let mut d = dec.unwrap();
-    let img = d.done.pop_front().or_else(|| d.current().cloned());
-    match img {
-        Some(i) => {
-            println!("{}: {} rows, syncs {}", i.mode.name(), i.rows, i.syncs_found);
-            let mut f = format!("P6\n{} {}\n255\n", i.width, i.height).into_bytes();
-            f.extend_from_slice(&i.rgb);
-            std::fs::write(&a[1], f).unwrap();
-        }
-        None => println!("no picture"),
+    let mut pics: Vec<_> = d.done.drain(..).collect();
+    if let Some(c) = d.current() {
+        pics.push(c.clone());
+    }
+    if pics.is_empty() {
+        println!("no picture");
+    }
+    for (k, i) in pics.iter().enumerate() {
+        println!("#{k} {}: {} rows, syncs {}", i.mode.name(), i.rows, i.syncs_found);
+        let mut f = format!("P6\n{} {}\n255\n", i.width, i.height).into_bytes();
+        f.extend_from_slice(&i.rgb);
+        std::fs::write(a[1].replace(".ppm", &format!("_{k}.ppm")), f).unwrap();
     }
 }
