@@ -16,12 +16,12 @@ from lab import Phone, Vsg60Gen, wait_idle  # noqa: E402
 W, H = 320, 240
 
 
-def test_image():
+def test_image(w=W, h=H):
     bars = [(255, 255, 255), (255, 255, 0), (0, 255, 255), (0, 255, 0), (255, 0, 255), (255, 0, 0), (0, 0, 255), (0, 0, 0)]
-    img = np.zeros((H, W, 3), np.uint8)
-    for y in range(H):
-        for x in range(W):
-            img[y, x] = bars[x * 8 // W] if y < H // 2 else ((230, 230, 230) if ((x // 20) + (y // 20)) % 2 == 0 else (20, 20, 120))
+    img = np.zeros((h, w, 3), np.uint8)
+    for y in range(h):
+        for x in range(w):
+            img[y, x] = bars[x * 8 // w] if y < h // 2 else ((230, 230, 230) if ((x // (w // 16)) + (y // (w // 16))) % 2 == 0 else (20, 20, 120))
     return img
 
 
@@ -59,6 +59,35 @@ def robot36_tones(img):
     return t
 
 
+def vis_tones(code):
+    t = [(0, 0.1), (1900, 0.3), (1200, 0.01), (1900, 0.3), (1200, 0.03)]
+    ones = 0
+    for b in range(7):
+        one = (code >> b) & 1
+        ones += one
+        t.append((1100 if one else 1300, 0.03))
+    return t + [(1100 if ones % 2 else 1300, 0.03), (1200, 0.03)]
+
+
+def pd120_tones(img):
+    """PD120 (VIS 95): per line pair sync 20 ms, porch 2.08 ms, Y0, R-Y, B-Y, Y1 of 121.6 ms each."""
+    h, w, _ = img.shape
+    lev = lambda v: 1500 + 800 * v / 255  # noqa: E731
+    t = vis_tones(95)
+    l = 0.1216
+    for p in range(h // 2):
+        y0, y1 = 2 * p, 2 * p + 1
+        c0 = [ycc(img[y0, x]) for x in range(w)]
+        c1 = [ycc(img[y1, x]) for x in range(w)]
+        t += [(1200, 0.020), (1500, 0.00208)]
+        t += [(lev(c0[x][0]), l / w) for x in range(w)]
+        t += [(lev((c0[x][1] + c1[x][1]) / 2), l / w) for x in range(w)]
+        t += [(lev((c0[x][2] + c1[x][2]) / 2), l / w) for x in range(w)]
+        t += [(lev(c1[x][0]), l / w) for x in range(w)]
+    t.append((0, 0.3))
+    return t
+
+
 def fm_iq(tones, rate, dev, audio_fs=48000.0):
     """Audio of the tones (phase-continuous), then FM at `dev` Hz deviation, resampled to `rate`."""
     n_total = int(round(sum(s for _, s in tones) * audio_fs))
@@ -86,20 +115,23 @@ def main():
     ap.add_argument("--dev", type=float, default=3000.0)
     ap.add_argument("--levels", default="-100,-110,-115,-118,-120")
     ap.add_argument("--rate", type=float, default=25e3, help="ARB rate (25 kS/s plays at the right speed on the VSG60; 20 does not)")
+    ap.add_argument("--mode", default="robot36", choices=["robot36", "pd120"])
     ap.add_argument("--name", default="sstv")
     a = ap.parse_args()
     root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     out = os.path.join(root, "measurements", time.strftime("%Y-%m-%d_%H%M") + "_" + a.name)
     os.makedirs(out, exist_ok=True)
-    img = test_image()
+    w, h = (640, 496) if a.mode == "pd120" else (W, H)
+    img = test_image(w, h)
     with open(os.path.join(out, "sent.ppm"), "wb") as fh:
-        fh.write(f"P6\n{W} {H}\n255\n".encode() + img.tobytes())
-    iq, secs = fm_iq(robot36_tones(img), a.rate, a.dev)
-    print(f"Robot 36 waveform: {secs:.1f} s, {len(iq)} samples at {a.rate / 1e3:g} kS/s")
+        fh.write(f"P6\n{w} {h}\n255\n".encode() + img.tobytes())
+    iq, secs = fm_iq(pd120_tones(img) if a.mode == "pd120" else robot36_tones(img), a.rate, a.dev)
+    mname = "PD120" if a.mode == "pd120" else "Robot 36"
+    print(f"{mname} waveform: {secs:.1f} s, {len(iq)} samples at {a.rate / 1e3:g} kS/s")
     phone = Phone(a.phone, a.pin)
     host, port = (a.vsg.split(":") + ["5124"])[:2]
     gen = Vsg60Gen(a.atten, host, int(port), r"C:\sathunter_lab", None)
-    res = {"started": time.strftime("%Y-%m-%d %H:%M:%S"), "freq_hz": a.freq, "deviation_hz": a.dev, "mode": "Robot 36", "rows": []}
+    res = {"started": time.strftime("%Y-%m-%d %H:%M:%S"), "freq_hz": a.freq, "deviation_hz": a.dev, "mode": mname, "rows": []}
 
     def save():
         with open(os.path.join(out, "results.json"), "w", encoding="utf-8") as fh:
@@ -115,10 +147,10 @@ def main():
         phone.cmd(cmd="sstv", on=True)
         levels = [float(x) for x in a.levels.split(",")]
         for k, lv in enumerate(levels):
-            phone.phase("SSTV", k + 1, len(levels), f"Robot 36 at {lv:.0f} dBm")
+            phone.phase("SSTV", k + 1, len(levels), f"{mname} at {lv:.0f} dBm")
             wait_idle(phone)
             c0 = phone._req("GET", "/sstv")["count"]
-            gen.play(a.freq, lv, "sathunter_sstv_r36.cf32", list(iq), a.rate)  # the ARB loops; the decoder waits for the next VIS
+            gen.play(a.freq, lv, f"sathunter_sstv_{a.mode}.cf32", list(iq), a.rate)  # the ARB loops; the decoder waits for the next VIS
             t0 = time.time()
             got = None
             while time.time() - t0 < 2.4 * secs + 10:
@@ -133,10 +165,10 @@ def main():
                 with urllib.request.urlopen(f"{phone.base}/sstv.ppm?pin={phone.pin}", timeout=30) as r:
                     ppm = r.read()
                 hdr_end = ppm.index(b"255\n") + 4
-                rx = np.frombuffer(ppm[hdr_end:], np.uint8).reshape(H, W, 3)
+                rx = np.frombuffer(ppm[hdr_end:], np.uint8).reshape(h, w, 3)
                 with open(os.path.join(out, f"received_{int(-lv)}dBm.ppm"), "wb") as fh:
                     fh.write(ppm)
-                inner = (slice(2, H - 2), slice(4, W - 4))
+                inner = (slice(2, h - 2), slice(4, w - 4))
                 row["mean_error"] = float(np.abs(rx[inner].astype(float) - img[inner].astype(float)).mean())
                 row["mode"] = got.get("last", {}).get("mode")
             res["rows"].append(row)
