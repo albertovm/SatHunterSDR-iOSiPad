@@ -8,7 +8,7 @@ function on_frame(frame)
   end
   show.text(frame.src .. " > " .. frame.dst .. via .. ": " .. frame.info)
 
-  local lat, lon = aprs.position(frame.info)
+  local lat, lon = aprs.position(frame.info, frame.dst)
   if lat then
     show.map(lat, lon, frame.src)
   end

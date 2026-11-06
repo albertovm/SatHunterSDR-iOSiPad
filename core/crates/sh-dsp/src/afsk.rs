@@ -185,6 +185,55 @@ pub fn afsk_audio(levels: &[u8], fs: f64) -> Vec<f32> {
     out
 }
 
+/// Latitude, longitude from a Mic-E report (info starts with ` or '): the latitude and the
+/// N/S, longitude offset and E/W flags are in the destination address, the longitude in the info.
+pub fn mic_e_position(dst: &str, info: &str) -> Option<(f64, f64)> {
+    let d = dst.split('-').next()?.as_bytes();
+    let b = info.as_bytes();
+    if d.len() != 6 || b.len() < 4 || !matches!(b[0], b'`' | b'\'' | 0x1c | 0x1d) {
+        return None;
+    }
+    let digit = |c: u8| -> Option<u8> {
+        match c {
+            b'0'..=b'9' => Some(c - b'0'),
+            b'A'..=b'J' => Some(c - b'A'),
+            b'P'..=b'Y' => Some(c - b'P'),
+            b'K' | b'L' | b'Z' => Some(0), // position ambiguity: a blank digit
+            _ => None,
+        }
+    };
+    let mut v = [0u8; 6];
+    for k in 0..6 {
+        v[k] = digit(d[k])?;
+    }
+    let mut lat = (v[0] * 10 + v[1]) as f64 + ((v[2] * 10 + v[3]) as f64 + (v[4] * 10 + v[5]) as f64 / 100.0) / 60.0;
+    if d[3] < b'P' {
+        lat = -lat; // south
+    }
+    let mut deg = b[1] as i32 - 28;
+    if d[4] >= b'P' {
+        deg += 100;
+    }
+    if (180..=189).contains(&deg) {
+        deg -= 80;
+    } else if (190..=199).contains(&deg) {
+        deg -= 190;
+    }
+    let mut min = b[2] as i32 - 28;
+    if min >= 60 {
+        min -= 60;
+    }
+    let hun = b[3] as i32 - 28;
+    if !(0..=179).contains(&deg) || !(0..=59).contains(&min) || !(0..=99).contains(&hun) {
+        return None;
+    }
+    let mut lon = deg as f64 + (min as f64 + hun as f64 / 100.0) / 60.0;
+    if d[5] >= b'P' {
+        lon = -lon; // west
+    }
+    (lat.abs() <= 90.0).then_some((lat, lon))
+}
+
 /// Latitude, longitude from an APRS position report (uncompressed: `!` `=` or `/` `@` with a
 /// timestamp), None when the info field has no position.
 pub fn aprs_position(info: &str) -> Option<(f64, f64)> {

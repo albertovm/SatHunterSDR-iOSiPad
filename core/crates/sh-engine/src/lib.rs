@@ -1471,7 +1471,8 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
         for f in &frames {
             q.0 += 1;
             let n = q.0;
-            let pos = sh_dsp::afsk::aprs_position(&String::from_utf8_lossy(&f.info));
+            let info = String::from_utf8_lossy(&f.info);
+            let pos = sh_dsp::afsk::aprs_position(&info).or_else(|| sh_dsp::afsk::mic_e_position(&f.dst, &info));
             q.1.push_back(json!({
                 "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
                 "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),

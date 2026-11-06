@@ -9,7 +9,7 @@ function on_frame(frame)
   show.text(frame.src .. " > " .. frame.dst .. ": " .. frame.info)
 
   -- APRS positions start with ! or = (or / and @ with a time stamp)
-  local lat, lon = aprs.position(frame.info)
+  local lat, lon = aprs.position(frame.info, frame.dst)
   if lat then
     show.map(lat, lon, frame.src)
   end

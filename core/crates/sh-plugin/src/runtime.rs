@@ -80,6 +80,55 @@ impl Frame {
     }
 }
 
+/// Latitude, longitude from a Mic-E report (info starts with ` or '): the latitude and the
+/// N/S, longitude offset and E/W flags are in the destination address, the longitude in the info.
+pub fn mic_e_position(dst: &str, info: &str) -> Option<(f64, f64)> {
+    let d = dst.split('-').next()?.as_bytes();
+    let b = info.as_bytes();
+    if d.len() != 6 || b.len() < 4 || !matches!(b[0], b'`' | b'\'' | 0x1c | 0x1d) {
+        return None;
+    }
+    let digit = |c: u8| -> Option<u8> {
+        match c {
+            b'0'..=b'9' => Some(c - b'0'),
+            b'A'..=b'J' => Some(c - b'A'),
+            b'P'..=b'Y' => Some(c - b'P'),
+            b'K' | b'L' | b'Z' => Some(0), // position ambiguity: a blank digit
+            _ => None,
+        }
+    };
+    let mut v = [0u8; 6];
+    for k in 0..6 {
+        v[k] = digit(d[k])?;
+    }
+    let mut lat = (v[0] * 10 + v[1]) as f64 + ((v[2] * 10 + v[3]) as f64 + (v[4] * 10 + v[5]) as f64 / 100.0) / 60.0;
+    if d[3] < b'P' {
+        lat = -lat; // south
+    }
+    let mut deg = b[1] as i32 - 28;
+    if d[4] >= b'P' {
+        deg += 100;
+    }
+    if (180..=189).contains(&deg) {
+        deg -= 80;
+    } else if (190..=199).contains(&deg) {
+        deg -= 190;
+    }
+    let mut min = b[2] as i32 - 28;
+    if min >= 60 {
+        min -= 60;
+    }
+    let hun = b[3] as i32 - 28;
+    if !(0..=179).contains(&deg) || !(0..=59).contains(&min) || !(0..=99).contains(&hun) {
+        return None;
+    }
+    let mut lon = deg as f64 + (min as f64 + hun as f64 / 100.0) / 60.0;
+    if d[5] >= b'P' {
+        lon = -lon; // west
+    }
+    (lat.abs() <= 90.0).then_some((lat, lon))
+}
+
 /// Latitude, longitude from an APRS position report (uncompressed: `!` `=` or `/` `@` with a
 /// timestamp), None when the info field has no position.
 pub fn aprs_position(info: &str) -> Option<(f64, f64)> {
@@ -209,7 +258,8 @@ impl Plugin {
         g.set("bytes", bytes)?;
 
         let aprs = lua.create_table()?;
-        aprs.set("position", lua.create_function(|_, info: String| Ok(match aprs_position(&info) {
+        // aprs.position(info [, dst]): with the destination address Mic-E reports work too
+        aprs.set("position", lua.create_function(|_, (info, dst): (String, Option<String>)| Ok(match aprs_position(&info).or_else(|| mic_e_position(dst.as_deref().unwrap_or(""), &info)) {
             Some((a, b)) => (Some(a), Some(b)),
             None => (None, None),
         }))?)?;
@@ -277,6 +327,10 @@ mod tests {
         assert!(aprs_position("@092345z3345.67S/07012.34W_").map(|(a, b)| a < 0.0 && b < 0.0).unwrap());
         assert_eq!(aprs_position(":HA5XYZ   :hello"), None);
         assert_eq!(aprs_position("!99"), None);
+        // Mic-E, HA5UDS-7 heard in Budapest (field log 2026-11-06)
+        let (lat, lon) = mic_e_position("TWSS85", "`/^;l!J[/`\"5D}_3\r").unwrap();
+        assert!((lat - (47.0 + 33.85 / 60.0)).abs() < 1e-9 && (lon - (19.0 + 6.31 / 60.0)).abs() < 1e-9, "{lat} {lon}");
+        assert_eq!(mic_e_position("APRS", "`/^;l"), None);
     }
 
     #[test]
