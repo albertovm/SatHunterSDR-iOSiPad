@@ -26,6 +26,7 @@
     }
   ],
   "plugins": [
-    { "id": "iss-aprs", "path": "plugins/iss-aprs" }
+    { "id": "iss-aprs", "path": "plugins/iss-aprs" },
+    { "id": "aprs-map", "path": "plugins/aprs-map" }
   ]
 }

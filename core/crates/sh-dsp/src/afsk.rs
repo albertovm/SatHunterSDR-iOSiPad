@@ -8,6 +8,7 @@
 //! CUBEBUG-2 recording showed), HDLC removes the bit stuffing, the CRC-16 (X.25) checks the frame.
 
 use crate::Complex32;
+use rustfft::num_complex::Complex;
 use std::collections::VecDeque;
 
 const MARK: f64 = 1200.0;
@@ -231,13 +232,21 @@ pub struct AfskParams {
     /// Repair frames with a bad CRC by flipping one bit or two adjacent bits (one NRZI line error)
     /// when the addresses already parse; the CRC then has to match
     pub fix_bits: bool,
+    /// Tone detector instead of the FM discriminator: mark and space magnitude over one bit
+    /// (two sliding correlators). Simulated: no better than the discriminator (49 dB-Hz: 65 %
+    /// vs 85 %, 50 dB-Hz: 95 % both), kept as an option for real audio with twist
+    pub tones: bool,
+    /// Run two more detectors beside this one (the tone detector, and the discriminator with a
+    /// wide low-pass) and merge their frames: real recordings differ in twist, de-emphasis and
+    /// audio bandwidth, and each detector wins on some of them (SatNOGS test vectors, testdata/)
+    pub multi: bool,
 }
 
 impl Default for AfskParams {
     fn default() -> Self {
         // Simulated (examples/aprs_sim.rs, FM AFSK + white noise): the narrower low-pass and the
         // bit repair move the 90 % packet point from about 50.2 to 49.4 dB-Hz C/N0
-        AfskParams { lp_cut: 650.0, lp_trans: 500.0, smooth: 0.5, pll_gain: 0.3, deemph_hz: 0.0, fix_bits: true }
+        AfskParams { lp_cut: 650.0, lp_trans: 500.0, smooth: 0.5, pll_gain: 0.3, deemph_hz: 0.0, fix_bits: true, tones: false, multi: true }
     }
 }
 
@@ -253,6 +262,12 @@ pub struct AfskDecoder {
     lp: Vec<f32>,
     hist: VecDeque<Complex32>,
     last: Complex32,
+    // tone detector: per-tone phase and step, sliding one-bit sums, long-term level per tone
+    tph: [f64; 2],
+    tstep: [f64; 2],
+    tbuf: VecDeque<[Complex<f64>; 2]>,
+    tsum: [Complex<f64>; 2],
+    tn: usize,
     // bit smoothing (half a bit)
     dsum: f32,
     dwin: VecDeque<f32>,
@@ -277,6 +292,11 @@ pub struct AfskDecoder {
     pub bad_crc: u64,
     /// Frames repaired by a bit flip
     pub fixed: u64,
+    /// The extra detectors (`multi`), and the frames seen lately (sample count, raw) so a frame
+    /// two detectors decode is reported once
+    alt: Vec<AfskDecoder>,
+    seen: VecDeque<(u64, Vec<u8>)>,
+    samples: u64,
 }
 
 impl AfskDecoder {
@@ -298,6 +318,11 @@ impl AfskDecoder {
             hist: VecDeque::from(vec![Complex32::new(0.0, 0.0); taps.len()]),
             lp: taps,
             last: Complex32::new(1.0, 0.0),
+            tph: [0.0; 2],
+            tstep: [2.0 * std::f64::consts::PI * MARK / fs, 2.0 * std::f64::consts::PI * SPACE / fs],
+            tbuf: VecDeque::new(),
+            tsum: [Complex::new(0.0, 0.0); 2],
+            tn: (fs / BAUD).round().max(2.0) as usize,
             dsum: 0.0,
             dwin_n: ((fs / BAUD) * prm.smooth).round().max(1.0) as usize,
             dwin: VecDeque::new(),
@@ -315,6 +340,41 @@ impl AfskDecoder {
             frames: VecDeque::new(),
             bad_crc: 0,
             fixed: 0,
+            alt: if prm.multi {
+                let one = AfskParams { multi: false, ..prm };
+                vec![
+                    AfskDecoder::with_params(fs, AfskParams { tones: true, ..one }),
+                    AfskDecoder::with_params(fs, AfskParams { lp_cut: 3000.0, ..one }),
+                ]
+            } else {
+                Vec::new()
+            },
+            seen: VecDeque::new(),
+            samples: 0,
+        }
+    }
+
+    /// Frames from all detectors in this chunk: each new one once (same bytes within 1 s = same frame).
+    fn merge(&mut self, before: usize) {
+        let window = self.fs as u64;
+        let now = self.samples;
+        while self.seen.front().is_some_and(|(t, _)| now.saturating_sub(*t) > window) {
+            self.seen.pop_front();
+        }
+        let mine: Vec<Ax25Frame> = self.frames.drain(before.min(self.frames.len())..).collect();
+        let mut alt: Vec<Ax25Frame> = Vec::new();
+        for d in &mut self.alt {
+            alt.extend(d.frames.drain(..));
+        }
+        for f in mine.into_iter().chain(alt) {
+            if self.seen.iter().any(|(_, r)| *r == f.raw) {
+                continue;
+            }
+            self.seen.push_back((now, f.raw.clone()));
+            self.frames.push_back(f);
+        }
+        while self.frames.len() > 100 {
+            self.frames.pop_front();
         }
     }
 
@@ -324,6 +384,20 @@ impl AfskDecoder {
 
     /// Feed audio samples; decoded frames collect in `frames`.
     pub fn process(&mut self, audio: &[f32]) {
+        let before = self.frames.len();
+        self.run(audio);
+        self.samples += audio.len() as u64;
+        if self.alt.is_empty() {
+            return;
+        }
+        for d in &mut self.alt {
+            d.run(audio);
+            self.fixed += std::mem::take(&mut d.fixed);
+        }
+        self.merge(before);
+    }
+
+    fn run(&mut self, audio: &[f32]) {
         for &a in audio {
             let a = if self.de_a > 0.0 {
                 self.de_y = self.de_a * self.de_y + (1.0 - self.de_a) * a;
@@ -331,6 +405,12 @@ impl AfskDecoder {
             } else {
                 a
             };
+            if self.prm.tones {
+                let d = self.tone_metric(a);
+                self.dsum = d;
+                self.decide();
+                continue;
+            }
             // mix down by 1700 Hz and low-pass
             let (s, c) = self.nco_ph.sin_cos();
             self.nco_ph += self.nco_step;
@@ -351,19 +431,48 @@ impl AfskDecoder {
             if self.dwin.len() > self.dwin_n {
                 self.dsum -= self.dwin.pop_front().unwrap();
             }
-            let mark = self.dsum < 0.0;
-            // DPLL: sample when the phase wraps; a transition pulls the phase towards 0.5
-            if mark != self.prev_sign {
-                self.prev_sign = mark;
-                self.pll += (0.5 - self.pll) * self.prm.pll_gain;
-            }
-            self.pll += self.pll_step;
-            if self.pll >= 1.0 {
-                self.pll -= 1.0;
-                let c = self.dsum.abs();
-                self.bit(mark, c);
-            }
+            self.decide();
         }
+    }
+
+    /// Clock recovery and bit decision on the current detector output (`dsum`: < 0 = mark).
+    fn decide(&mut self) {
+        let mark = self.dsum < 0.0;
+        // DPLL: sample when the phase wraps; a transition pulls the phase towards 0.5
+        if mark != self.prev_sign {
+            self.prev_sign = mark;
+            self.pll += (0.5 - self.pll) * self.prm.pll_gain;
+        }
+        self.pll += self.pll_step;
+        if self.pll >= 1.0 {
+            self.pll -= 1.0;
+            let c = self.dsum.abs();
+            self.bit(mark, c);
+        }
+    }
+
+    /// Tone detector: |space| - |mark| over the last bit.
+    fn tone_metric(&mut self, a: f32) -> f32 {
+        let a = a as f64;
+        let mut p = [Complex::new(0.0, 0.0); 2];
+        for k in 0..2 {
+            let (s, c) = self.tph[k].sin_cos();
+            self.tph[k] += self.tstep[k];
+            if self.tph[k] > std::f64::consts::PI {
+                self.tph[k] -= 2.0 * std::f64::consts::PI;
+            }
+            p[k] = Complex::new(a * c, -a * s);
+            self.tsum[k] += p[k];
+        }
+        self.tbuf.push_back(p);
+        if self.tbuf.len() > self.tn {
+            let o = self.tbuf.pop_front().unwrap();
+            self.tsum[0] -= o[0];
+            self.tsum[1] -= o[1];
+        }
+        // Plain magnitude difference: scaling each tone by its long-term level (twist
+        // equalisation) cost 1-2 dB in the simulation (noisy level estimates)
+        (self.tsum[1].norm() - self.tsum[0].norm()) as f32
     }
 
     fn bit(&mut self, level: bool, conf: f32) {
@@ -427,7 +536,7 @@ impl AfskDecoder {
             if crc16(body) == got {
                 if let Some(f) = Ax25Frame::parse(body) {
                     self.frames.push_back(f);
-                    while self.frames.len() > 100 {
+                    while !self.prm.multi && self.frames.len() > 100 {
                         self.frames.pop_front();
                     }
                 }

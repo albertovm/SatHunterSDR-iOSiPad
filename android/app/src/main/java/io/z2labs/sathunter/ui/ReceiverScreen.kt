@@ -93,6 +93,7 @@ private val Glass = Color(0xB30A0F16)
 @Composable
 fun ReceiverScreen(
     st: Status,
+    sstvPic: android.graphics.Bitmap? = null,
     detail: SatDetail?,
     pose: Pose,
     compassOn: Boolean,
@@ -114,6 +115,7 @@ fun ReceiverScreen(
     var viewLo by remember { mutableFloatStateOf(0f) }
     var viewHi by remember { mutableFloatStateOf(1f) }
     var radarLarge by remember { mutableStateOf(false) }
+    var mapOpen by remember { mutableStateOf(false) }
     // Spectrum / waterfall split, dragged with the handle on the divider, kept between runs
     val prefs = LocalContext.current.getSharedPreferences("ui", android.content.Context.MODE_PRIVATE)
     var split by remember { mutableFloatStateOf(prefs.getFloat("split", 0.32f).coerceIn(0.12f, 0.75f)) }
@@ -375,7 +377,14 @@ fun ReceiverScreen(
             }
 
             st.lab?.let { LabConsole(it, Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = if (overlay) 64.dp else 6.dp)) }
-            if (st.aprs.on) AprsPanel(st.aprs, Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp))
+            if (st.sstv.on) SstvPanel(st.sstv, sstvPic, Modifier.align(Alignment.CenterEnd).padding(end = 6.dp))
+            if (st.aprs.on) {
+                AprsPanel(
+                    st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), pins = mapPins(st).size, onMap = { mapOpen = true }, groundHz = if (st.groundAprs) st.groundAprsHz else null,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp),
+                )
+            }
+            if (mapOpen) MapDialog(st, if (st.groundAprs) null else detail) { mapOpen = false }
 
             if (radarOn && detail != null) {
                 Radar(

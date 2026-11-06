@@ -43,6 +43,12 @@ data class Rec(val name: String, val secs: Double, val bytes: Long, val dropped:
 
 /** One decoded APRS / AX.25 frame */
 data class AprsFrame(val n: Long, val time: Double, val tnc2: String, val src: String, val info: String, val lat: Double?, val lon: Double?)
+/** SSTV decoder: on, the picture being received, how many finished */
+data class SstvState(val on: Boolean = false, val mode: String? = null, val rows: Int = 0, val height: Int = 0, val count: Long = 0)
+
+/** A station on the map (from a decoder plugin or a decoded APRS position) */
+data class Pin(val lat: Double, val lon: Double, val label: String, val time: Double)
+
 data class AprsState(val on: Boolean = false, val count: Long = 0, val badCrc: Long = 0, val frames: List<AprsFrame> = emptyList())
 
 data class Status(
@@ -84,6 +90,15 @@ data class Status(
     val updateReq: Long = 0,
     val updatePrerelease: Boolean = true,
     val aprs: AprsState = AprsState(),
+    /** Decoder plugins on, and their last output lines (text, map pins) */
+    val pluginsOn: Boolean = true,
+    val plugins: List<String> = emptyList(),
+    /** Map pins from the plugins, latest per station */
+    val pins: List<Pin> = emptyList(),
+    /** Terrestrial APRS mode (fixed frequency, no tracking) and its frequency */
+    val groundAprs: Boolean = false,
+    val groundAprsHz: Double = 144.8e6,
+    val sstv: SstvState = SstvState(),
     /** null when the lab link is off */
     val lab: LabState? = null,
 )
@@ -182,6 +197,9 @@ data class SatDetail(
     val rxHz: Double,
     val now: Double,
     val simulated: Boolean,
+    /** Sub-satellite point (lat, lon, height km) and the ground track (lat, lon), -15 ... +90 min */
+    val sub: Triple<Double, Double, Double>? = null,
+    val ground: List<Pair<Double, Double>> = emptyList(),
 )
 
 /** Talks to the Rust engine: commands, and polled state for the UI. */
@@ -256,6 +274,7 @@ class Engine(dataDir: String) {
                 refreshStatus()
                 refreshDetail()
                 if (wantList && k % 4 == 0) refreshList()
+                if (k % 4 == 0) refreshSstv()
                 k++
                 delay(250)
             }
@@ -315,6 +334,29 @@ class Engine(dataDir: String) {
     fun labPin(pin: String) = async("lab_pin", JSONObject().put("pin", pin))
     fun aprs(on: Boolean) = async("aprs", JSONObject().put("on", on))
     fun aprsClear() = async("aprs_clear")
+    fun plugins(on: Boolean) = async("plugins", JSONObject().put("on", on))
+    fun sstv(on: Boolean) = async("sstv", JSONObject().put("on", on))
+    fun groundAprs(on: Boolean, hz: Double? = null) = async("ground_aprs", JSONObject().put("on", on).apply { if (hz != null) put("hz", hz) })
+
+    /** The SSTV picture being received (or the last one), refreshed by the poller while SSTV is on. */
+    private val _sstvPic = MutableStateFlow<android.graphics.Bitmap?>(null)
+    val sstvPic: StateFlow<android.graphics.Bitmap?> = _sstvPic
+    private var sstvSeen = Pair(-1, -1L)
+
+    private fun refreshSstv() {
+        val s = _status.value.sstv
+        if (!s.on) return
+        val key = Pair(s.rows, s.count)
+        if (key == sstvSeen) return
+        sstvSeen = key
+        val j = try { JSONObject(Native.command("""{"cmd":"sstv_image","current":true}""")) } catch (_: Exception) { return }
+        if (!j.optBoolean("ok")) return
+        val w = j.optInt("width"); val h = j.optInt("height")
+        val rgb = try { android.util.Base64.decode(j.optString("rgb"), android.util.Base64.DEFAULT) } catch (_: Exception) { return }
+        if (w <= 0 || h <= 0 || rgb.size < w * h * 3) return
+        val px = IntArray(w * h) { k -> (0xFF shl 24) or ((rgb[3 * k].toInt() and 0xFF) shl 16) or ((rgb[3 * k + 1].toInt() and 0xFF) shl 8) or (rgb[3 * k + 2].toInt() and 0xFF) }
+        _sstvPic.value = android.graphics.Bitmap.createBitmap(px, w, h, android.graphics.Bitmap.Config.ARGB_8888)
+    }
     fun decimation(factor: Int) = async("decimation", JSONObject().put("factor", factor))
     fun filter(f: FilterState) = async("filter", JSONObject().put("filter", f.toJson())) { refreshList() }
     fun favourite(norad: Long, on: Boolean) = async("favourite", JSONObject().put("norad", norad).put("on", on)) { refreshList() }
@@ -379,6 +421,29 @@ class Engine(dataDir: String) {
                     } ?: emptyList(),
                 )
             } ?: AprsState(),
+            sstv = j.optJSONObject("sstv")?.let { v ->
+                val rx = v.optJSONObject("receiving")
+                SstvState(on = v.optBoolean("on"), mode = rx?.optString("mode"), rows = rx?.optInt("rows") ?: 0, height = rx?.optInt("height") ?: 0, count = v.optLong("count"))
+            } ?: SstvState(),
+            pluginsOn = j.optJSONObject("plugins")?.optBoolean("on", true) ?: true,
+            plugins = j.optJSONObject("plugins")?.optJSONArray("out")?.let { a ->
+                (0 until a.length()).mapNotNull { k ->
+                    a.optJSONObject(k)?.let { o ->
+                        when (o.optString("kind")) {
+                            "text" -> o.optString("text")
+                            "map" -> "⌖ %.4f %.4f %s".format(o.optDouble("lat"), o.optDouble("lon"), o.optString("label"))
+                            else -> o.optString("line")
+                        }
+                    }
+                }
+            } ?: emptyList(),
+            groundAprs = j.optJSONObject("ground_aprs")?.optBoolean("on") ?: false,
+            groundAprsHz = j.optJSONObject("ground_aprs")?.optDouble("hz", 144.8e6) ?: 144.8e6,
+            pins = j.optJSONObject("plugins")?.optJSONArray("pins")?.let { a ->
+                (0 until a.length()).mapNotNull { k ->
+                    a.optJSONObject(k)?.let { o -> Pin(o.optDouble("lat"), o.optDouble("lon"), o.optString("label"), o.optDouble("time")) }
+                }
+            } ?: emptyList(),
             lab = j.optJSONObject("lab")?.takeIf { it.optBoolean("on") }?.let { l ->
                 val ph = l.optJSONObject("phase")
                 fun strs(name: String) = l.optJSONArray(name)?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()
@@ -507,6 +572,10 @@ class Engine(dataDir: String) {
             rxHz = j.optDouble("rx_hz", 0.0),
             now = j.optDouble("now"),
             simulated = j.optBoolean("simulated"),
+            sub = j.optJSONObject("sub")?.let { Triple(it.optDouble("lat"), it.optDouble("lon"), it.optDouble("alt_km")) },
+            ground = j.optJSONArray("ground")?.let { a ->
+                (0 until a.length()).mapNotNull { k -> a.optJSONArray(k)?.let { Pair(it.optDouble(0), it.optDouble(1)) } }
+            } ?: emptyList(),
         )
     }
 

@@ -315,6 +315,7 @@ private fun FilterPanel(list: SatList, engine: Engine) {
 @Composable
 private fun SelectedCard(d: SatDetail, engine: Engine, radarOn: Boolean, onRadar: (Boolean) -> Unit) {
     var txMenu by remember { mutableStateOf(false) }
+    var mapOpen by remember { mutableStateOf(false) }
     val tx = d.tx.firstOrNull { it.uuid == d.selectedTx }
     Column(Modifier.fillMaxWidth().background(Color(0xFF16212D)).padding(horizontal = 12.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -368,7 +369,10 @@ private fun SelectedCard(d: SatDetail, engine: Engine, radarOn: Boolean, onRadar
             Spacer(Modifier.width(12.dp))
             Switch(checked = radarOn, onCheckedChange = onRadar)
             Text(" Radar", fontSize = 13.sp)
+            Spacer(Modifier.width(12.dp))
+            OutlinedButton(onClick = { mapOpen = true }) { Text("Map") }
         }
+        if (mapOpen) MapDialog(engine) { mapOpen = false }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             if (d.simulated) {
                 Text("Simulated time", color = SatYellow, fontSize = 13.sp)

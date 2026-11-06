@@ -2,8 +2,11 @@
 //! The UI (Android today, desktop later) talks to it with JSON commands and pulls spectrum rows
 //! and audio. Nothing in here panics on bad input; errors come back as {"ok": false, "error"}.
 
+#![recursion_limit = "256"]
+
 pub mod config;
 mod lab;
+mod plugins;
 pub mod record;
 pub mod sat;
 
@@ -99,6 +102,11 @@ struct Inner {
     /// APRS: the decoder (when on) and the frames decoded so far (total count, last ones)
     aprs: Mutex<Option<sh_dsp::afsk::AfskDecoder>>,
     aprs_frames: Mutex<(u64, VecDeque<Value>)>,
+    /// Decoder plugins, loaded on first use (lock after aprs / aprs_frames, never before)
+    plugins: Mutex<Option<plugins::Host>>,
+    /// SSTV: the decoder (when on) and the finished pictures (total count, the last few)
+    sstv: Mutex<Option<sh_dsp::sstv::SstvDecoder>>,
+    sstv_pics: Mutex<(u64, VecDeque<sh_dsp::sstv::SstvImage>)>,
     quit: AtomicBool,
     time_shift: Mutex<(f64, f64)>, // (seconds added to the clock, LOS of the simulated pass)
     work: Mutex<Sender<Work>>,
@@ -208,6 +216,17 @@ enum Cmd {
     Aprs { on: bool },
     /// Forget the decoded APRS frames
     AprsClear,
+    /// Terrestrial APRS mode: on = Doppler tracking off, NFM 12.5 kHz on `hz` (default the last
+    /// one, 144.800 MHz), the APRS decoder on; off = back to the satellites (tracking on)
+    GroundAprs { on: bool, hz: Option<f64> },
+    /// Decoder plugins on / off
+    Plugins { on: bool },
+    /// Plugin output after number `since` (text lines, values, map pins)
+    PluginOut { since: Option<u64> },
+    /// SSTV decoder on / off
+    Sstv { on: bool },
+    /// A picture as base64 RGB: the one being received (`current`) or the last finished one
+    SstvImage { current: Option<bool> },
     /// Ask the app to look for a newer release on GitHub and offer it (the app shows the
     /// system install dialog; Android does not allow a silent install)
     Update { prerelease: Option<bool> },
@@ -245,6 +264,9 @@ impl Engine {
             update_req: Mutex::new((0, true)),
             aprs: Mutex::new(None),
             aprs_frames: Mutex::new((0, VecDeque::new())),
+            plugins: Mutex::new(None),
+            sstv: Mutex::new(None),
+            sstv_pics: Mutex::new((0, VecDeque::new())),
             quit: AtomicBool::new(false),
             time_shift: Mutex::new((0.0, 0.0)),
             work: Mutex::new(wtx),
@@ -588,10 +610,32 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             *lock(&i.aprs) = if on { Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE)) } else { None };
             Ok(json!({ "aprs": on }))
         }
+        Cmd::GroundAprs { on, hz } => {
+            ground_aprs(i, on, hz)?;
+            Ok(json!({ "ground_aprs": on, "hz": lock(&i.cfg).ground_aprs_hz }))
+        }
         Cmd::AprsClear => {
             *lock(&i.aprs_frames) = (0, VecDeque::new());
+            if let Some(h) = lock(&i.plugins).as_mut() {
+                h.out = (0, VecDeque::new());
+            }
             Ok(json!({}))
         }
+        Cmd::Plugins { on } => {
+            lock(&i.cfg).plugins = on;
+            i.save();
+            Ok(json!({ "plugins": on }))
+        }
+        Cmd::PluginOut { since } => Ok(plugin_out(i, since.unwrap_or(0))),
+        Cmd::Sstv { on } => {
+            lock(&i.cfg).sstv = on;
+            i.save();
+            *lock(&i.sstv) = if on { Some(sh_dsp::sstv::SstvDecoder::new(sh_dsp::demod::AUDIO_RATE)) } else { None };
+            Ok(json!({ "sstv": on }))
+        }
+        Cmd::SstvImage { current } => sstv_image(i, current.unwrap_or(false)).map(|(img, n)| {
+            json!({ "n": n, "mode": img.mode.name(), "width": img.width, "height": img.height, "rows": img.rows, "rgb": base64(&img.rgb) })
+        }).ok_or_else(|| "no picture yet".to_string()),
         Cmd::Update { prerelease } => {
             let mut u = lock(&i.update_req);
             u.0 += 1;
@@ -886,6 +930,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
                 lab::feed(&i, b.center_hz, b.rate, &[], &audio);
             }
             aprs_feed(&i, &audio, p.vfo_hz);
+            sstv_feed(&i, &audio);
             let mut q = lock(&i.audio);
             q.extend(audio.iter());
             while q.len() > AUDIO_MAX {
@@ -1021,7 +1066,46 @@ fn select(i: &Inner, norad: u64, tx: Option<String>) {
     set_tracking(i, true);
 }
 
+fn ground_aprs(i: &Inner, on: bool, hz: Option<f64>) -> Result<(), String> {
+    {
+        let mut c = lock(&i.cfg);
+        c.ground_aprs = on;
+        if let Some(h) = hz.filter(|h| (50e6..1.3e9).contains(h)) {
+            c.ground_aprs_hz = h;
+        }
+        if on {
+            c.aprs = true;
+        }
+    }
+    if on {
+        set_tracking(i, false);
+        let hz = lock(&i.cfg).ground_aprs_hz;
+        let bw = 12_500.0;
+        {
+            let mut c = lock(&i.cfg);
+            c.mode = Mode::Nfm.name().into();
+            c.bw = bw;
+        }
+        i.bump_params(|p| {
+            p.mode = Mode::Nfm;
+            p.bw = bw;
+        });
+        if lock(&i.aprs).is_none() {
+            *lock(&i.aprs) = Some(sh_dsp::afsk::AfskDecoder::new(sh_dsp::demod::AUDIO_RATE));
+        }
+        tune(i, hz)?;
+    } else if lock(&i.cfg).selected.is_some() {
+        set_tracking(i, true);
+    }
+    i.save();
+    Ok(())
+}
+
 fn set_tracking(i: &Inner, on: bool) {
+    if on {
+        // a satellite again: the terrestrial APRS mode ends
+        lock(&i.cfg).ground_aprs = false;
+    }
     let auto = lock(&i.cfg).auto_demod;
     {
         let mut st = lock(&i.sat);
@@ -1359,6 +1443,9 @@ fn status(i: &Inner) -> Value {
         "lab_pin": c.lab_pin,
         "update_req": lock(&i.update_req).0,
         "aprs": aprs_status(i, c.aprs, 20),
+        "ground_aprs": json!({ "on": c.ground_aprs, "hz": c.ground_aprs_hz }),
+        "plugins": plugin_status(i, c.plugins, 20),
+        "sstv": sstv_status(i, c.sstv),
         "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
@@ -1377,18 +1464,111 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
         return;
     }
     let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|t| t.as_secs_f64()).unwrap_or(0.0);
-    let mut q = lock(&i.aprs_frames);
-    while let Some(f) = d.frames.pop_front() {
+    let frames: Vec<sh_dsp::afsk::Ax25Frame> = d.frames.drain(..).collect();
+    drop(g);
+    {
+        let mut q = lock(&i.aprs_frames);
+        for f in &frames {
+            q.0 += 1;
+            let n = q.0;
+            let pos = sh_dsp::afsk::aprs_position(&String::from_utf8_lossy(&f.info));
+            q.1.push_back(json!({
+                "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
+                "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),
+            }));
+            while q.1.len() > 200 {
+                q.1.pop_front();
+            }
+        }
+    }
+    let (on, norad) = {
+        let c = lock(&i.cfg);
+        // terrestrial APRS: the generic plugins, whatever satellite is selected
+        (c.plugins, if c.ground_aprs { None } else { c.selected })
+    };
+    if on {
+        let mut h = lock(&i.plugins);
+        let host = h.get_or_insert_with(plugins::Host::load);
+        for f in &frames {
+            host.ax25(f, norad, vfo_hz, now);
+        }
+    }
+}
+
+/// Run the SSTV decoder on new audio; finished pictures go to the list.
+fn sstv_feed(i: &Inner, audio: &[f32]) {
+    let want = lock(&i.cfg).sstv;
+    let mut g = lock(&i.sstv);
+    if g.is_none() && want {
+        *g = Some(sh_dsp::sstv::SstvDecoder::new(sh_dsp::demod::AUDIO_RATE));
+    }
+    let Some(d) = g.as_mut() else { return };
+    d.process(audio);
+    if d.done.is_empty() {
+        return;
+    }
+    let pics: Vec<_> = d.done.drain(..).collect();
+    drop(g);
+    let mut q = lock(&i.sstv_pics);
+    for p in pics {
         q.0 += 1;
-        let n = q.0;
-        let pos = sh_dsp::afsk::aprs_position(&String::from_utf8_lossy(&f.info));
-        q.1.push_back(json!({
-            "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": f.tnc2(), "src": f.src, "dst": f.dst, "path": f.path,
-            "info": String::from_utf8_lossy(&f.info), "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1),
-        }));
-        while q.1.len() > 200 {
+        q.1.push_back(p);
+        while q.1.len() > 4 {
             q.1.pop_front();
         }
+    }
+}
+
+/// SSTV state: on, the picture being received (mode, rows), how many are finished.
+pub(crate) fn sstv_status(i: &Inner, on: bool) -> Value {
+    // lock order: sstv, then sstv_pics
+    let rx = lock(&i.sstv).as_ref().and_then(|d| d.current().map(|c| json!({ "mode": c.mode.name(), "rows": c.rows, "height": c.height, "syncs": c.syncs_found })));
+    let q = lock(&i.sstv_pics);
+    json!({ "on": on, "receiving": rx, "count": q.0, "last": q.1.back().map(|p| json!({ "mode": p.mode.name(), "rows": p.rows, "height": p.height })) })
+}
+
+/// The picture being received (`current`) or the last finished one, with its number (0 = in progress).
+pub(crate) fn sstv_image(i: &Inner, current: bool) -> Option<(sh_dsp::sstv::SstvImage, u64)> {
+    if current {
+        if let Some(c) = lock(&i.sstv).as_ref().and_then(|d| d.current().cloned()) {
+            return Some((c, 0));
+        }
+    }
+    let q = lock(&i.sstv_pics);
+    q.1.back().cloned().map(|p| (p, q.0))
+}
+
+fn base64(b: &[u8]) -> String {
+    const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut s = String::with_capacity(b.len() * 4 / 3 + 4);
+    for c in b.chunks(3) {
+        let n = (c[0] as u32) << 16 | (*c.get(1).unwrap_or(&0) as u32) << 8 | *c.get(2).unwrap_or(&0) as u32;
+        s.push(T[(n >> 18) as usize & 63] as char);
+        s.push(T[(n >> 12) as usize & 63] as char);
+        s.push(if c.len() > 1 { T[(n >> 6) as usize & 63] as char } else { '=' });
+        s.push(if c.len() > 2 { T[n as usize & 63] as char } else { '=' });
+    }
+    s
+}
+
+/// Plugin output after number `since`, and which plugins are loaded.
+pub(crate) fn plugin_out(i: &Inner, since: u64) -> Value {
+    let on = lock(&i.cfg).plugins;
+    let mut h = lock(&i.plugins);
+    let mut v = if on { h.get_or_insert_with(plugins::Host::load).since(since) } else { json!({ "plugins": [], "errors": [], "count": 0, "out": [] }) };
+    v["on"] = on.into();
+    v
+}
+
+/// Plugin state and the last `n` outputs (no loading here: status is polled often).
+pub(crate) fn plugin_status(i: &Inner, on: bool, n: usize) -> Value {
+    let h = lock(&i.plugins);
+    match h.as_ref() {
+        Some(h) => {
+            let skip = h.out.1.len().saturating_sub(n);
+            json!({ "on": on, "loaded": h.ids(), "errors": h.errors, "count": h.out.0, "out": h.out.1.iter().skip(skip).cloned().collect::<Vec<_>>(), "pins": h.pins })
+        }
+        None => json!({ "on": on, "loaded": [], "errors": [], "count": 0, "out": [], "pins": [] }),
     }
 }
 
@@ -1471,6 +1651,9 @@ fn sat_detail(i: &Inner) -> Value {
         "tx": txs,
         "selected_tx": tx.map(|t| t.uuid.clone()),
         "look": look.map(|l| json!({"az": l.az, "el": l.el, "range_km": l.range_km, "range_rate_kms": l.range_rate_kms})),
+        "sub": sat.orbit.subpoint(now).ok().map(|(lat, lon, h)| json!({"lat": lat, "lon": lon, "alt_km": h})),
+        // ground track for the map: 15 min back, 90 min ahead, 30 s steps
+        "ground": (-30..=180).filter_map(|k| sat.orbit.subpoint(now + 30.0 * k as f64).ok().map(|(a, b, _)| [(a * 100.0).round() / 100.0, (b * 100.0).round() / 100.0])).collect::<Vec<_>>(),
         "pass": s.sel_pass,
         "track": s.track,
         "others": s.others,
@@ -1553,6 +1736,31 @@ mod tests {
         let st = cmd(&e, r#"{"cmd":"status"}"#);
         assert_eq!(st["vfo_hz"].as_f64(), Some(102e6));
         assert_eq!(st["center_tuning"], true);
+    }
+
+    #[test]
+    fn ground_aprs_mode_tunes_and_stops_tracking() {
+        let d = tmpdir("gaprs");
+        write_iss(&d);
+        Config { update_days: 0.0, ..Config::default() }.save(&d.join("config.json"));
+        let e = Engine::new(&d);
+        cmd(&e, r#"{"cmd":"source","id":"demo"}"#);
+        cmd(&e, r#"{"cmd":"sat_select","norad":25544}"#);
+        assert_eq!(cmd(&e, r#"{"cmd":"ground_aprs","on":true}"#)["ok"], true);
+        let st = cmd(&e, r#"{"cmd":"status"}"#);
+        assert_eq!(st["vfo_hz"].as_f64(), Some(144.8e6));
+        assert_eq!(st["mode"], "NFM");
+        assert_eq!(st["aprs"]["on"], true);
+        assert_eq!(st["ground_aprs"]["on"], true);
+        assert_eq!(cmd(&e, r#"{"cmd":"sat_detail"}"#)["tracking"], false);
+        // another frequency, remembered
+        cmd(&e, r#"{"cmd":"ground_aprs","on":true,"hz":144390000}"#);
+        assert_eq!(cmd(&e, r#"{"cmd":"status"}"#)["vfo_hz"].as_f64(), Some(144.39e6));
+        // tracking a satellite again ends the mode
+        cmd(&e, r#"{"cmd":"sat_track","on":true}"#);
+        let st = cmd(&e, r#"{"cmd":"status"}"#);
+        assert_eq!(st["ground_aprs"]["on"], false);
+        assert_eq!(st["ground_aprs"]["hz"].as_f64(), Some(144.39e6));
     }
 
     #[test]

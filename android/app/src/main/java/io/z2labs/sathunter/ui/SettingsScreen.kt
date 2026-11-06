@@ -3,6 +3,7 @@ package io.z2labs.sathunter.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,6 +53,8 @@ fun SettingsScreen(
     onCompass: (Boolean) -> Unit,
     gpsInfo: String,
     onFollowGps: (Boolean) -> Unit,
+    guardMin: Int = 2,
+    onGuard: (Int) -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp)) {
         Section("Receiver")
@@ -173,6 +176,49 @@ fun SettingsScreen(
             }
             Switch(checked = st.aprs.on, onCheckedChange = { engine.aprs(it) })
         }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Decoder plugins", fontSize = 14.sp)
+                Text("Small Luau scripts turn the decoded frames into readable lines and map positions (ISS APRS, generic APRS).", color = Dim, fontSize = 12.sp)
+            }
+            Switch(checked = st.pluginsOn, onCheckedChange = { engine.plugins(it) })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("SSTV pictures (Robot 36, PD120)", fontSize = 14.sp)
+                Text("ISS SSTV events on 145.800 MHz, in NFM. The picture builds up in a panel on the receiver screen.", color = Dim, fontSize = 12.sp)
+            }
+            Switch(checked = st.sstv.on, onCheckedChange = { engine.sstv(it) })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Terrestrial APRS mode", fontSize = 14.sp, color = if (st.groundAprs) SatYellow else Color.Unspecified)
+                Text(
+                    "For testing: the local APRS network on a fixed frequency, Doppler tracking off, all stations on the map. " +
+                        "Tracking a satellite again ends it.",
+                    color = Dim, fontSize = 12.sp,
+                )
+            }
+            Switch(checked = st.groundAprs, onCheckedChange = { engine.groundAprs(it) })
+        }
+        if (st.groundAprs) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                for ((hz, name) in listOf(144.800e6 to "144.800 Europe", 144.390e6 to "144.390 N. America", 145.175e6 to "145.175 Australia", 144.640e6 to "144.640 China", 145.825e6 to "145.825 ISS / sats")) {
+                    FilterChip(selected = kotlin.math.abs(st.groundAprsHz - hz) < 1.0, onClick = { engine.groundAprs(true, hz) }, label = { Text(name) })
+                }
+            }
+        }
+
+        HorizontalDivider(Modifier.padding(top = 12.dp))
+        Section("Screen")
+        Text("Screen saver (protects an AMOLED screen during long passes and measurements)", fontSize = 14.sp)
+        Text("After this long without a touch the screen goes black and dim; a small summary (frequency, satellite, signal, lab phase, last decode, battery) moves around so no pixel stays lit. The receiver keeps running; tap to wake.",
+            color = Dim, fontSize = 12.sp)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            for ((m, label) in listOf(0 to "Off", 1 to "1 min", 2 to "2 min", 5 to "5 min", 10 to "10 min")) {
+                FilterChip(selected = guardMin == m, onClick = { onGuard(m) }, label = { Text(label) })
+            }
+        }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("Debug")
@@ -213,6 +259,19 @@ fun SettingsScreen(
             Button(onClick = { updater.check(pre) }) { Text("Check now") }
             (upd as? Updater.State.Available)?.let { a -> Button(onClick = { updater.install(a.rel) }) { Text("Install ${a.rel.tag}") } }
         }
+        // Unattended (lab) updates: Android 12+ installs updates of this app without the dialog;
+        // reopening it afterwards needs "Display over other apps"
+        val ctx = androidx.compose.ui.platform.LocalContext.current
+        val overlay = android.provider.Settings.canDrawOverlays(ctx)
+        Text(
+            if (!updater.silentWorks) "Updates need a tap on Install on this phone (it refuses installs without confirmation)."
+            else if (overlay) "Unattended updates: the app reopens itself after an update." else "Unattended updates: allow \"Display over other apps\" so the app reopens itself after an update (lab runs overnight).",
+            color = Dim, fontSize = 12.sp,
+        )
+        if (!overlay) Button(onClick = {
+            ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:${ctx.packageName}"))
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+        }) { Text("Allow reopening") }
 
         HorizontalDivider(Modifier.padding(top = 12.dp))
         Section("About")

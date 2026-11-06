@@ -8,3 +8,6 @@ repository.workspace = true
 
 [dependencies]
 rustfft.workspace = true
+
+[dev-dependencies]
+lewton = "0.10"

@@ -3,6 +3,8 @@ package io.z2labs.sathunter
 /** JNI entry points of the Rust core (core/crates/sh-android). */
 object Native {
     init {
+        // The Luau plugin runtime in the core is C++ (libc++_shared.so ships in the APK)
+        runCatching { System.loadLibrary("c++_shared") }
         System.loadLibrary("sathunter")
     }
 

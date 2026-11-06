@@ -1,0 +1,1313 @@
+{
+ "aprs": {
+  "bad_crc": 1,
+  "count": 38,
+  "frames": [
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 00",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 1,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884862.6696281,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 00"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 01",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 2,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884863.7073257,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 01"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 02",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 3,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884864.7644548,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 02"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 03",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 4,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884865.8029954,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 03"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 04",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 5,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884866.8438923,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 04"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 05",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 6,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884867.8842435,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 05"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 06",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 7,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884868.926193,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 06"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 07",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 8,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884869.9627278,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 07"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 08",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 9,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884871.0042431,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 08"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 09",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 10,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884872.0438983,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 09"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 00",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 11,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884873.1009178,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 00"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 01",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 12,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884874.1391304,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 01"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 02",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 13,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884875.1804023,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 02"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 03",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 14,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884876.2176774,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 03"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 04",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 15,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884877.258584,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 04"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 05",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 16,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884878.2997077,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 05"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 06",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 17,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884879.34045,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 06"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 07",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 18,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884880.3819168,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 07"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 08",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 19,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884881.419441,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 08"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 09",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 20,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884882.474628,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 09"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 00",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 21,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884883.5157108,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 00"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 01",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 22,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884884.5549488,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 01"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 02",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 23,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884885.5957773,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 02"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 03",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 24,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884886.6359468,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 03"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 04",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 25,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884887.6752038,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 04"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 05",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 26,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884888.7152355,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 05"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 06",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 27,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884889.7572002,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 06"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 07",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 28,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884890.8126185,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 07"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 08",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 29,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884891.85101,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 08"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 09",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 30,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884892.8911173,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 09"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 00",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 31,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884893.9322972,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 00"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 01",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 32,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884894.9719057,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 01"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 02",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 33,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884896.0146208,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 02"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 03",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 34,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884897.0525806,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 03"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 04",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 35,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884898.0911381,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 04"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 05",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 36,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884899.14735,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 05"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 06",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 37,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884900.1896305,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 06"
+   },
+   {
+    "dst": "APRS",
+    "freq_hz": 436600000.0,
+    "info": "!4729.87N/01902.41E>SatHunter lab packet 07",
+    "lat": 47.49783333333333,
+    "lon": 19.040166666666668,
+    "n": 38,
+    "path": [
+     "WIDE1-1"
+    ],
+    "src": "HG0LAB-1",
+    "time": 1793884901.2270303,
+    "tnc2": "HG0LAB-1>APRS,WIDE1-1:!4729.87N/01902.41E>SatHunter lab packet 07"
+   }
+  ],
+  "ok": true
+ },
+ "plugins": {
+  "count": 76,
+  "errors": [],
+  "ok": true,
+  "on": true,
+  "out": [
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "n": 1,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "time": 1793884862.6696281
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 2,
+    "plugin": "aprs-map",
+    "time": 1793884862.6696281
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "n": 3,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "time": 1793884863.7073257
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 4,
+    "plugin": "aprs-map",
+    "time": 1793884863.7073257
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "n": 5,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "time": 1793884864.7644548
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 6,
+    "plugin": "aprs-map",
+    "time": 1793884864.7644548
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "n": 7,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "time": 1793884865.8029954
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 8,
+    "plugin": "aprs-map",
+    "time": 1793884865.8029954
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "n": 9,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "time": 1793884866.8438923
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 10,
+    "plugin": "aprs-map",
+    "time": 1793884866.8438923
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "n": 11,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "time": 1793884867.8842435
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 12,
+    "plugin": "aprs-map",
+    "time": 1793884867.8842435
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "n": 13,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "time": 1793884868.926193
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 14,
+    "plugin": "aprs-map",
+    "time": 1793884868.926193
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "n": 15,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "time": 1793884869.9627278
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 16,
+    "plugin": "aprs-map",
+    "time": 1793884869.9627278
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 08",
+    "n": 17,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 08",
+    "time": 1793884871.0042431
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 18,
+    "plugin": "aprs-map",
+    "time": 1793884871.0042431
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 09",
+    "n": 19,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 09",
+    "time": 1793884872.0438983
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 20,
+    "plugin": "aprs-map",
+    "time": 1793884872.0438983
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "n": 21,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "time": 1793884873.1009178
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 22,
+    "plugin": "aprs-map",
+    "time": 1793884873.1009178
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "n": 23,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "time": 1793884874.1391304
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 24,
+    "plugin": "aprs-map",
+    "time": 1793884874.1391304
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "n": 25,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "time": 1793884875.1804023
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 26,
+    "plugin": "aprs-map",
+    "time": 1793884875.1804023
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "n": 27,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "time": 1793884876.2176774
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 28,
+    "plugin": "aprs-map",
+    "time": 1793884876.2176774
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "n": 29,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "time": 1793884877.258584
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 30,
+    "plugin": "aprs-map",
+    "time": 1793884877.258584
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "n": 31,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "time": 1793884878.2997077
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 32,
+    "plugin": "aprs-map",
+    "time": 1793884878.2997077
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "n": 33,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "time": 1793884879.34045
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 34,
+    "plugin": "aprs-map",
+    "time": 1793884879.34045
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "n": 35,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "time": 1793884880.3819168
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 36,
+    "plugin": "aprs-map",
+    "time": 1793884880.3819168
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 08",
+    "n": 37,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 08",
+    "time": 1793884881.419441
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 38,
+    "plugin": "aprs-map",
+    "time": 1793884881.419441
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 09",
+    "n": 39,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 09",
+    "time": 1793884882.474628
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 40,
+    "plugin": "aprs-map",
+    "time": 1793884882.474628
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "n": 41,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "time": 1793884883.5157108
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 42,
+    "plugin": "aprs-map",
+    "time": 1793884883.5157108
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "n": 43,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "time": 1793884884.5549488
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 44,
+    "plugin": "aprs-map",
+    "time": 1793884884.5549488
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "n": 45,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "time": 1793884885.5957773
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 46,
+    "plugin": "aprs-map",
+    "time": 1793884885.5957773
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "n": 47,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "time": 1793884886.6359468
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 48,
+    "plugin": "aprs-map",
+    "time": 1793884886.6359468
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "n": 49,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "time": 1793884887.6752038
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 50,
+    "plugin": "aprs-map",
+    "time": 1793884887.6752038
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "n": 51,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "time": 1793884888.7152355
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 52,
+    "plugin": "aprs-map",
+    "time": 1793884888.7152355
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "n": 53,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "time": 1793884889.7572002
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 54,
+    "plugin": "aprs-map",
+    "time": 1793884889.7572002
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "n": 55,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "time": 1793884890.8126185
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 56,
+    "plugin": "aprs-map",
+    "time": 1793884890.8126185
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 08",
+    "n": 57,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 08",
+    "time": 1793884891.85101
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 58,
+    "plugin": "aprs-map",
+    "time": 1793884891.85101
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 09",
+    "n": 59,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 09",
+    "time": 1793884892.8911173
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 60,
+    "plugin": "aprs-map",
+    "time": 1793884892.8911173
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "n": 61,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 00",
+    "time": 1793884893.9322972
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 62,
+    "plugin": "aprs-map",
+    "time": 1793884893.9322972
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "n": 63,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 01",
+    "time": 1793884894.9719057
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 64,
+    "plugin": "aprs-map",
+    "time": 1793884894.9719057
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "n": 65,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 02",
+    "time": 1793884896.0146208
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 66,
+    "plugin": "aprs-map",
+    "time": 1793884896.0146208
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "n": 67,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 03",
+    "time": 1793884897.0525806
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 68,
+    "plugin": "aprs-map",
+    "time": 1793884897.0525806
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "n": 69,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 04",
+    "time": 1793884898.0911381
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 70,
+    "plugin": "aprs-map",
+    "time": 1793884898.0911381
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "n": 71,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 05",
+    "time": 1793884899.14735
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 72,
+    "plugin": "aprs-map",
+    "time": 1793884899.14735
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "n": 73,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 06",
+    "time": 1793884900.1896305
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 74,
+    "plugin": "aprs-map",
+    "time": 1793884900.1896305
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "text",
+    "line": "text HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "n": 75,
+    "plugin": "aprs-map",
+    "text": "HG0LAB-1 > APRS via WIDE1-1: !4729.87N/01902.41E>SatHunter lab packet 07",
+    "time": 1793884901.2270303
+   },
+   {
+    "freq_hz": 436600000.0,
+    "kind": "map",
+    "label": "HG0LAB-1",
+    "lat": 47.49783333333333,
+    "line": "map 47.497833 19.040167 HG0LAB-1",
+    "lon": 19.040166666666668,
+    "n": 76,
+    "plugin": "aprs-map",
+    "time": 1793884901.2270303
+   }
+  ],
+  "plugins": [
+   "iss-aprs",
+   "aprs-map"
+  ]
+ }
+}

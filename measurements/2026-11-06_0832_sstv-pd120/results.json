@@ -1,0 +1,33 @@
+{
+ "started": "2026-11-06 08:32:29",
+ "freq_hz": 436600000.0,
+ "deviation_hz": 3000.0,
+ "mode": "PD120",
+ "rows": [
+  {
+   "level_dbm": -110.0,
+   "received": true,
+   "mean_error": 4.254014656444033,
+   "mode": "PD120"
+  },
+  {
+   "level_dbm": -125.0,
+   "received": true,
+   "mean_error": 8.620180268258379,
+   "mode": "PD120"
+  },
+  {
+   "level_dbm": -130.0,
+   "received": true,
+   "mean_error": 12.917306653288051,
+   "mode": "PD120"
+  },
+  {
+   "level_dbm": -134.0,
+   "received": true,
+   "mean_error": 19.910959315289354,
+   "mode": "PD120"
+  }
+ ],
+ "finished": "2026-11-06 08:41:27"
+}

@@ -49,6 +49,7 @@ import io.z2labs.sathunter.ui.Panel
 import io.z2labs.sathunter.ui.ReceiverScreen
 import io.z2labs.sathunter.ui.SatHunterTheme
 import io.z2labs.sathunter.ui.SatScreen
+import io.z2labs.sathunter.ui.ScreenGuard
 import io.z2labs.sathunter.ui.SettingsScreen
 import io.z2labs.sathunter.ui.UpdateBanner
 
@@ -96,12 +97,17 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         engine.startPolling()
         if (prefs.getBoolean("compass", true)) compass.start()
         if (engine.status.value.followGps && hasLocation()) gps.start()
     }
 
     override fun onPause() {
+        // Something else in front (an install / Play Protect dialog, another app): let the screen
+        // time out as usual; our screen saver cannot draw over it (2026-11-05: a pending install
+        // dialog kept the AMOLED lit all night)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         engine.stopPolling()
         compass.stop()
         gps.stop()
@@ -123,6 +129,7 @@ class MainActivity : ComponentActivity() {
         val st by engine.status.collectAsState()
         val list by engine.satList.collectAsState()
         val detail by engine.detail.collectAsState()
+        val sstvPic by engine.sstvPic.collectAsState()
         val error by engine.error.collectAsState()
         val pose by compass.pose.collectAsState()
         val gpsInfo by gps.info.collectAsState()
@@ -132,6 +139,7 @@ class MainActivity : ComponentActivity() {
         var compassOn by remember { mutableStateOf(prefs.getBoolean("compass", true)) }
         var radarOn by remember { mutableStateOf(prefs.getBoolean("radar", true)) }
         var fullscreen by remember { mutableStateOf(prefs.getBoolean("fullscreen", false)) }
+        var guardMin by remember { mutableIntStateOf(prefs.getInt("guard_min", 2)) }
         val askLocation = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
             if (r.values.any { it }) gps.start()
         }
@@ -174,6 +182,7 @@ class MainActivity : ComponentActivity() {
 
         // Landscape: the tabs go to a slim rail on the side, the height is for the plot
         val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        ScreenGuard(guardMin, st, detail) {
         Scaffold(
             containerColor = Bg,
             topBar = {
@@ -198,7 +207,7 @@ class MainActivity : ComponentActivity() {
             Box(Modifier.weight(1f).fillMaxHeight()) {
                 when (tab) {
                     0 -> ReceiverScreen(
-                        st = st, detail = detail, pose = pose, compassOn = compassOn, radarOn = radarOn, muted = muted,
+                        st = st, sstvPic = sstvPic, detail = detail, pose = pose, compassOn = compassOn, radarOn = radarOn, muted = muted,
                         volume = volume,
                         onVolume = { volume = it; muted = false; prefs.edit().putFloat("volume", it).apply() },
                         fullscreen = full,
@@ -225,10 +234,13 @@ class MainActivity : ComponentActivity() {
                                 else askLocation.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                             } else gps.stop()
                         },
+                        guardMin = guardMin,
+                        onGuard = { guardMin = it; prefs.edit().putInt("guard_min", it).apply() },
                     )
                 }
             }
             }
+        }
         }
         error?.let { e ->
             AlertDialog(
