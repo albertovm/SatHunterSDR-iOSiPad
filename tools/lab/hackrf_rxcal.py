@@ -28,6 +28,7 @@ from lab import Phone  # noqa: E402
 
 HZ = 436.6e6
 DBFS_TO_RTL_DBM = -80.0 + 46.8  # see the docstring
+DBFS_TO_LNA_IN_DBM = -80.0  # the same chain as system-a: levels at the LNA input
 
 
 def main():
@@ -37,10 +38,13 @@ def main():
     ap.add_argument("--atten", type=float, required=True)
     ap.add_argument("--txvga", default="0,4,8,12,16,20,24,28,32,36,40,44,47")
     ap.add_argument("--rtl-ppm", type=float, default=None, help="the phone's ppm setting is used when omitted")
+    ap.add_argument("--no-lna", action="store_true", help="HackRF chain straight into the RTL (default: through the Spacewalker LNA, bias tee on)")
     a = ap.parse_args()
     ph = Phone(a.ip, a.pin)
     st0 = ph.status()
     ph.cmd(cmd="gain", db=12.4)
+    ph.cmd(cmd="bias_tee", on=not a.no_lna)
+    conv = DBFS_TO_RTL_DBM if a.no_lna else DBFS_TO_LNA_IN_DBM
     ph.cmd(cmd="decimation", factor=2)
     ph.cmd(cmd="center", hz=HZ - 100e3)  # the tone away from the RTL's DC spike
     ph.cmd(cmd="tune", hz=HZ)
@@ -59,7 +63,7 @@ def main():
                 gen.cw(HZ, 0.0)
                 time.sleep(0.5)
                 m = ph._req("GET", "/measure?hz=%d&bw=2000&secs=1.5" % HZ)
-                p_rtl = m["peak_dbfs"] + DBFS_TO_RTL_DBM
+                p_rtl = m["peak_dbfs"] + conv
                 row = {"amp": amp, "txvga": tx, "peak_dbfs": m["peak_dbfs"], "snr_db": m["peak_snr_db"],
                        "rtl_dbm": p_rtl, "p0": p_rtl + a.atten - tx, "offset_hz": m["offset_hz"]}
                 rows.append(row)
@@ -75,7 +79,7 @@ def main():
         raise SystemExit("the level does not follow txvga (%.1f dB range): no HackRF signal at %.3f MHz?" % (max(lv) - min(lv), HZ / 1e6))
     # usable points: well above the floor (SNR > 20 dB) and below the ADC clip (< -6 dBFS)
     good = [r for r in rows if r["snr_db"] > 20 and r["peak_dbfs"] < -6]
-    cal = {"p0": {}, "p0_amp": {}, "ppm": None, "atten_db": a.atten, "method": "receiver transfer (system-a VSG60 scale)",
+    cal = {"p0": {}, "p0_amp": {}, "ppm": None, "atten_db": a.atten, "method": "receiver transfer (system-a VSG60 scale), levels at the " + ("RTL input" if a.no_lna else "LNA input"),
            "made": time.strftime("%Y-%m-%d %H:%M")}
     for amp, key in ((False, "p0"), (True, "p0_amp")):
         g = [r for r in good if r["amp"] == amp and r["txvga"] <= 40]
