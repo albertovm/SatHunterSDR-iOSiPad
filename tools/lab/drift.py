@@ -17,6 +17,7 @@ def main():
     ap.add_argument("--pin", required=True)
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--atten", type=float, default=0.0)
+    ap.add_argument("--gen", choices=["vsg60", "hackrf"], default="vsg60")
     ap.add_argument("--freq", type=float, default=436.6e6)
     ap.add_argument("--level", type=float, default=-95.0, help="at the receiver input, dBm")
     ap.add_argument("--mins", type=float, default=90.0)
@@ -38,7 +39,11 @@ def main():
             json.dump(res, fh, indent=1)
 
     host, port = (a.vsg.split(":") + ["5124"])[:2]
-    gen = Vsg60Gen(a.atten, host, int(port), a.vsg_dir if hasattr(a, "vsg_dir") else r"C:\sathunter_lab", None)
+    if a.gen == "hackrf":
+        from hackrf_gen import HackRfGen
+        gen = HackRfGen(a.atten)
+    else:
+        gen = Vsg60Gen(a.atten, host, int(port), a.vsg_dir if hasattr(a, "vsg_dir") else r"C:\sathunter_lab", None)
     try:
         ph.cmd(cmd="rate", hz=1024000.0)
         ph.cmd(cmd="decimation", factor=8)
