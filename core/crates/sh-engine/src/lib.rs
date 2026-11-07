@@ -106,6 +106,8 @@ struct Inner {
     plugins: Mutex<Option<plugins::Host>>,
     /// SSTV: the decoder (when on) and the finished pictures (total count, the last few)
     sstv: Mutex<Option<sh_dsp::sstv::SstvDecoder>>,
+    /// 9600 bd G3RUH decoder (its frames join the AX.25 list and the plugins)
+    fsk: Mutex<Option<sh_dsp::fsk9600::G3ruhDecoder>>,
     sstv_pics: Mutex<(u64, VecDeque<sh_dsp::sstv::SstvImage>)>,
     quit: AtomicBool,
     time_shift: Mutex<(f64, f64)>, // (seconds added to the clock, LOS of the simulated pass)
@@ -225,6 +227,8 @@ enum Cmd {
     PluginOut { since: Option<u64> },
     /// SSTV decoder on / off
     Sstv { on: bool },
+    /// 9600 bd G3RUH FSK decoder on / off
+    Fsk9k6 { on: bool },
     /// A picture as base64 RGB: the one being received (`current`) or the last finished one
     SstvImage { current: Option<bool> },
     /// Ask the app to look for a newer release on GitHub and offer it (the app shows the
@@ -266,6 +270,7 @@ impl Engine {
             aprs_frames: Mutex::new((0, VecDeque::new())),
             plugins: Mutex::new(None),
             sstv: Mutex::new(None),
+            fsk: Mutex::new(None),
             sstv_pics: Mutex::new((0, VecDeque::new())),
             quit: AtomicBool::new(false),
             time_shift: Mutex::new((0.0, 0.0)),
@@ -633,6 +638,23 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             *lock(&i.sstv) = if on { Some(sh_dsp::sstv::SstvDecoder::new(sh_dsp::demod::AUDIO_RATE)) } else { None };
             Ok(json!({ "sstv": on }))
         }
+        Cmd::Fsk9k6 { on } => {
+            lock(&i.cfg).fsk9k6 = on;
+            // 9600 bd needs a wider channel than voice: NFM at least 20 kHz
+            let widen = on && {
+                let c = lock(&i.cfg);
+                c.mode == "NFM" && c.bw < 20_000.0
+            };
+            if widen {
+                lock(&i.cfg).bw = 20_000.0;
+                i.bump_params(|p| p.bw = 20_000.0);
+            }
+            i.save();
+            if !on {
+                *lock(&i.fsk) = None;
+            }
+            Ok(json!({ "fsk9k6": on }))
+        }
         Cmd::SstvImage { current } => sstv_image(i, current.unwrap_or(false)).map(|(img, n)| {
             json!({ "n": n, "mode": img.mode.name(), "width": img.width, "height": img.height, "rows": img.rows, "rgb": base64(&img.rgb) })
         }).ok_or_else(|| "no picture yet".to_string()),
@@ -931,6 +953,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
             }
             aprs_feed(&i, &audio, p.vfo_hz);
             sstv_feed(&i, &audio);
+            fsk_feed(&i, d.fm_raw(), d.channel_rate(), p.vfo_hz);
             let mut q = lock(&i.audio);
             q.extend(audio.iter());
             while q.len() > AUDIO_MAX {
@@ -1446,6 +1469,7 @@ fn status(i: &Inner) -> Value {
         "ground_aprs": json!({ "on": c.ground_aprs, "hz": c.ground_aprs_hz }),
         "plugins": plugin_status(i, c.plugins, 20),
         "sstv": sstv_status(i, c.sstv),
+        "fsk9k6": fsk_status(i, c.fsk9k6),
         "update_prerelease": lock(&i.update_req).1,
         "recording": lock(&i.recorder).as_ref().map(|r| json!({ "name": r.name, "secs": r.seconds(), "bytes": r.bytes(), "dropped": r.dropped })),
     })
@@ -1494,6 +1518,65 @@ fn aprs_feed(i: &Inner, audio: &[f32], vfo_hz: f64) {
             host.ax25(f, norad, vfo_hz, now);
         }
     }
+}
+
+/// Run the 9600 bd G3RUH decoder on the FM discriminator. AX.25 frames join the APRS / AX.25
+/// list (and the plugins) like the AFSK ones; other frames with a good CRC (AX.100, CSP) are
+/// listed raw, as hex.
+fn fsk_feed(i: &Inner, disc: &[f32], rate: f64, vfo_hz: f64) {
+    if disc.is_empty() || !lock(&i.cfg).fsk9k6 {
+        return;
+    }
+    let mut g = lock(&i.fsk);
+    if g.as_ref().map(|d| (d.rate() - rate).abs() > 1.0).unwrap_or(true) {
+        *g = Some(sh_dsp::fsk9600::G3ruhDecoder::new(rate));
+    }
+    let Some(d) = g.as_mut() else { return };
+    d.process(disc);
+    if d.frames.is_empty() {
+        return;
+    }
+    let frames: Vec<sh_dsp::fsk9600::RawFrame> = d.frames.drain(..).collect();
+    drop(g);
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|t| t.as_secs_f64()).unwrap_or(0.0);
+    {
+        let mut q = lock(&i.aprs_frames);
+        for f in &frames {
+            q.0 += 1;
+            let n = q.0;
+            let hex: String = f.data.iter().map(|b| format!("{b:02x}")).collect();
+            q.1.push_back(match &f.ax25 {
+                Some(a) => {
+                    let info = String::from_utf8_lossy(&a.info);
+                    let pos = sh_dsp::afsk::aprs_position(&info).or_else(|| sh_dsp::afsk::mic_e_position(&a.dst, &info));
+                    json!({
+                        "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": a.tnc2(), "src": a.src, "dst": a.dst, "path": a.path,
+                        "info": info, "lat": pos.map(|p| p.0), "lon": pos.map(|p| p.1), "modem": "9k6", "raw": hex,
+                    })
+                }
+                None => json!({ "n": n, "time": now, "freq_hz": vfo_hz, "tnc2": format!("[9k6 {} bytes] {hex}", f.data.len()), "src": "", "modem": "9k6", "raw": hex }),
+            });
+            while q.1.len() > 200 {
+                q.1.pop_front();
+            }
+        }
+    }
+    let (on, norad) = {
+        let c = lock(&i.cfg);
+        (c.plugins, if c.ground_aprs { None } else { c.selected })
+    };
+    if on {
+        let mut h = lock(&i.plugins);
+        let host = h.get_or_insert_with(plugins::Host::load);
+        for f in frames.iter().filter_map(|f| f.ax25.as_ref()) {
+            host.ax25(f, norad, vfo_hz, now);
+        }
+    }
+}
+
+fn fsk_status(i: &Inner, on: bool) -> Value {
+    let g = lock(&i.fsk);
+    json!({ "on": on, "count": g.as_ref().map(|d| d.count).unwrap_or(0), "bad_crc": g.as_ref().map(|d| d.bad_crc).unwrap_or(0) })
 }
 
 /// Run the SSTV decoder on new audio; finished pictures go to the list.

@@ -282,9 +282,19 @@ impl Demodulator {
         }
     }
 
-    #[allow(dead_code)]
-    fn rate(&self) -> f64 {
+    /// Rate of the channel (and of `fm_raw`).
+    pub fn channel_rate(&self) -> f64 {
         self.fs_ch
+    }
+
+    /// The FM discriminator's output of the last `process` call, before the audio low-pass
+    /// (NFM / WFM only): for data decoders wider than the audio (9600 bd G3RUH).
+    pub fn fm_raw(&self) -> &[f32] {
+        if matches!(self.mode, Mode::Nfm | Mode::Wfm) {
+            &self.raw
+        } else {
+            &[]
+        }
     }
 }
 
