@@ -8,6 +8,7 @@
 //!   GET  /status                 the engine status
 //!   POST /cmd                    any engine command (the app's JSON API)
 //!   GET  /measure?hz=&bw=&secs=  channel at `hz`: peak level, noise floor, SNR, frequency offset
+//!   GET  /fm?secs=               the FM discriminator (before the audio filter) as a WAV at the channel rate
 //!   GET  /spectrum?secs=         the spectrum the app shows, averaged over `secs`: centre, rate, dB per bin
 //!   GET  /cw?secs=               CW decode of the last `secs` of demodulated audio
 //!   GET  /iq?secs=               `secs` of IQ as an SDR++ style WAV (binary)
@@ -36,6 +37,9 @@ pub(crate) struct Tap {
     pub rows: VecDeque<(f64, f64, Vec<f32>)>,
     /// demodulated audio, 48 kHz
     pub audio: VecDeque<f32>,
+    /// the FM discriminator before the audio filter (rad/sample) and its rate: /fm for data decoders
+    pub fm: VecDeque<f32>,
+    pub fm_rate: f64,
 }
 
 pub(crate) struct Lab {
@@ -181,6 +185,23 @@ pub(crate) fn stop(i: &Inner) {
     *lock(&i.tap) = Tap::default();
 }
 
+/// The FM discriminator's samples (NFM / WFM), for /fm.
+pub(crate) fn feed_fm(i: &Inner, fm: &[f32], rate: f64) {
+    if fm.is_empty() {
+        return;
+    }
+    let mut t = lock(&i.tap);
+    if (t.fm_rate - rate).abs() > 0.5 {
+        t.fm.clear();
+        t.fm_rate = rate;
+    }
+    t.fm.extend(fm.iter());
+    let max = (rate * 65.0) as usize;
+    while t.fm.len() > max {
+        t.fm.pop_front();
+    }
+}
+
 /// Called by the DSP thread for every block while the lab link is on.
 pub(crate) fn feed(i: &Inner, center: f64, rate: f64, rows: &[Vec<f32>], audio: &[f32]) {
     let mut t = lock(&i.tap);
@@ -263,6 +284,7 @@ fn handle(i: &Arc<Inner>, mut rq: tiny_http::Request) {
         ("GET", "/cw") => cw(i, num("secs", 20.0).clamp(2.0, 60.0)),
         ("GET", "/iq") => return iq(i, rq, num("secs", 2.0).clamp(0.1, 30.0)),
         ("GET", "/audio") => return audio(i, rq, num("secs", 2.0).clamp(0.1, 120.0)),
+        ("GET", "/fm") => return fm(i, rq, num("secs", 2.0).clamp(0.1, 60.0)),
         ("GET", "/aprs") => Ok(super::aprs_since(i, num("since", 0.0).max(0.0) as u64)),
         ("GET", "/plugins") => Ok(super::plugin_out(i, num("since", 0.0).max(0.0) as u64)),
         ("GET", "/sstv") => Ok(super::sstv_status(i, lock(&i.cfg).sstv)),
@@ -424,6 +446,41 @@ fn cw(i: &Inner, secs: f64) -> Result<Value, String> {
         "text": r.text, "wpm": r.wpm, "snr_db": r.snr_db, "cn0_dbhz": r.cn0_dbhz, "drift_hz_s": r.drift_hz_s,
         "tone_hz": r.tone.first().map(|t| t.1), "secs": a.len() as f64 / sh_dsp::demod::AUDIO_RATE,
     }))
+}
+
+/// The last `secs` of the FM discriminator (before the audio filter: what the 9k6 decoder sees),
+/// 16-bit mono WAV at the channel rate, full scale = pi rad/sample.
+fn fm(i: &Arc<Inner>, rq: tiny_http::Request, secs: f64) {
+    lock(&i.tap).fm.clear();
+    std::thread::sleep(Duration::from_secs_f64(secs));
+    let (a, rate): (Vec<f32>, f64) = {
+        let t = lock(&i.tap);
+        (t.fm.iter().copied().collect(), t.fm_rate)
+    };
+    if a.is_empty() {
+        return reply(rq, 400, &json!({ "ok": false, "error": "no FM samples (NFM / WFM, receiver running?)" }));
+    }
+    let rate = rate.round() as u32;
+    let data_len = (a.len() * 2) as u32;
+    let mut b = Vec::with_capacity(44 + a.len() * 2);
+    b.extend_from_slice(b"RIFF");
+    b.extend_from_slice(&(36 + data_len).to_le_bytes());
+    b.extend_from_slice(b"WAVEfmt ");
+    b.extend_from_slice(&16u32.to_le_bytes());
+    b.extend_from_slice(&1u16.to_le_bytes());
+    b.extend_from_slice(&1u16.to_le_bytes());
+    b.extend_from_slice(&rate.to_le_bytes());
+    b.extend_from_slice(&(rate * 2).to_le_bytes());
+    b.extend_from_slice(&2u16.to_le_bytes());
+    b.extend_from_slice(&16u16.to_le_bytes());
+    b.extend_from_slice(b"data");
+    b.extend_from_slice(&data_len.to_le_bytes());
+    for v in &a {
+        b.extend_from_slice(&(((v / std::f32::consts::PI).clamp(-1.0, 1.0) * 32767.0) as i16).to_le_bytes());
+    }
+    log(i, format!("fm: {:.1} s at {} Hz sent", a.len() as f64 / rate as f64, rate));
+    let h = tiny_http::Header::from_bytes(&b"Content-Type"[..], &b"audio/wav"[..]).unwrap();
+    let _ = rq.respond(tiny_http::Response::from_data(b).with_header(h));
 }
 
 /// `secs` of IQ as a WAV, through the recorder into a scratch file.

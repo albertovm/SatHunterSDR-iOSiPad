@@ -950,6 +950,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
             d.process(&b.samples, &mut audio);
             if i.lab_on.load(Ordering::Relaxed) {
                 lab::feed(&i, b.center_hz, b.rate, &[], &audio);
+                lab::feed_fm(&i, d.fm_raw(), d.channel_rate());
             }
             aprs_feed(&i, &audio, p.vfo_hz);
             sstv_feed(&i, &audio);
