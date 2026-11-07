@@ -68,7 +68,7 @@ def main():
                 ph.cmd(cmd="decimation", factor=dec)
                 ph.cmd(cmd="center", hz=a.center)
                 time.sleep(1.0)
-                gen.off()
+                getattr(gen, "silence", gen.off)()
                 floor = ph._req("GET", "/spectrum?secs=2")
                 c, fs, n = floor["center_hz"], floor["rate"], floor["bins"]
                 base = np.array(floor["db"])

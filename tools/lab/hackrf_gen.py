@@ -217,8 +217,22 @@ class HackRfGen:
         self._set(None)
 
     def cw(self, hz, dbm):
-        # 1 s loop: the tone offset from the LO lands on a whole number of cycles (1 Hz steps)
-        return self._play(hz, dbm, "sathunter_cw", np.ones(100_000, dtype=np.complex64), 100e3)
+        # made in memory (no file per tone): a 1 s loop, the offset from the LO in whole cycles
+        tx, amp, dig = self.settings(hz, dbm)
+        dig = round(dig * 2) / 2
+        self._need(hz, tx, amp)
+        n = self.RATE
+        cyc = round(hz - self.lo)
+        ph = 2 * np.pi * ((cyc * np.arange(n, dtype=np.int64)) % n) / n
+        k = 127 * 10 ** (dig / 20)
+        buf = np.empty(2 * n, dtype=np.int8)
+        buf[0::2] = np.round(k * np.cos(ph))
+        buf[1::2] = np.round(k * np.sin(ph))
+        self._set(buf)
+        self.current = ("sathunter_cw", np.ones(100_000, dtype=np.complex64), 100e3, dbm)
+        self.last = {"hz": hz, "dbm": dbm, "txvga": tx, "amp": amp, "digital_db": dig,
+                     "p0": self.p0(hz, amp), "atten": self.atten, "lo": self.lo}
+        return self.last
 
     def play(self, hz, dbm, name, iq, rate):
         """Any waveform; `dbm` is the waveform's peak level (as Auto Scale on the VSG60)."""

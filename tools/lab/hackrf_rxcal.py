@@ -55,8 +55,8 @@ def main():
         print("floor %.1f dBFS per bin" % floor["noise_dbfs_per_bin"])
         for amp in (False, True):
             for tx in [int(x) for x in a.txvga.split(",")]:
-                gen._need(HZ, tx, amp)
-                gen._set(np.memmap(gen._file("sathunter_cw", np.ones(100_000, dtype=np.complex64), 100e3, 0.0, HZ - gen.lo), dtype=np.int8, mode="r"))
+                gen.settings = lambda hz, dbm, tx=tx, amp=amp: (tx, amp, 0.0)  # force this txvga, full scale
+                gen.cw(HZ, 0.0)
                 time.sleep(0.5)
                 m = ph._req("GET", "/measure?hz=%d&bw=2000&secs=1.5" % HZ)
                 p_rtl = m["peak_dbfs"] + DBFS_TO_RTL_DBM
