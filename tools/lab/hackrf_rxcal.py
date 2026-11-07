@@ -42,7 +42,7 @@ def main():
     st0 = ph.status()
     ph.cmd(cmd="gain", db=12.4)
     ph.cmd(cmd="decimation", factor=2)
-    ph.cmd(cmd="center", hz=HZ)
+    ph.cmd(cmd="center", hz=HZ - 100e3)  # the tone away from the RTL's DC spike
     ph.cmd(cmd="tune", hz=HZ)
     time.sleep(1.5)
     st = ph.status()
@@ -70,6 +70,9 @@ def main():
         ph.cmd(cmd="gain", db=st0.get("gain"))
         ph.cmd(cmd="decimation", factor=st0.get("decimation", 8))
 
+    lv = [r["peak_dbfs"] for r in rows if not r["amp"]]
+    if max(lv) - min(lv) < 10:
+        raise SystemExit("the level does not follow txvga (%.1f dB range): no HackRF signal at %.3f MHz?" % (max(lv) - min(lv), HZ / 1e6))
     # usable points: well above the floor (SNR > 20 dB) and below the ADC clip (< -6 dBFS)
     good = [r for r in rows if r["snr_db"] > 20 and r["peak_dbfs"] < -6]
     cal = {"p0": {}, "p0_amp": {}, "ppm": None, "atten_db": a.atten, "method": "receiver transfer (system-a VSG60 scale)",
