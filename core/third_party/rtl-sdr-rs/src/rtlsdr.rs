@@ -378,6 +378,12 @@ impl RtlSdr {
         self.set_gpio(0, on)
     }
 
+    /// The EEPROM's "force bias tee" bit (RTL-SDR Blog: byte 7 bit 1 cleared, set with
+    /// `rtl_biast -b 1 -w` or rtl_eeprom): the bias tee stays on whatever the software asks.
+    pub fn bias_forced(&self) -> bool {
+        self.force_bt
+    }
+
     #[allow(dead_code)]
     pub fn get_xtal_freq(&self) -> u32 {
         (self.xtal as f32 * (1.0 + self.corr as f32 / 1e6)) as u32

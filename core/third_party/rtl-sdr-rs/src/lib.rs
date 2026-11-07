@@ -236,6 +236,9 @@ impl RtlSdr {
     pub fn set_bias_tee(&self, on: bool) -> Result<()> {
         self.sdr.set_bias_tee(on)
     }
+    pub fn bias_forced(&self) -> bool {
+        self.sdr.bias_forced()
+    }
     pub fn get_tuner_id(&self) -> Result<&str> {
         self.sdr.get_tuner_id()
     }

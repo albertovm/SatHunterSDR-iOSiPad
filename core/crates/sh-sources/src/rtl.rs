@@ -25,6 +25,8 @@ struct Shared {
     pending_gain: AtomicBool,
     bias: AtomicBool,
     pending_bias: AtomicBool,
+    /// The dongle's EEPROM forces the bias tee on (software cannot switch it off)
+    bias_forced: AtomicBool,
     /// Crystal error in ppm (f64 bits): the hardware is tuned to f / (1 + ppm), the blocks
     /// carry the true frequency
     ppm: AtomicU64,
@@ -52,6 +54,7 @@ impl RtlSource {
                 pending_gain: AtomicBool::new(false),
                 bias: AtomicBool::new(false),
                 pending_bias: AtomicBool::new(false),
+                bias_forced: AtomicBool::new(false),
                 ppm: AtomicU64::new(0f64.to_bits()),
                 decimation: AtomicU64::new(1),
                 run: AtomicBool::new(false),
@@ -144,13 +147,26 @@ impl Agc {
     }
 }
 
-fn status_line(tuner: &str, v4: bool, rate: f64, gain: Option<f32>, agc: &Agc, bias: bool) -> String {
+/// 0 off, 1 on, 2 forced on by the EEPROM
+fn bias_state(sh: &Shared) -> u8 {
+    if sh.bias_forced.load(Ordering::SeqCst) {
+        2
+    } else {
+        sh.bias.load(Ordering::SeqCst) as u8
+    }
+}
+
+fn status_line(tuner: &str, v4: bool, rate: f64, gain: Option<f32>, agc: &Agc, bias: u8) -> String {
     let v4 = if v4 { " (RTL-SDR Blog V4)" } else { "" };
     let g = match gain {
         Some(g) => format!("{g:.1} dB"),
         None => format!("auto {:.1} dB", agc.db()),
     };
-    let b = if bias { ", bias tee ON" } else { "" };
+    let b = match bias {
+        2 => ", bias tee ON (forced by the dongle's EEPROM)",
+        1 => ", bias tee ON",
+        _ => "",
+    };
     format!("tuner {tuner}{v4}, {:.3} MS/s, gain {g}{b}", rate / 1e6)
 }
 
@@ -191,10 +207,11 @@ fn worker(id: UsbId, sh: Arc<Shared>, sink: Sink) {
     }
     let tuner = sdr.get_tuner_id().map(|s| s.to_string()).unwrap_or_else(|_| "?".into());
     let v4 = sdr.is_blog_v4();
+    sh.bias_forced.store(sdr.bias_forced(), Ordering::SeqCst);
     let mut gain = gain;
     let mut agc = Agc::new();
     let window = (rate * 0.1) as usize; // one decision per 100 ms
-    set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, sh.bias.load(Ordering::SeqCst)));
+    set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, bias_state(&sh)));
     // The pending flags are left as they are: a change made while the device was opening
     // (the engine tunes right after start) is applied below instead of being lost.
     // 32 kB transfers: ~7 ms at 2.4 MS/s, low latency for the waterfall
@@ -219,12 +236,12 @@ fn worker(id: UsbId, sh: Arc<Shared>, sink: Sink) {
             gain = *sh.gain.lock().unwrap_or_else(|e| e.into_inner());
             agc = Agc::new();
             let _ = ctl.set_tuner_gain(manual(gain.unwrap_or(agc.db())));
-            set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, sh.bias.load(Ordering::SeqCst)));
+            set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, bias_state(&sh)));
         }
         if sh.pending_bias.swap(false, Ordering::SeqCst) {
             let on = sh.bias.load(Ordering::SeqCst);
             match ctl.set_bias_tee(on) {
-                Ok(_) => set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, on)),
+                Ok(_) => set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, bias_state(&sh))),
                 Err(e) => fail(format!("bias tee: {e:?}")),
             }
         }
@@ -239,7 +256,7 @@ fn worker(id: UsbId, sh: Arc<Shared>, sink: Sink) {
                 if gain.is_none() {
                     if let Some(db) = agc.feed(&data, window) {
                         let _ = ctl.set_tuner_gain(manual(db));
-                        set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, sh.bias.load(Ordering::SeqCst)));
+                        set_status(&sh, status_line(&tuner, v4, rate, gain, &agc, bias_state(&sh)));
                     }
                 }
                 out.clear();
