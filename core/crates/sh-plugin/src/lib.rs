@@ -236,7 +236,7 @@ mod tests {
     }
 
     /// Every plugin in the repository loads, and the ones with frame tests (test/frames.txt,
-    /// one TNC2 line per frame) show exactly test/expected.txt.
+    /// one TNC2 line per frame, or `hex:` for a non-AX.25 frame) show exactly test/expected.txt.
     #[test]
     fn repository_plugins_pass_their_tests() {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../plugins");
@@ -254,7 +254,14 @@ mod tests {
             let mut got = Vec::new();
             got.extend(p.on_start("test", 0).unwrap().iter().map(|o| o.line()));
             for line in std::fs::read_to_string(&frames).unwrap().lines().filter(|l| !l.trim().is_empty()) {
-                let f = runtime::Frame::from_tnc2(line).unwrap_or_else(|| panic!("{}: not a TNC2 line: {line}", dir.display()));
+                let f = match line.strip_prefix("hex:") {
+                    // a non-AX.25 HDLC frame: only bytes
+                    Some(h) => runtime::Frame {
+                        bytes: (0..h.trim().len() / 2).map(|k| u8::from_str_radix(&h.trim()[2 * k..2 * k + 2], 16).unwrap()).collect(),
+                        ..Default::default()
+                    },
+                    None => runtime::Frame::from_tnc2(line).unwrap_or_else(|| panic!("{}: not a TNC2 line: {line}", dir.display())),
+                };
                 got.extend(p.on_frame(&f).unwrap().iter().map(|o| o.line()));
             }
             got.extend(p.on_end().unwrap().iter().map(|o| o.line()));

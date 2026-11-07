@@ -1569,8 +1569,8 @@ fn fsk_feed(i: &Inner, disc: &[f32], rate: f64, vfo_hz: f64) {
     if on {
         let mut h = lock(&i.plugins);
         let host = h.get_or_insert_with(plugins::Host::load);
-        for f in frames.iter().filter_map(|f| f.ax25.as_ref()) {
-            host.ax25(f, norad, vfo_hz, now);
+        for f in &frames {
+            host.fsk9600(f, norad, vfo_hz, now);
         }
     }
 }

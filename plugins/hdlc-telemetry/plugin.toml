@@ -1,0 +1,8 @@
+id = "hdlc-telemetry"
+name = "9k6 telemetry"
+version = "0.1"
+author = "SatHunterSDR"
+description = "Any frame of the 9600 bd G3RUH chain: AX.25 frames as text (or hex when they carry binary telemetry), other HDLC frames (AX.100, CSP) as hex. Positions go on the map. Used when no satellite-specific plugin applies."
+level = "easy"
+chain = "fsk9600"
+modes = ["FSK", "GFSK", "G3RUH"]

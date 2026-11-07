@@ -27,6 +27,7 @@
   ],
   "plugins": [
     { "id": "iss-aprs", "path": "plugins/iss-aprs" },
-    { "id": "aprs-map", "path": "plugins/aprs-map" }
+    { "id": "aprs-map", "path": "plugins/aprs-map" },
+    { "id": "hdlc-telemetry", "path": "plugins/hdlc-telemetry" }
   ]
 }
