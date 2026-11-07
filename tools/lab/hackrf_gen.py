@@ -123,10 +123,16 @@ class HackRfGen:
         cmd = [self.exe, "-t", path, "-f", "%d" % round(lo), "-s", "%d" % self.RATE, "-x", str(tx), "-a", "1" if amp else "0", "-R"]
         if self.serial:
             cmd += ["-d", self.serial]
-        self.proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-        time.sleep(0.6)  # USB start, PLL lock
-        if self.proc.poll() is not None:
+        # the previous hackrf_transfer can hold the USB device for a moment after it is stopped
+        err = ""
+        for attempt in range(8):
+            self.proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+            time.sleep(0.6)  # USB start, PLL lock
+            if self.proc.poll() is None:
+                break
             err = self.proc.stderr.read().decode(errors="replace")
+            time.sleep(0.5 + 0.5 * attempt)
+        else:
             raise SystemExit(f"HackRF: hackrf_transfer stopped: {err.strip()[-300:]}")
         self.current = (path, hz, tx, amp)
 
