@@ -2,6 +2,7 @@
 
     python tools/lab/hackrf_cal.py --atten 70.3 [--freqs 144.8e6,145.8e6,435e6,436e6,437e6,438e6]
 
+Needs hackrf_server.py running on the PC with the HackRF (the BB60C on the same PC).
 Chain: HackRF -> the attenuators and cable used at the measurements (--atten, their total as
 measured with the VSG60/BB60C path calibration) -> BB60C. For every frequency, txvga step and amplifier
 setting it plays a CW tone at full digital scale and reads the BB60C: output power, frequency error,
@@ -44,7 +45,9 @@ def main():
             for amp in (False, True):
                 for tx in tvs:
                     gen.cal = {}
-                    gen._run(gen._file("sathunter_cw", np.ones(20_000, dtype=np.complex64), 100e3, 0.0), f, tx, amp)
+                    gen.settings = lambda hz, dbm, tx=tx, amp=amp: (tx, amp, 0.0)  # this txvga, full scale
+                    gen.cw(f, 0.0)
+                    time.sleep(0.3)
                     p, fh = bb.peak(f, span=50e3, rbw=100, ref_dbm=10.0 - a.atten)
                     lo, _ = bb.peak(f - gen.OFFSET, span=20e3, rbw=100, ref_dbm=10.0 - a.atten)
                     row = {"hz": f, "amp": amp, "txvga": tx, "out_dbm": p + a.atten, "err_hz": fh - f, "lo_dbc": lo - p}
@@ -54,7 +57,8 @@ def main():
         drift = []
         t0 = time.time()
         while time.time() - t0 < a.warm * 60:
-            gen._run(gen._file("sathunter_cw", np.ones(20_000, dtype=np.complex64), 100e3, 0.0), 436e6, 20, False)
+            gen.settings = lambda hz, dbm: (20, False, 0.0)
+            gen.cw(436e6, 0.0)
             p, fh = bb.peak(436e6, span=50e3, rbw=100, ref_dbm=10.0 - a.atten)
             drift.append({"t": time.time() - t0, "out_dbm": p + a.atten, "err_hz": fh - 436e6})
             print("drift %4.0f s: %+6.2f dBm %+6.0f Hz" % (drift[-1]["t"], drift[-1]["out_dbm"], drift[-1]["err_hz"]))

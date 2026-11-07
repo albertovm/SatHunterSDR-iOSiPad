@@ -57,7 +57,7 @@ def main():
     try:
         floor = ph._req("GET", "/measure?hz=%d&bw=2000&secs=2" % HZ)
         print("floor %.1f dBFS per bin" % floor["noise_dbfs_per_bin"])
-        for amp in (False, True):
+        for amp in (False,):
             for tx in [int(x) for x in a.txvga.split(",")]:
                 gen.settings = lambda hz, dbm, tx=tx, amp=amp: (tx, amp, 0.0)  # force this txvga, full scale
                 gen.cw(HZ, 0.0)
