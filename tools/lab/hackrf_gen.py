@@ -50,9 +50,14 @@ class HackRfGen:
         self.proc = None
         self.current = None  # (file, hz, txvga, amp)
         self.last = {}
-        r = subprocess.run([self.exe, "-h"], capture_output=True, text=True)
-        if "hackrf_transfer" not in (r.stdout + r.stderr):
+        import shutil
+        found = shutil.which(self.exe)
+        if not found:
+            conda = os.path.join(os.path.expanduser("~"), "radioconda", "Library", "bin", "hackrf_transfer.exe")
+            found = conda if os.path.exists(conda) else None
+        if not found:
             raise SystemExit(f"HackRF: {self.exe} not found (radioconda / PothosSDR on the PATH?)")
+        self.exe = found
 
     # ---- level model
     def p0(self, hz, amp):
