@@ -20,7 +20,7 @@ fn main() {
     }
     let x: Vec<f32> = data.chunks_exact(2).map(|c| i16::from_le_bytes([c[0], c[1]]) as f32 / 32768.0).collect();
     let env = |k: &str, v: f64| std::env::var(k).ok().and_then(|s| s.parse().ok()).unwrap_or(v);
-    let mut d = G3ruhDecoder::with_params(fs as f64, env("BAUD", 9600.0), env("LP", 0.6), env("PG", 0.25));
+    let mut d = if std::env::var("LP").is_ok() { G3ruhDecoder::with_params(fs as f64, env("BAUD", 9600.0), env("LP", 0.55), env("PG", 0.1)) } else { G3ruhDecoder::new(fs as f64) };
     let mut all = Vec::new();
     for c in x.chunks(960) {
         d.process(c);

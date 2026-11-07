@@ -44,6 +44,13 @@ pub struct G3ruhDecoder {
     pub frames: VecDeque<RawFrame>,
     pub count: u64,
     pub bad_crc: u64,
+    /// A second detector with other filter / clock settings, frames merged (same bytes within
+    /// 1 s = one frame): the phone's wide discriminator wants a narrow low-pass, some stations'
+    /// pre-filtered SatNOGS audio a wider one with a slow clock
+    alt: Option<Box<G3ruhDecoder>>,
+    seen: VecDeque<(u64, Vec<u8>)>,
+    samples: u64,
+    reported: u64,
 }
 
 impl G3ruhDecoder {
@@ -53,8 +60,11 @@ impl G3ruhDecoder {
     }
 
     pub fn with_rate(fs: f64, baud: f64) -> Self {
-        // tuned on SatNOGS recordings (testdata/satnogs): a slow clock loop and a wider low-pass
-        Self::with_params(fs, baud, 0.7, 0.05)
+        // tuned on the phone's own discriminator (lab /fm recordings, 2026-11-07) and on SatNOGS
+        // audio (testdata/satnogs): low-pass 0.55 x baud, clock gain 0.1; plus 0.7 / 0.05
+        let mut d = Self::with_params(fs, baud, 0.55, 0.1);
+        d.alt = Some(Box::new(Self::with_params(fs, baud, 0.7, 0.05)));
+        d
     }
 
     /// `lp`: low-pass cut-off as a fraction of the bit rate; `pll_gain`: clock correction per crossing.
@@ -80,6 +90,10 @@ impl G3ruhDecoder {
             frames: VecDeque::new(),
             count: 0,
             bad_crc: 0,
+            alt: None,
+            seen: VecDeque::new(),
+            samples: 0,
+            reported: 0,
         }
     }
 
@@ -89,6 +103,37 @@ impl G3ruhDecoder {
 
     /// Discriminator samples (any scale: the sign decides).
     pub fn process(&mut self, disc: &[f32]) {
+        let before = self.frames.len();
+        self.run(disc);
+        self.samples += disc.len() as u64;
+        let Some(mut alt) = self.alt.take() else { return };
+        alt.run(disc);
+        // merge: each frame once
+        let now = self.samples;
+        let win = self.fs as u64;
+        while self.seen.front().is_some_and(|(t, _)| now.saturating_sub(*t) > win) {
+            self.seen.pop_front();
+        }
+        let mine: Vec<RawFrame> = self.frames.drain(before.min(self.frames.len())..).collect();
+        let other: Vec<RawFrame> = alt.frames.drain(..).collect();
+        self.alt = Some(alt);
+        let mut added = 0u64;
+        for f in mine.into_iter().chain(other) {
+            if self.seen.iter().any(|(_, d)| *d == f.data) {
+                continue;
+            }
+            self.seen.push_back((now, f.data.clone()));
+            self.frames.push_back(f);
+            added += 1;
+        }
+        self.reported += added;
+        self.count = self.reported;
+        while self.frames.len() > 100 {
+            self.frames.pop_front();
+        }
+    }
+
+    fn run(&mut self, disc: &[f32]) {
         self.buf.clear();
         self.lp.process(disc, &mut self.buf);
         let buf = std::mem::take(&mut self.buf);
@@ -173,7 +218,7 @@ impl G3ruhDecoder {
             if crc16(body) == got {
                 self.count += 1;
                 self.frames.push_back(RawFrame { data: body.to_vec(), ax25: Ax25Frame::parse(body) });
-                while self.frames.len() > 100 {
+                while self.alt.is_none() && self.frames.len() > 100 {
                     self.frames.pop_front();
                 }
             } else if n >= 17 {
