@@ -50,6 +50,8 @@ pub struct Config {
     pub plugins: bool,
     /// SSTV decoder (Robot 36, PD120) on the demodulated audio
     pub sstv: bool,
+    /// 9600 bd G3RUH FSK decoder on the FM discriminator (needs NFM 15-25 kHz)
+    pub fsk9k6: bool,
     /// Terrestrial APRS mode: fixed frequency, no Doppler tracking, the generic APRS plugins
     /// (for testing the decoder and the map on the local APRS network)
     pub ground_aprs: bool,
@@ -92,6 +94,7 @@ impl Default for Config {
             aprs: false,
             plugins: true,
             sstv: false,
+            fsk9k6: false,
             ground_aprs: false,
             ground_aprs_hz: 144.800e6,
             freqs: Default::default(),

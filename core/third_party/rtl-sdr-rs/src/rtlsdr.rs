@@ -43,6 +43,7 @@ pub struct RtlSdr {
     corr: i32, // PPM
     force_bt: bool,
     force_ds: bool,
+    eeprom7: Option<u8>,
     fir: [i32; FIR_LEN],
 }
 
@@ -62,6 +63,7 @@ impl RtlSdr {
             corr: 0,
             force_bt: false,
             force_ds: false,
+            eeprom7: None,
             fir: *DEFAULT_FIR,
         }
     }
@@ -123,10 +125,14 @@ impl RtlSdr {
 
         // Hack to force the Bias T to always be on if we set the IR-Endpoint bit in the EEPROM to 0. Default on EEPROM is 1.
         let mut buf: [u8; EEPROM_SIZE] = [0; EEPROM_SIZE];
-        self.handle.read_eeprom(&mut buf, 0, EEPROM_SIZE)?;
-        self.force_bt = buf[7] & 0x02 == 0;
+        // Only a valid RTL2832 EEPROM (header 0x28 0x32) counts: a failed or blank read (zeros)
+        // would otherwise read as "force bias tee" and keep the bias tee on for good (SatHunterSDR)
+        let ok = self.handle.read_eeprom(&mut buf, 0, EEPROM_SIZE).is_ok() && buf[0] == 0x28 && buf[1] == 0x32;
+        info!("EEPROM header {:02x} {:02x}, byte 7 {:02x} ({})", buf[0], buf[1], buf[7], if ok { "valid" } else { "ignored" });
+        self.eeprom7 = if ok { Some(buf[7]) } else { None };
+        self.force_bt = ok && buf[7] & 0x02 == 0;
         // Hack to force direct sampling mode to always be on if we set the remote-enabled bit in the EEPROM to 1. Default on EEPROM is 0.
-        self.force_ds = buf[7] & 0x01 != 0;
+        self.force_ds = ok && buf[7] & 0x01 != 0;
         // TODO: if(force_ds){tuner_type = TUNER_UNKNOWN}
         info!("Init tuner");
         self.tuner.init(&self.handle)?;
@@ -376,6 +382,17 @@ impl RtlSdr {
 
     pub fn set_bias_tee(&self, on: bool) -> Result<()> {
         self.set_gpio(0, on)
+    }
+
+    /// The EEPROM's "force bias tee" bit (RTL-SDR Blog: byte 7 bit 1 cleared, set with
+    /// `rtl_biast -b 1 -w` or rtl_eeprom): the bias tee stays on whatever the software asks.
+    pub fn bias_forced(&self) -> bool {
+        self.force_bt
+    }
+
+    /// EEPROM byte 7 (None when the EEPROM could not be read or is not an RTL2832 one).
+    pub fn eeprom_byte7(&self) -> Option<u8> {
+        self.eeprom7
     }
 
     #[allow(dead_code)]

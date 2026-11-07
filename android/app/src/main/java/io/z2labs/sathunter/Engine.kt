@@ -44,6 +44,9 @@ data class Rec(val name: String, val secs: Double, val bytes: Long, val dropped:
 /** One decoded APRS / AX.25 frame */
 data class AprsFrame(val n: Long, val time: Double, val tnc2: String, val src: String, val info: String, val lat: Double?, val lon: Double?)
 /** SSTV decoder: on, the picture being received, how many finished */
+/** 9600 bd G3RUH FSK decoder (its frames are in the AX.25 list with the APRS ones) */
+data class FskState(val on: Boolean = false, val count: Long = 0, val badCrc: Long = 0)
+
 data class SstvState(val on: Boolean = false, val mode: String? = null, val rows: Int = 0, val height: Int = 0, val count: Long = 0)
 
 /** A station on the map (from a decoder plugin or a decoded APRS position) */
@@ -97,6 +100,7 @@ data class Status(
     val pins: List<Pin> = emptyList(),
     /** Terrestrial APRS mode (fixed frequency, no tracking) and its frequency */
     val groundAprs: Boolean = false,
+    val fsk: FskState = FskState(),
     val groundAprsHz: Double = 144.8e6,
     val sstv: SstvState = SstvState(),
     /** null when the lab link is off */
@@ -336,6 +340,7 @@ class Engine(dataDir: String) {
     fun aprsClear() = async("aprs_clear")
     fun plugins(on: Boolean) = async("plugins", JSONObject().put("on", on))
     fun sstv(on: Boolean) = async("sstv", JSONObject().put("on", on))
+    fun fsk9k6(on: Boolean) = async("fsk9k6", JSONObject().put("on", on))
     fun groundAprs(on: Boolean, hz: Double? = null) = async("ground_aprs", JSONObject().put("on", on).apply { if (hz != null) put("hz", hz) })
 
     /** The SSTV picture being received (or the last one), refreshed by the poller while SSTV is on. */
@@ -438,6 +443,7 @@ class Engine(dataDir: String) {
                 }
             } ?: emptyList(),
             groundAprs = j.optJSONObject("ground_aprs")?.optBoolean("on") ?: false,
+            fsk = j.optJSONObject("fsk9k6")?.let { FskState(it.optBoolean("on"), it.optLong("count"), it.optLong("bad_crc")) } ?: FskState(),
             groundAprsHz = j.optJSONObject("ground_aprs")?.optDouble("hz", 144.8e6) ?: 144.8e6,
             pins = j.optJSONObject("plugins")?.optJSONArray("pins")?.let { a ->
                 (0 until a.length()).mapNotNull { k ->

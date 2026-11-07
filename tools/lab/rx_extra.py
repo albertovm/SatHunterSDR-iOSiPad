@@ -48,6 +48,36 @@ def aprs_waveform(rate, dev, n_packets=10, gap_s=0.3):
     return [complex(v) for v in np.exp(1j * ph)], len(a) / rate
 
 
+def g3ruh_waveform(rate, dev, n_packets=10, gap_s=0.05, size=80):
+    """n_packets AX.25 UI frames (numbered), 9600 bd G3RUH: HDLC + NRZI, scrambled 1 + x^12 + x^17,
+    raised-cosine NRZ (roll-off 0.5), FM with `dev` peak deviation."""
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
+    from aprs_gen import ui_frame, hdlc_nrzi
+    baud = 9600.0
+    bits = []
+    for k in range(n_packets):
+        raw = ui_frame("HG0LAB-2", "CQ", [], (f"SatHunter 9k6 lab frame {k:02d} " + "x" * size)[:size].encode())
+        bits += hdlc_nrzi(raw, 24, 4) + [1] * int(gap_s * baud)
+    reg, line = 0, []
+    for d in bits:
+        s = d ^ ((reg >> 11) & 1) ^ ((reg >> 16) & 1)
+        reg = ((reg << 1) | s) & 0x3FFFF
+        line.append(s)
+    sps = rate / baud
+    n = int(np.ceil(len(line) * sps))
+    t = np.arange(-4 * sps, 4 * sps + 1) / sps
+    beta = 0.5
+    den = 1 - (2 * beta * t) ** 2
+    h = np.sinc(t) * np.where(np.abs(den) < 1e-6, np.pi / 4, np.cos(np.pi * beta * t) / np.where(np.abs(den) < 1e-6, 1, den))
+    imp = np.zeros(n)
+    idx = ((np.arange(len(line)) + 0.5) * sps).astype(int)
+    imp[idx[idx < n]] = (2 * np.array(line) - 1)[idx < n]
+    bb = np.convolve(imp, h, mode="same")
+    bb /= np.abs(bb).max()
+    ph = 2 * np.pi * dev * np.cumsum(bb) / rate
+    return np.exp(1j * ph).astype(np.complex64), n / rate
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--phone", required=True)
@@ -55,8 +85,13 @@ def main():
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--vsg-dir", default=r"C:\sathunter_lab")
     ap.add_argument("--atten", type=float, default=0.0)
+    ap.add_argument("--gen", choices=["vsg60", "hackrf"], default="vsg60")
     ap.add_argument("--freq", type=float, default=436.6e6)
-    ap.add_argument("--part", choices=["twotone", "doppler", "aprs"], required=True)
+    ap.add_argument("--part", choices=["twotone", "doppler", "aprs", "g3ruh"], required=True)
+    ap.add_argument("--g3ruh-levels", default="-100,-105,-108,-110,-112,-114,-116,-118,-120", help="g3ruh: dBm")
+    ap.add_argument("--g3ruh-dev", type=float, default=3000.0, help="g3ruh: FM deviation, Hz")
+    ap.add_argument("--g3ruh-bws", default="20000", help="g3ruh: NFM channel bandwidths, Hz")
+    ap.add_argument("--g3ruh-secs", type=float, default=20.0, help="g3ruh: listening time per level")
     ap.add_argument("--gains", default="12.5,29.7", help="twotone: RTL gains")
     ap.add_argument("--levels", default="-125,-120,-115,-110,-105,-100,-97,-94,-91,-88,-85,-82,-79",
                     help="twotone: level of each tone at the receiver input, dBm")
@@ -75,7 +110,11 @@ def main():
 
     phone = Phone(a.phone, a.pin)
     host, port = (a.vsg.split(":") + ["5124"])[:2]
-    gen = Vsg60Gen(a.atten, host, int(port), a.vsg_dir, None)
+    if a.gen == "hackrf":
+        from hackrf_gen import HackRfGen
+        gen = HackRfGen(a.atten)
+    else:
+        gen = Vsg60Gen(a.atten, host, int(port), a.vsg_dir, None)
     root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     out = os.path.join(root, "measurements", time.strftime("%Y-%m-%d_%H%M") + "_" + (a.name or a.part))
     os.makedirs(out, exist_ok=True)
@@ -146,6 +185,40 @@ def main():
                 row = {"cpu_pct_after": cpu_load(), "bw_hz": bw, "level_dbm": lv, "decoded": len(good), "expected": expected, "success": min(1.0, len(good) / expected), "bad_crc_total": r["bad_crc"]}
                 res["aprs"]["rows"].append(row)
                 phone.log(f"APRS {bw / 1e3:g} kHz {lv:.0f} dBm: {len(good)} of ~{expected:.0f} packets ({100 * row['success']:.0f} %)")
+                save()
+            gen.off()
+        elif a.part == "g3ruh":
+            phone.cmd(cmd="gain", db=12.5)
+            phone.cmd(cmd="fsk9k6", on=True)
+            phone.cmd(cmd="tune", hz=a.freq)
+            time.sleep(1.5)
+            rate = 100e3
+            iq, loop_s = g3ruh_waveform(rate, a.g3ruh_dev)
+            per_s = 10 / loop_s
+            res["g3ruh"] = {"deviation_hz": a.g3ruh_dev, "frames_per_loop": 10, "loop_s": loop_s, "rows": []}
+            lv_list = [float(x) for x in a.g3ruh_levels.split(",")]
+            runs = [(float(bw), lv) for bw in a.g3ruh_bws.split(",") for lv in lv_list]
+            cur_bw = None
+            for k, (bw, lv) in enumerate(runs):
+                if bw != cur_bw:
+                    phone.cmd(cmd="mode", mode="NFM", bw=bw)
+                    cur_bw = bw
+                    time.sleep(1.0)
+                phone.phase("9k6 G3RUH", k + 1, len(runs), f"NFM {bw / 1e3:g} kHz, {lv:.0f} dBm, {a.g3ruh_dev / 1e3:.1f} kHz deviation")
+                gen.play(a.freq, lv, f"sathunter_g3ruh_{int(a.g3ruh_dev)}.cf32", iq, rate)
+                time.sleep(1.0)
+                wait_idle(phone)
+                c0 = phone._req("GET", "/aprs?since=0")["count"]
+                t0 = time.time()
+                time.sleep(a.g3ruh_secs)
+                r = phone._req("GET", f"/aprs?since={c0}")
+                dt = time.time() - t0
+                good = [f for f in r["frames"] if "SatHunter 9k6 lab frame" in f.get("info", "")]
+                expected = dt * per_s
+                row = {"cpu_pct_after": cpu_load(), "bw_hz": bw, "level_dbm": lv, "decoded": len(good), "expected": expected,
+                       "success": min(1.0, len(good) / expected)}
+                res["g3ruh"]["rows"].append(row)
+                phone.log(f"9k6 {bw / 1e3:g} kHz {lv:.0f} dBm: {len(good)} of ~{expected:.0f} frames ({100 * row['success']:.0f} %)")
                 save()
             gen.off()
         else:

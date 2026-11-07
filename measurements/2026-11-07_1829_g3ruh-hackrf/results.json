@@ -1,0 +1,165 @@
+{
+ "started": "2026-11-07 18:29:59",
+ "part": "g3ruh",
+ "freq_hz": 436600000.0,
+ "atten_db": 70.5,
+ "phone": {
+  "source_status": "tuner r820t [eeprom7 16], 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "decimation": 8,
+  "ppm": -0.2,
+  "gain": 12.5
+ },
+ "g3ruh": {
+  "deviation_hz": 3000.0,
+  "frames_per_loop": 10,
+  "loop_s": 1.55105,
+  "rows": [
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -100.0,
+    "decoded": 129,
+    "expected": 129.55298672323127,
+    "success": 0.9957315787368713
+   },
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -105.0,
+    "decoded": 129,
+    "expected": 129.30537295416042,
+    "success": 0.9976383583513682
+   },
+   {
+    "cpu_pct_after": 22.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -108.0,
+    "decoded": 129,
+    "expected": 129.3202801678552,
+    "success": 0.9975233569905704
+   },
+   {
+    "cpu_pct_after": 12.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -110.0,
+    "decoded": 130,
+    "expected": 129.81478832303037,
+    "success": 1.0
+   },
+   {
+    "cpu_pct_after": 4.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -112.0,
+    "decoded": 130,
+    "expected": 129.86065513571734,
+    "success": 1.0
+   },
+   {
+    "cpu_pct_after": 4.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -114.0,
+    "decoded": 129,
+    "expected": 129.9003610788963,
+    "success": 0.9930688331316534
+   },
+   {
+    "cpu_pct_after": 12.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -116.0,
+    "decoded": 85,
+    "expected": 129.2995133646982,
+    "success": 0.6573883983635084
+   },
+   {
+    "cpu_pct_after": 12.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -118.0,
+    "decoded": 3,
+    "expected": 129.7463039869051,
+    "success": 0.02312204592974595
+   },
+   {
+    "cpu_pct_after": 9.0,
+    "bw_hz": 20000.0,
+    "level_dbm": -120.0,
+    "decoded": 0,
+    "expected": 129.24838337406828,
+    "success": 0.0
+   },
+   {
+    "cpu_pct_after": 15.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -100.0,
+    "decoded": 130,
+    "expected": 129.86663462234063,
+    "success": 1.0
+   },
+   {
+    "cpu_pct_after": 4.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -105.0,
+    "decoded": 130,
+    "expected": 129.78570711289518,
+    "success": 1.0
+   },
+   {
+    "cpu_pct_after": 8.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -108.0,
+    "decoded": 131,
+    "expected": 129.8924893691282,
+    "success": 1.0
+   },
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -110.0,
+    "decoded": 130,
+    "expected": 129.99599751057784,
+    "success": 1.0
+   },
+   {
+    "cpu_pct_after": 10.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -112.0,
+    "decoded": 129,
+    "expected": 129.35747749350995,
+    "success": 0.9972365146535276
+   },
+   {
+    "cpu_pct_after": 3.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -114.0,
+    "decoded": 120,
+    "expected": 129.30011592478982,
+    "success": 0.9280734138691767
+   },
+   {
+    "cpu_pct_after": 16.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -116.0,
+    "decoded": 80,
+    "expected": 129.75939583460962,
+    "success": 0.6165256819010426
+   },
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -118.0,
+    "decoded": 2,
+    "expected": 129.7295276072119,
+    "success": 0.015416690686298438
+   },
+   {
+    "cpu_pct_after": 54.0,
+    "bw_hz": 25000.0,
+    "level_dbm": -120.0,
+    "decoded": 0,
+    "expected": 129.6535619956636,
+    "success": 0.0
+   }
+  ]
+ },
+ "finished": "2026-11-07 18:37:23"
+}

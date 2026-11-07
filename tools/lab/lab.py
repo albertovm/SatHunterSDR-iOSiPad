@@ -373,7 +373,7 @@ def main():
     ap.add_argument("--phone", required=True, help="the phone's LAN address (lab console)")
     ap.add_argument("--pin", required=True, help="the PIN on the lab console")
     ap.add_argument("--port", type=int, default=8765)
-    ap.add_argument("--gen", choices=["demo", "manual", "vsg60"], default="demo")
+    ap.add_argument("--gen", choices=["demo", "manual", "vsg60", "hackrf"], default="demo")
     ap.add_argument("--vsg", default="192.168.1.199:5124", help="VSG software SCPI host:port")
     ap.add_argument("--vsg-dir", default=r"C:\sathunter_lab", help="folder the script writes the .cf32 waveforms into")
     ap.add_argument("--vsg-path", help="the same folder as the VSG PC sees it (default: --vsg-dir)")
@@ -401,7 +401,8 @@ def main():
     a = ap.parse_args()
 
     phone = Phone(a.phone, a.pin, a.port)
-    gen = {"demo": lambda: DemoGen(), "manual": lambda: ManualGen(a.atten), "vsg60": lambda: Vsg60Gen(a.atten, a.vsg.split(":")[0], int(a.vsg.split(":")[1]) if ":" in a.vsg else 5124, a.vsg_dir, a.vsg_path)}[a.gen]()
+    gen = {"demo": lambda: DemoGen(), "manual": lambda: ManualGen(a.atten), "vsg60": lambda: Vsg60Gen(a.atten, a.vsg.split(":")[0], int(a.vsg.split(":")[1]) if ":" in a.vsg else 5124, a.vsg_dir, a.vsg_path),
+           "hackrf": lambda: __import__("hackrf_gen").HackRfGen(a.atten)}[a.gen]()
     freq = gen.fixed_freq or a.freq
     levels = [float(x) for x in a.levels.split(",") if x.strip()]
     cw_levels = [float(x) for x in a.cw_levels.split(",") if x.strip()]

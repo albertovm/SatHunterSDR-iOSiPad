@@ -1,0 +1,9 @@
+{
+ "method": "receiver transfer (system-a VSG60 scale), levels at the LNA input; hackrf_rxcal.py 2026-11-07 02:15 and 02:31, txvga 4-32: 1.00 dB/dB, +-0.5 dB",
+ "atten_db": 70.5,
+ "p0": {"436600000": -45.6},
+ "p0_amp": {},
+ "ppm": 2.07,
+ "allow_amp": false,
+ "made": "2026-11-07 02:31"
+}

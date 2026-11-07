@@ -1,0 +1,4 @@
+text HG0SAT > CQ: telemetry 001 batt 7.42V temp 21C
+text HA5ABC-7 > APRS: !4729.87N/01902.41E>9k6 position
+map 47.497833 19.040167 HA5ABC-7
+text HDLC 34 bytes: 85 00 85 00 a1 b2 c3 d4 e5 f6 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e ...

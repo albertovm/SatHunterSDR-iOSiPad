@@ -15,6 +15,10 @@ pixel error, 0-255, away from the edges). Raw data and every received picture:
 
 ![Error vs level](plots.png)
 
+> **Caveat (2026-11-07):** with a HackRF at home the same test needs about 12 dB more signal, while APRS from the same
+> chain agrees with the lab. These levels may be optimistic (VSG60A level at a 25 kS/s ARB?); to be checked with the BB60C.
+> See [the home HackRF report](../2026-11-07_home-hackrf/report.md).
+
 | Level at the receiver input | Mean pixel error | Picture |
 |---|---|---|
 | -100 ... -120 dBm | 6.1 ... 9.6 | clean |

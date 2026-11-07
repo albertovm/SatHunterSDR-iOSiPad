@@ -111,6 +111,7 @@ def main():
     ap.add_argument("--pin", required=True)
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--atten", type=float, default=0.0)
+    ap.add_argument("--gen", choices=["vsg60", "hackrf"], default="vsg60")
     ap.add_argument("--freq", type=float, default=436.6e6)
     ap.add_argument("--dev", type=float, default=3000.0)
     ap.add_argument("--levels", default="-100,-110,-115,-118,-120")
@@ -130,7 +131,11 @@ def main():
     print(f"{mname} waveform: {secs:.1f} s, {len(iq)} samples at {a.rate / 1e3:g} kS/s")
     phone = Phone(a.phone, a.pin)
     host, port = (a.vsg.split(":") + ["5124"])[:2]
-    gen = Vsg60Gen(a.atten, host, int(port), r"C:\sathunter_lab", None)
+    if a.gen == "hackrf":
+        from hackrf_gen import HackRfGen
+        gen = HackRfGen(a.atten)
+    else:
+        gen = Vsg60Gen(a.atten, host, int(port), r"C:\sathunter_lab", None)
     res = {"started": time.strftime("%Y-%m-%d %H:%M:%S"), "freq_hz": a.freq, "deviation_hz": a.dev, "mode": mname, "rows": []}
 
     def save():

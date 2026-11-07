@@ -12,6 +12,7 @@ use std::collections::VecDeque;
 const BUILTIN: &[(&str, &str, &str)] = &[
     ("plugins/iss-aprs", include_str!("../../../../plugins/iss-aprs/plugin.toml"), include_str!("../../../../plugins/iss-aprs/decoder.lua")),
     ("plugins/aprs-map", include_str!("../../../../plugins/aprs-map/plugin.toml"), include_str!("../../../../plugins/aprs-map/decoder.lua")),
+    ("plugins/hdlc-telemetry", include_str!("../../../../plugins/hdlc-telemetry/plugin.toml"), include_str!("../../../../plugins/hdlc-telemetry/decoder.lua")),
 ];
 
 const KEEP: usize = 300;
@@ -91,6 +92,43 @@ impl Host {
         }
     }
 
+    /// A frame from the 9600 bd G3RUH chain: AX.25 (src, dst, path, info) or another HDLC frame
+    /// (empty addresses, the whole frame in `bytes`).
+    pub fn fsk9600(&mut self, f: &sh_dsp::fsk9600::RawFrame, norad: Option<u64>, freq_hz: f64, time: f64) {
+        let frame = match &f.ax25 {
+            Some(a) => Frame {
+                src: a.src.clone(),
+                dst: a.dst.clone(),
+                path: a.path.clone(),
+                info: String::from_utf8_lossy(&a.info).into_owned(),
+                bytes: a.info.clone(),
+                time,
+                ..Default::default()
+            },
+            None => Frame { bytes: f.data.clone(), time, ..Default::default() },
+        };
+        self.run(Chain::Fsk9600, "FSK", norad, freq_hz, time, &frame);
+    }
+
+    fn run(&mut self, chain: Chain, mode: &str, norad: Option<u64>, freq_hz: f64, time: f64, frame: &Frame) {
+        for k in self.pick(chain, norad, mode) {
+            let id = self.plugins[k].manifest.id.clone();
+            match self.plugins[k].on_frame(frame) {
+                Ok(outs) => {
+                    for o in outs {
+                        self.push(&id, time, freq_hz, o);
+                    }
+                }
+                Err(e) => {
+                    self.errors.push(format!("{id}: {e}"));
+                    if self.errors.len() > 20 {
+                        self.errors.remove(0);
+                    }
+                }
+            }
+        }
+    }
+
     fn push(&mut self, id: &str, time: f64, freq_hz: f64, o: Output) {
         self.out.0 += 1;
         let n = self.out.0;
@@ -152,7 +190,7 @@ mod tests {
     fn builtins_load_and_pick_by_satellite() {
         let mut h = Host::load();
         assert!(h.errors.is_empty(), "{:?}", h.errors);
-        assert_eq!(h.ids(), vec!["iss-aprs", "aprs-map"]);
+        assert_eq!(h.ids(), vec!["iss-aprs", "aprs-map", "hdlc-telemetry"]);
         let f = frame("HA5ABC-7>APRS,RS0ISS*:!4729.87N/01902.41E>Hello");
         // ISS selected: only iss-aprs
         h.ax25(&f, Some(25544), 145.825e6, 1.0);
@@ -173,5 +211,20 @@ mod tests {
         assert_eq!(pins.len(), 1);
         assert_eq!(pins[0]["label"], "HA5ABC-7");
         assert_eq!(pins[0]["time"], 3.0);
+    }
+
+    #[test]
+    fn fsk9600_frames_reach_the_telemetry_plugin() {
+        let mut h = Host::load();
+        let ax = frame("HG0SAT>CQ:batt 7.42V");
+        let mut raw = vec![0x82u8, 0x86, 0x9c, 0x40, 0x40, 0x40, 0x60];
+        raw.extend_from_slice(&ax.info);
+        h.fsk9600(&sh_dsp::fsk9600::RawFrame { data: vec![0x85, 0, 0x85, 0, 1, 2, 3], ax25: None }, None, 436.6e6, 1.0);
+        h.fsk9600(&sh_dsp::fsk9600::RawFrame { data: raw, ax25: Some(ax) }, None, 436.6e6, 2.0);
+        let outs = h.since(0)["out"].as_array().unwrap().clone();
+        assert_eq!(outs.len(), 2, "{outs:?}");
+        assert!(outs.iter().all(|o| o["plugin"] == "hdlc-telemetry"));
+        assert_eq!(outs[0]["text"], "HDLC 7 bytes: 85 00 85 00 01 02 03");
+        assert_eq!(outs[1]["text"], "HG0SAT > CQ: batt 7.42V");
     }
 }
