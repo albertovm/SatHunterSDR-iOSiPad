@@ -1,0 +1,37 @@
+{
+ "started": "2026-11-07 03:45:35",
+ "freq_hz": 436600000.0,
+ "deviation_hz": 3000.0,
+ "mode": "Robot 36",
+ "rows": [
+  {
+   "level_dbm": -120.0,
+   "received": true,
+   "mean_error": 21.53533336954947,
+   "mode": "Robot 36"
+  },
+  {
+   "level_dbm": -128.0,
+   "received": true,
+   "mean_error": 106.22560390409967,
+   "mode": "Robot 36"
+  },
+  {
+   "level_dbm": -132.0,
+   "received": false
+  },
+  {
+   "level_dbm": -134.0,
+   "received": false
+  },
+  {
+   "level_dbm": -136.0,
+   "received": false
+  },
+  {
+   "level_dbm": -138.0,
+   "received": false
+  }
+ ],
+ "finished": "2026-11-07 03:53:52"
+}
