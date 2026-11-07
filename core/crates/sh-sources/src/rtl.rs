@@ -27,6 +27,8 @@ struct Shared {
     pending_bias: AtomicBool,
     /// The dongle's EEPROM forces the bias tee on (software cannot switch it off)
     bias_forced: AtomicBool,
+    /// EEPROM byte 7 as read at open (diagnostics; None = not readable / not valid)
+    eeprom: Mutex<Option<u8>>,
     /// Crystal error in ppm (f64 bits): the hardware is tuned to f / (1 + ppm), the blocks
     /// carry the true frequency
     ppm: AtomicU64,
@@ -55,6 +57,7 @@ impl RtlSource {
                 bias: AtomicBool::new(false),
                 pending_bias: AtomicBool::new(false),
                 bias_forced: AtomicBool::new(false),
+                eeprom: Mutex::new(None),
                 ppm: AtomicU64::new(0f64.to_bits()),
                 decimation: AtomicU64::new(1),
                 run: AtomicBool::new(false),
@@ -206,8 +209,14 @@ fn worker(id: UsbId, sh: Arc<Shared>, sink: Sink) {
         return fail(e);
     }
     let tuner = sdr.get_tuner_id().map(|s| s.to_string()).unwrap_or_else(|_| "?".into());
+    // EEPROM byte 7 (bias tee / direct sampling force bits) for diagnostics
+    let tuner = match sdr.eeprom_byte7() {
+        Some(b) => format!("{tuner} [eeprom7 {b:02x}]"),
+        None => format!("{tuner} [eeprom ?]"),
+    };
     let v4 = sdr.is_blog_v4();
     sh.bias_forced.store(sdr.bias_forced(), Ordering::SeqCst);
+    *sh.eeprom.lock().unwrap_or_else(|e| e.into_inner()) = sdr.eeprom_byte7();
     let mut gain = gain;
     let mut agc = Agc::new();
     let window = (rate * 0.1) as usize; // one decision per 100 ms
