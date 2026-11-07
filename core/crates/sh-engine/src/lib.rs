@@ -1975,16 +1975,28 @@ mod tests {
         assert_eq!(st["mode"], "USB");
         assert!((st["vfo_hz"].as_f64().unwrap() - rx).abs() < 50.0, "vfo {} rx {rx}", st["vfo_hz"]);
         // Simulated pass: the satellite comes up within seconds
-        cmd(&e, r#"{"cmd":"simulate"}"#);
-        let mut det = Value::Null;
+        // (only when the next pass is still ahead: with the real clock the ISS can be up right now,
+        // and then there is nothing to simulate)
+        let mut det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
         for _ in 0..40 {
-            std::thread::sleep(Duration::from_millis(100));
-            det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
-            if det["simulated"] == true {
+            if det["pass"].is_object() {
                 break;
             }
+            std::thread::sleep(Duration::from_millis(100));
+            det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
         }
-        assert_eq!(det["simulated"], true, "{det}");
+        let ahead = det["pass"]["aos"].as_f64().zip(det["now"].as_f64()).is_some_and(|(aos, now)| aos > now + 5.0);
+        if ahead && det["pass"]["always"] != true {
+            cmd(&e, r#"{"cmd":"simulate"}"#);
+            for _ in 0..40 {
+                std::thread::sleep(Duration::from_millis(100));
+                det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
+                if det["simulated"] == true {
+                    break;
+                }
+            }
+            assert_eq!(det["simulated"], true, "{det}");
+        }
         cmd(&e, r#"{"cmd":"stop"}"#);
     }
 }
