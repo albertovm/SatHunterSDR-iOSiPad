@@ -68,3 +68,38 @@ fn rs18s_robot36_picture() {
     assert_eq!(img.rows, img.height);
     assert!(img.syncs_found >= 150, "{} syncs", img.syncs_found);
 }
+
+fn g3ruh(name: &str) -> Vec<sh_dsp::fsk9600::RawFrame> {
+    let (fs, x) = ogg(name);
+    let mut d = sh_dsp::fsk9600::G3ruhDecoder::new(fs);
+    let mut out = Vec::new();
+    for c in x.chunks(960) {
+        d.process(c);
+        out.extend(d.frames.drain(..));
+    }
+    out
+}
+
+#[test]
+fn g3ruh_9k6_ax25_from_piszkesteto() {
+    // SatNOGS 15370627 (Piszkesteto UHF, Hungary), NORAD 57175, 9k6 FSK AX.25: all 6 frames of this cut
+    let f = g3ruh("satnogs_15370627_57175_g3ruh9k6.ogg");
+    let ax: Vec<_> = f.iter().filter_map(|f| f.ax25.as_ref()).collect();
+    assert!(ax.len() >= 6, "{} AX.25 frames of {}", ax.len(), f.len());
+}
+
+#[test]
+fn g3ruh_9k6_raw_frames() {
+    // SatNOGS 15388314 (UX5UL), NORAD 98914: HDLC frames that are not AX.25 (they start 85 00 85 00)
+    let f = g3ruh("satnogs_15388314_98914_g3ruh9k6.ogg");
+    assert!(f.len() >= 6, "{} frames", f.len());
+    assert!(f.iter().all(|f| f.data.starts_with(&[0x85, 0x00, 0x85, 0x00])), "{:02x?}", f.iter().map(|f| &f.data[..4]).collect::<Vec<_>>());
+}
+
+#[test]
+fn g3ruh_9k6_weak_station() {
+    // SatNOGS 15383314 (Swallowview), NORAD 98193: the station's decoders got 12 frames in this cut,
+    // this chain fewer; kept as the case to improve on
+    let f = g3ruh("satnogs_15383314_98193_g3ruh9k6.ogg");
+    assert!(f.len() >= 4, "{} frames", f.len());
+}

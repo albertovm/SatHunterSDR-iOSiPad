@@ -53,16 +53,22 @@ impl G3ruhDecoder {
     }
 
     pub fn with_rate(fs: f64, baud: f64) -> Self {
+        // tuned on SatNOGS recordings (testdata/satnogs): a slow clock loop and a wider low-pass
+        Self::with_params(fs, baud, 0.7, 0.05)
+    }
+
+    /// `lp`: low-pass cut-off as a fraction of the bit rate; `pll_gain`: clock correction per crossing.
+    pub fn with_params(fs: f64, baud: f64, lp: f64, pll_gain: f64) -> Self {
         G3ruhDecoder {
             fs,
-            lp: Fir::new(lowpass(0.6 * baud, 0.4 * baud, fs)),
+            lp: Fir::new(lowpass(lp * baud, 0.4 * baud, fs)),
             buf: Vec::new(),
             dc: 0.0,
             // carrier offset: tracked over about 200 ms (the scrambled stream has no DC)
             dc_k: (1.0 / (0.2 * fs)) as f32,
             pll: 0.0,
             step: baud / fs,
-            pll_gain: 0.25,
+            pll_gain,
             prev: 0.0,
             sreg: 0,
             last: 0,
