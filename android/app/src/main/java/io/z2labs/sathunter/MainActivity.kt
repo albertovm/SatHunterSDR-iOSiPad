@@ -220,6 +220,13 @@ class MainActivity : ComponentActivity() {
                         onDecimation = { engine.decimation(it) },
                         onRecord = { recorder.toggle(st.recording != null) },
                         onCompass = { setCompass(!compassOn) },
+                        onDecoderOff = { k ->
+                            when (k) {
+                                "sstv" -> engine.sstv(false)
+                                // closing the APRS panel in the terrestrial mode ends that mode too
+                                "aprs" -> { if (st.groundAprs) engine.groundAprs(false); engine.aprs(false) }
+                            }
+                        },
                     )
                     1 -> SatScreen(list, detail, engine, radarOn) {
                         radarOn = it

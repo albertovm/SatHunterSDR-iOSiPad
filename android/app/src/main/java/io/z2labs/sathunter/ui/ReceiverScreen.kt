@@ -111,6 +111,7 @@ fun ReceiverScreen(
     onDecimation: (Int) -> Unit,
     onRecord: () -> Unit,
     onCompass: () -> Unit,
+    onDecoderOff: (String) -> Unit = {},
 ) {
     var viewLo by remember { mutableFloatStateOf(0f) }
     var viewHi by remember { mutableFloatStateOf(1f) }
@@ -231,14 +232,20 @@ fun ReceiverScreen(
                 }
                 val xa = x(a)
                 val xb = max(x(b), xa + 2f)
-                drawRect(Color(0x33FFFFFF), Offset(xa, 0f), Size(xb - xa, specH))
+                // The channel is a faint band; the VFO itself only a red marker on the top edge of
+                // the spectrum and short ticks at the waterfall's edges: nothing on top of the signal
+                // (a CW carrier right on the VFO was hidden under the old full-height red line)
+                drawRect(Color(0x26FFFFFF), Offset(xa, 0f), Size(xb - xa, specH))
+                drawLine(Color(0x66FFFFFF), Offset(xa, specH), Offset(xa, size.height), 1f)
+                drawLine(Color(0x66FFFFFF), Offset(xb, specH), Offset(xb, size.height), 1f)
                 val xv = x(vfo)
-                // Solid on the spectrum; on the waterfall only short ticks at the edges and a
-                // faint line, so the signal right on the VFO (a tracked CW beacon) is not hidden
-                drawLine(Color(0xFFFF4A3A), Offset(xv, 0f), Offset(xv, specH), 2.dp.toPx())
-                drawLine(Color(0xFFFF4A3A), Offset(xv, specH), Offset(xv, specH + 10.dp.toPx()), 2.dp.toPx())
-                drawLine(Color(0xFFFF4A3A), Offset(xv, size.height - 10.dp.toPx()), Offset(xv, size.height), 2.dp.toPx())
-                drawLine(Color(0x40FF4A3A), Offset(xv, specH), Offset(xv, size.height), 1.dp.toPx())
+                val tri = 7.dp.toPx()
+                drawPath(
+                    androidx.compose.ui.graphics.Path().apply { moveTo(xv - tri, 0f); lineTo(xv + tri, 0f); lineTo(xv, tri * 1.4f); close() },
+                    Color(0xFFFF4A3A),
+                )
+                drawLine(Color(0xFFFF4A3A), Offset(xv, specH), Offset(xv, specH + 6.dp.toPx()), 2.dp.toPx())
+                drawLine(Color(0xFFFF4A3A), Offset(xv, size.height - 6.dp.toPx()), Offset(xv, size.height), 2.dp.toPx())
                 // Frequency scale along the bottom of the spectrum
                 val f0 = shownCenter + (viewLo - 0.5) * s.specRate
                 val f1 = shownCenter + (viewHi - 0.5) * s.specRate
@@ -376,13 +383,32 @@ fun ReceiverScreen(
                 }
             }
 
-            st.lab?.let { LabConsole(it, Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = if (overlay) 64.dp else 6.dp)) }
-            if (st.sstv.on) SstvPanel(st.sstv, sstvPic, Modifier.align(Alignment.CenterEnd).padding(end = 6.dp))
+            // Panels over the waterfall fold into one-line chips (folded by default), so they do not
+            // hide the signals; a tap opens them
+            st.lab?.let { l ->
+                Fold(
+                    "lab", "LAB", if (l.total > 0) "${l.phase} ${l.step}/${l.total}" else l.phase, Color(0xFFFFC83C),
+                    Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = if (overlay) 64.dp else 6.dp),
+                ) { LabConsole(l) }
+            }
+            if (st.sstv.on) {
+                Fold(
+                    "sstv", "SSTV", st.sstv.mode?.let { "$it ${st.sstv.rows}/${st.sstv.height}" } ?: "waiting · ${st.sstv.count} pictures", SatYellow,
+                    Modifier.align(Alignment.CenterEnd).padding(end = 6.dp), alignEnd = true, onClose = { onDecoderOff("sstv") },
+                ) { SstvPanel(st.sstv, sstvPic) }
+            }
             if (st.aprs.on) {
-                AprsPanel(
-                    st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), pins = mapPins(st).size, onMap = { mapOpen = true }, groundHz = if (st.groundAprs) st.groundAprsHz else null,
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp),
-                )
+                Fold(
+                    "aprs", if (st.groundAprs) "APRS %.3f".format(st.groundAprsHz / 1e6) else "APRS",
+                    "${st.aprs.count} frames" + (st.aprs.frames.lastOrNull()?.src?.let { " · $it" } ?: ""), Color(0xFFFFC857),
+                    Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp), alignEnd = true,
+                    onClose = { onDecoderOff("aprs") },
+                ) {
+                    AprsPanel(
+                        st.aprs, plugin = if (st.pluginsOn) st.plugins else emptyList(), pins = mapPins(st).size, onMap = { mapOpen = true },
+                        groundHz = if (st.groundAprs) st.groundAprsHz else null,
+                    )
+                }
             }
             if (mapOpen) MapDialog(st, if (st.groundAprs) null else detail) { mapOpen = false }
 
