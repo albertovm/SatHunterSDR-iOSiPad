@@ -1976,9 +1976,15 @@ mod tests {
         assert!((st["vfo_hz"].as_f64().unwrap() - rx).abs() < 50.0, "vfo {} rx {rx}", st["vfo_hz"]);
         // Simulated pass: the satellite comes up within seconds
         cmd(&e, r#"{"cmd":"simulate"}"#);
-        std::thread::sleep(Duration::from_millis(300));
-        let det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
-        assert_eq!(det["simulated"], true);
+        let mut det = Value::Null;
+        for _ in 0..40 {
+            std::thread::sleep(Duration::from_millis(100));
+            det = cmd(&e, r#"{"cmd":"sat_detail"}"#);
+            if det["simulated"] == true {
+                break;
+            }
+        }
+        assert_eq!(det["simulated"], true, "{det}");
         cmd(&e, r#"{"cmd":"stop"}"#);
     }
 }
