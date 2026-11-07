@@ -144,8 +144,8 @@ class HackRfGen:
         tx, amp, dig = self.settings(hz, dbm)
         dig = round(dig * 2) / 2
         self._need(hz, tx, amp)
-        path = self._file(name, iq, rate, dig, hz - self.lo)
-        self._set(path)
+        path = self._file(name, iq, rate, 0.0, hz - self.lo)  # full scale; the server scales it
+        self._cmd(cmd="file", path=path, scale=10 ** (dig / 20))
         self.last = {"hz": hz, "dbm": dbm, "txvga": tx, "amp": amp, "digital_db": dig,
                      "p0": self.p0(hz, amp), "atten": self.atten, "lo": self.lo, "file": os.path.basename(path)}
         self.current = (name, iq, rate, dbm)

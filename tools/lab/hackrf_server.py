@@ -11,7 +11,7 @@ one JSON object per line:
 
   {"cmd":"lo","hz":436350000}           LO frequency (the signal sits at LO + its offset)
   {"cmd":"gain","vga":20,"amp":false}   TX VGA 0-47 dB, RF amplifier
-  {"cmd":"file","path":"...iq8"}       loop a signed 8-bit IQ file at 2 MS/s
+  {"cmd":"file","path":"...iq8","scale":0.5}  loop a signed 8-bit IQ file at 2 MS/s, scaled
   {"cmd":"cw","offset":250000,"scale":0.9}  a tone at LO + offset, amplitude 0-1
   {"cmd":"silence"}                     zeros (the stream keeps running)
   {"cmd":"status"}
@@ -61,6 +61,7 @@ class Tx:
         self.errors = 0
         self.desc = "silence"
         self.quit = False
+        self.scale = 1.0
         threading.Thread(target=self.run, daemon=True).start()
 
     def run(self):
@@ -80,6 +81,8 @@ class Tx:
                     if len(chunk) < 2 * n:  # wrap around the loop
                         chunk = np.concatenate([chunk, buf[:2 * n - len(chunk)]])
                     self.pos = (self.pos + 2 * n) % len(buf)
+            if buf is not None and self.scale != 1.0:
+                chunk = np.clip(np.round(chunk.astype(np.float32) * self.scale), -127, 127).astype(np.int8)
             chunk = np.ascontiguousarray(chunk, dtype=np.int8)
             off = 0
             while off < n and not self.quit:
@@ -106,8 +109,10 @@ class Tx:
             self.dev.setGain(self.TX, 0, "VGA", self.vga)
             self.dev.setGain(self.TX, 0, "AMP", 14 if self.amp else 0)
         elif c == "file":
-            self.set_buf(np.memmap(m["path"], dtype=np.int8, mode="r"), os.path.basename(m["path"]))
+            self.scale = float(m.get("scale", 1.0))
+            self.set_buf(np.memmap(m["path"], dtype=np.int8, mode="r"), "%s x%.3f" % (os.path.basename(m["path"]), self.scale))
         elif c == "cw":
+            self.scale = 1.0
             off, k = float(m["offset"]), 127 * float(m.get("scale", 1.0))
             n = RATE  # 1 s loop, whole cycles
             cyc = round(off)

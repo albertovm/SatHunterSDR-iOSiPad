@@ -55,6 +55,7 @@ def main():
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--vsg-dir", default=r"C:\sathunter_lab")
     ap.add_argument("--atten", type=float, default=0.0)
+    ap.add_argument("--gen", choices=["vsg60", "hackrf"], default="vsg60")
     ap.add_argument("--freq", type=float, default=436.6e6)
     ap.add_argument("--part", choices=["twotone", "doppler", "aprs"], required=True)
     ap.add_argument("--gains", default="12.5,29.7", help="twotone: RTL gains")
@@ -75,7 +76,11 @@ def main():
 
     phone = Phone(a.phone, a.pin)
     host, port = (a.vsg.split(":") + ["5124"])[:2]
-    gen = Vsg60Gen(a.atten, host, int(port), a.vsg_dir, None)
+    if a.gen == "hackrf":
+        from hackrf_gen import HackRfGen
+        gen = HackRfGen(a.atten)
+    else:
+        gen = Vsg60Gen(a.atten, host, int(port), a.vsg_dir, None)
     root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     out = os.path.join(root, "measurements", time.strftime("%Y-%m-%d_%H%M") + "_" + (a.name or a.part))
     os.makedirs(out, exist_ok=True)
