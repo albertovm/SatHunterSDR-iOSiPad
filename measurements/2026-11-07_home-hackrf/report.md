@@ -61,7 +61,7 @@ lab's VSG60A levels agree for APRS.
 
 ## 4. SSTV Robot 36: [run 1](../2026-11-07_0308_sstv-hackrf-robot36/results.json), [run 2](../2026-11-07_0345_sstv-hackrf-robot36/results.json)
 
-Clean at -100 dBm (error 7.8, as in the lab), but 21.5 at -120 dBm, 106 at -128 dBm and no picture below: about
+Clean at -100 dBm (error 7.8 in a separate check run, lab: 6.1), but 21.5 at -120 dBm, 106 at -128 dBm and no picture below: about
 12 dB worse than the [lab result](../2026-11-05_sstv-summary/report.md) (clean to -132 dBm), twice the same.
 
 APRS from the same chain agrees with the lab within the floor difference, so the HackRF levels are not the cause.
