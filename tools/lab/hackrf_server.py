@@ -15,6 +15,11 @@ one JSON object per line:
   {"cmd":"cw","offset":250000,"scale":0.9}  a tone at LO + offset, amplitude 0-1
   {"cmd":"silence"}                     zeros (the stream keeps running)
   {"cmd":"status"}
+  {"cmd":"quit"}                        stop the stream properly, close the HackRF and exit
+                                        (never kill the server: a killed transmission hangs the
+                                        HackRF on Windows until it is replugged)
+Run it with libhackrf 2026.01 or newer (radioconda env hackrf2026): with 2024.02.1 even a proper
+stop hung the device.
 Every reply is one JSON line: {"ok":true,...} or {"ok":false,"error":...}.
 """
 import json
@@ -55,11 +60,12 @@ class Tx:
         self.written = 0
         self.errors = 0
         self.desc = "silence"
+        self.quit = False
         threading.Thread(target=self.run, daemon=True).start()
 
     def run(self):
         n = 65536  # samples per write
-        while True:
+        while not self.quit:
             with self.lock:
                 buf = self.buf
                 if buf is None:
@@ -76,7 +82,7 @@ class Tx:
                     self.pos = (self.pos + 2 * n) % len(buf)
             chunk = np.ascontiguousarray(chunk, dtype=np.int8)
             off = 0
-            while off < n:
+            while off < n and not self.quit:
                 sr = self.dev.writeStream(self.stream, [chunk[2 * off:]], n - off, timeoutUs=1_000_000)
                 if sr.ret > 0:
                     off += sr.ret
@@ -112,6 +118,16 @@ class Tx:
             self.set_buf(b, "cw %+d Hz scale %.3f" % (cyc, k / 127))
         elif c == "silence":
             self.set_buf(None, "silence")
+        elif c == "quit":
+            self.quit = True
+            with self.lock:
+                self.buf = None
+            time.sleep(0.3)
+            self.dev.deactivateStream(self.stream)
+            self.dev.closeStream(self.stream)
+            self.dev = None
+            threading.Thread(target=lambda: (time.sleep(0.5), os._exit(0)), daemon=True).start()
+            return {"ok": True, "quit": True}
         elif c != "status":
             return {"ok": False, "error": "unknown cmd %r" % c}
         return {"ok": True, "lo": self.lo, "vga": self.vga, "amp": self.amp, "playing": self.desc,
