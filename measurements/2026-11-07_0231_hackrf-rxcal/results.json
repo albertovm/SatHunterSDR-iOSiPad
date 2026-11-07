@@ -1,0 +1,297 @@
+{
+ "rows": [
+  {
+   "amp": false,
+   "txvga": 0,
+   "peak_dbfs": -39.0478320666664,
+   "snr_db": 25.9261981451389,
+   "rtl_dbm": -119.0478320666664,
+   "p0": -48.5478320666664,
+   "offset_hz": 902.2242959737778
+  },
+  {
+   "amp": false,
+   "txvga": 4,
+   "peak_dbfs": -32.18051004969604,
+   "snr_db": 32.849800096469856,
+   "rtl_dbm": -112.18051004969604,
+   "p0": -45.68051004969604,
+   "offset_hz": 901.771549642086
+  },
+  {
+   "amp": false,
+   "txvga": 8,
+   "peak_dbfs": -28.422906801384226,
+   "snr_db": 36.633331638168556,
+   "rtl_dbm": -108.42290680138423,
+   "p0": -45.92290680138423,
+   "offset_hz": 900.1205688714981
+  },
+  {
+   "amp": false,
+   "txvga": 12,
+   "peak_dbfs": -24.69016123462708,
+   "snr_db": 40.38746587892253,
+   "rtl_dbm": -104.69016123462708,
+   "p0": -46.190161234627084,
+   "offset_hz": 901.9725001454353
+  },
+  {
+   "amp": false,
+   "txvga": 16,
+   "peak_dbfs": -19.395742125964986,
+   "snr_db": 45.51086278044022,
+   "rtl_dbm": -99.39574212596499,
+   "p0": -44.895742125964986,
+   "offset_hz": 903.7930127978325
+  },
+  {
+   "amp": false,
+   "txvga": 20,
+   "peak_dbfs": -15.417162519903973,
+   "snr_db": 49.30398060235886,
+   "rtl_dbm": -95.41716251990397,
+   "p0": -44.91716251990397,
+   "offset_hz": 900.7768132090569
+  },
+  {
+   "amp": false,
+   "txvga": 24,
+   "peak_dbfs": -11.681946369129284,
+   "snr_db": 53.02493202704133,
+   "rtl_dbm": -91.68194636912928,
+   "p0": -45.18194636912928,
+   "offset_hz": 900.4532730579376
+  },
+  {
+   "amp": false,
+   "txvga": 28,
+   "peak_dbfs": -8.082319324767859,
+   "snr_db": 56.34045553331802,
+   "rtl_dbm": -88.08231932476787,
+   "p0": -45.582319324767866,
+   "offset_hz": 900.3377480506897
+  },
+  {
+   "amp": false,
+   "txvga": 32,
+   "peak_dbfs": -4.4186315528843405,
+   "snr_db": 59.3043741107384,
+   "rtl_dbm": -84.41863155288434,
+   "p0": -45.918631552884335,
+   "offset_hz": 899.8433273434639
+  },
+  {
+   "amp": false,
+   "txvga": 36,
+   "peak_dbfs": -0.7907962228765807,
+   "snr_db": 61.6459486524742,
+   "rtl_dbm": -80.79079622287658,
+   "p0": -46.29079622287658,
+   "offset_hz": 900.28195977211
+  },
+  {
+   "amp": false,
+   "txvga": 40,
+   "peak_dbfs": 0.9090757531749452,
+   "snr_db": 63.67073932537381,
+   "rtl_dbm": -79.09092424682505,
+   "p0": -48.590924246825054,
+   "offset_hz": 901.7427305579185
+  },
+  {
+   "amp": false,
+   "txvga": 44,
+   "peak_dbfs": 0.49721030520586196,
+   "snr_db": 63.53555093253466,
+   "rtl_dbm": -79.50278969479413,
+   "p0": -53.00278969479413,
+   "offset_hz": 902.2489469647408
+  },
+  {
+   "amp": false,
+   "txvga": 47,
+   "peak_dbfs": 1.130461246456314,
+   "snr_db": 64.2831508833878,
+   "rtl_dbm": -78.86953875354368,
+   "p0": -55.36953875354368,
+   "offset_hz": 900.9132387042046
+  }
+ ],
+ "cal": {
+  "p0": {
+   "436600000": -47.01
+  },
+  "p0_amp": {},
+  "ppm": 2.064,
+  "atten_db": 70.5,
+  "method": "receiver transfer (system-a VSG60 scale), levels at the LNA input",
+  "made": "2026-11-07 02:31",
+  "txvga_slope_noamp": 1.082
+ },
+ "floor": {
+  "bin_hz": 125.0,
+  "bw": 2000.0,
+  "center_hz": 436499999.6999826,
+  "channel_snr_db": -11.173980004602013,
+  "cn0_dbhz": 24.673729031796235,
+  "hz": 436600000.0,
+  "noise_dbfs_per_bin": -65.02508593754861,
+  "offset_hz": 704.6714300513268,
+  "offset_ppm": 1.6139977784043216,
+  "ok": true,
+  "peak_dbfs": -64.33075699247274,
+  "peak_hz": 436600704.67143005,
+  "peak_snr_db": 0.6943289450758594,
+  "rate": 512000.0,
+  "rows": 62,
+  "secs": 2.01552953
+ },
+ "phone": {
+  "aprs": {
+   "bad_crc": 740,
+   "count": 0,
+   "frames": [],
+   "on": true
+  },
+  "bias_tee": true,
+  "bins": 4096,
+  "bw": 12500.0,
+  "center_hz": 436500000.0,
+  "center_tuning": false,
+  "debug_mode": true,
+  "decimation": 2,
+  "devices": [
+   "rtl"
+  ],
+  "dropped": 0,
+  "follow_gps": true,
+  "gain": 12.399999618530273,
+  "ground_aprs": {
+   "hz": 144800000.0,
+   "on": true
+  },
+  "has_bias_tee": true,
+  "lab": {
+   "client": "192.168.1.238",
+   "ips": [
+    "192.168.1.237"
+   ],
+   "log": [
+    "01:15:40 measure 436.6000 MHz: peak +7.8 dB over noise, offset +901 Hz",
+    "01:15:44 measure 436.6000 MHz: peak +10.5 dB over noise, offset +907 Hz",
+    "01:15:47 measure 436.6000 MHz: peak +14.0 dB over noise, offset +905 Hz",
+    "01:15:50 measure 436.6000 MHz: peak +17.7 dB over noise, offset +905 Hz",
+    "01:15:53 measure 436.6000 MHz: peak +21.4 dB over noise, offset +906 Hz",
+    "01:15:57 measure 436.6000 MHz: peak +25.2 dB over noise, offset +907 Hz",
+    "01:16:01 measure 436.6000 MHz: peak +28.9 dB over noise, offset +905 Hz",
+    "01:16:04 measure 436.6000 MHz: peak +32.5 dB over noise, offset +904 Hz",
+    "01:16:07 measure 436.6000 MHz: peak +32.7 dB over noise, offset +902 Hz",
+    "01:30:58 cmd {\"cmd\": \"gain\", \"db\": 12.4}",
+    "01:30:58 cmd {\"cmd\": \"bias_tee\", \"on\": true}",
+    "01:30:58 cmd {\"cmd\": \"decimation\", \"factor\": 2}",
+    "01:30:58 cmd {\"cmd\": \"center\", \"hz\": 436500000.0}",
+    "01:30:58 cmd {\"cmd\": \"tune\", \"hz\": 436600000.0}"
+   ],
+   "on": true,
+   "phase": {
+    "detail": "decimation 8, span 128 kHz",
+    "phase": "pano sweep",
+    "step": 8,
+    "total": 8
+   },
+   "pin": "1027",
+   "port": 8765,
+   "requests": 94
+  },
+  "lab_pin": "1027",
+  "level_db": -71.53030395507812,
+  "locator": "JN97ml",
+  "markers": [
+   {
+    "el": 9.406457283019378,
+    "freq": 436749229.76556295,
+    "high": 0.0,
+    "low": 0.0,
+    "mode": "FSK",
+    "name": "CHAMRAN-1",
+    "norad": 61072,
+    "selected": false
+   }
+  ],
+  "mode": "NFM",
+  "ok": true,
+  "plugins": {
+   "count": 0,
+   "errors": [],
+   "loaded": [],
+   "on": true,
+   "out": [],
+   "pins": []
+  },
+  "ppm": -0.2,
+  "rate": 1024000.0,
+  "recording": null,
+  "running": true,
+  "source": "rtl",
+  "source_gains": [
+   0.0,
+   0.8999999761581421,
+   1.399999976158142,
+   2.700000047683716,
+   3.700000047683716,
+   7.699999809265137,
+   8.699999809265137,
+   12.5,
+   14.399999618530273,
+   15.699999809265137,
+   16.600000381469727,
+   19.700000762939453,
+   20.700000762939453,
+   22.899999618530273,
+   25.399999618530273,
+   28.0,
+   29.700000762939453,
+   32.79999923706055,
+   33.79999923706055,
+   36.400001525878906,
+   37.20000076293945,
+   38.599998474121094,
+   40.20000076293945,
+   42.099998474121094,
+   43.400001525878906,
+   43.900001525878906,
+   44.5,
+   48.0,
+   49.599998474121094
+  ],
+  "source_name": "RTL-SDR",
+  "source_rates": [
+   2400000.0,
+   2048000.0,
+   1920000.0,
+   1440000.0,
+   1024000.0,
+   250000.0
+  ],
+  "source_status": "tuner r820t [eeprom7 16], 1.024 MS/s, gain 12.4 dB, bias tee ON",
+  "spectrum_center_hz": 436499999.6999826,
+  "spectrum_rate": 512000.0,
+  "squelch": null,
+  "sstv": {
+   "count": 0,
+   "last": null,
+   "on": true,
+   "receiving": null
+  },
+  "station": {
+   "alt_m": 261.9000244140625,
+   "lat": 47.4966647,
+   "lon": 19.008232
+  },
+  "time_shift": 0.0,
+  "update_prerelease": true,
+  "update_req": 0,
+  "vfo_hz": 436600000.0
+ }
+}
