@@ -8,6 +8,7 @@ pub mod channel;
 pub mod cw;
 pub mod demod;
 pub mod filter;
+pub mod fsk9600;
 pub mod spectrum;
 pub mod sstv;
 
