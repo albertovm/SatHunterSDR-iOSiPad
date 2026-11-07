@@ -192,6 +192,17 @@ fun SettingsScreen(
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
+                Text("9600 bd FSK (G3RUH)", fontSize = 14.sp)
+                Text(
+                    "Telemetry of most 9k6 cubesats (AX.25 and other HDLC frames). Needs NFM 20 kHz or wider (set when switched on). " +
+                        if (st.fsk.on) "${st.fsk.count} frames" else "",
+                    color = Dim, fontSize = 12.sp,
+                )
+            }
+            Switch(checked = st.fsk.on, onCheckedChange = { engine.fsk9k6(it) })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
                 Text("Terrestrial APRS mode", fontSize = 14.sp, color = if (st.groundAprs) SatYellow else Color.Unspecified)
                 Text(
                     "For testing: the local APRS network on a fixed frequency, Doppler tracking off, all stations on the map. " +

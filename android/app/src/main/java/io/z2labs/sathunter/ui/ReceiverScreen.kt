@@ -397,9 +397,15 @@ fun ReceiverScreen(
                     Modifier.align(Alignment.CenterEnd).padding(end = 6.dp), alignEnd = true, onClose = { onDecoderOff("sstv") },
                 ) { SstvPanel(st.sstv, sstvPic) }
             }
-            if (st.aprs.on) {
+            if (st.aprs.on || st.fsk.on) {
                 Fold(
-                    "aprs", if (st.groundAprs) "APRS %.3f".format(st.groundAprsHz / 1e6) else "APRS",
+                    "aprs",
+                    when {
+                        st.groundAprs -> "APRS %.3f".format(st.groundAprsHz / 1e6)
+                        st.aprs.on && st.fsk.on -> "AX.25 1k2+9k6"
+                        st.fsk.on -> "9k6 FSK"
+                        else -> "APRS"
+                    },
                     "${st.aprs.count} frames" + (st.aprs.frames.lastOrNull()?.src?.let { " · $it" } ?: ""), Color(0xFFFFC857),
                     Modifier.align(Alignment.BottomEnd).padding(end = 6.dp, bottom = if (overlay) 64.dp else 6.dp), alignEnd = true,
                     onClose = { onDecoderOff("aprs") },

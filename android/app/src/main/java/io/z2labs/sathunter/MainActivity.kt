@@ -224,7 +224,7 @@ class MainActivity : ComponentActivity() {
                             when (k) {
                                 "sstv" -> engine.sstv(false)
                                 // closing the APRS panel in the terrestrial mode ends that mode too
-                                "aprs" -> { if (st.groundAprs) engine.groundAprs(false); engine.aprs(false) }
+                                "aprs" -> { if (st.groundAprs) engine.groundAprs(false); engine.aprs(false); engine.fsk9k6(false) }
                             }
                         },
                     )
