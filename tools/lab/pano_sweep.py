@@ -56,6 +56,10 @@ def main():
     out = os.path.join(root, "measurements", time.strftime("%Y-%m-%d_%H%M") + "_" + a.name)
     os.makedirs(out, exist_ok=True)
     gen = open_gen(a)
+    if gen.name == "hackrf":
+        # the LO moves with the tone (always 250 kHz below it): the HackRF's own LO leakage and
+        # IQ image sit at fixed places relative to the tone and are left out of the search below
+        gen.SPAN = 0.0
     if a.gain is not None:
         ph.cmd(cmd="gain", db=a.gain)
     rates = [float(r) for r in a.rates.split(",") if r.strip()] or [None]
@@ -93,6 +97,11 @@ def main():
                     if inside and kt is not None:
                         mask[max(0, kt - 4):kt + 5] = False
                     mask[n // 2 - 3:n // 2 + 4] = False  # DC
+                    if gen.name == "hackrf":
+                        for rel in (-gen.OFFSET, -2 * gen.OFFSET):  # the HackRF's LO leakage and IQ image
+                            kh = int(round((off + rel) / bin_hz + n / 2))
+                            if 0 <= kh < n:
+                                mask[max(0, kh - 3):kh + 4] = False
                     ko = int(np.argmax(np.where(mask, excess, -1e9)))
                     pts.append({"offset": float(off), "inside": bool(inside), "level_db": lvl,
                                 "other_db": float(d[ko]), "other_rise_db": float(excess[ko]), "other_offset": float(f[ko] - c),
