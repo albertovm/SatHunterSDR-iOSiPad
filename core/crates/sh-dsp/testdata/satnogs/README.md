@@ -14,6 +14,7 @@ credit to the station owners named below. Tests: [tests/satnogs.rs](../../tests/
 | `satnogs_15370627_57175_g3ruh9k6.ogg` | [15370627](https://network.satnogs.org/observations/15370627/) | NORAD 57175, 9k6 G3RUH FSK, AX.25 | Piszkesteto UHF | 225-320 | 6 frames | 6 AX.25 frames |
 | `satnogs_15388314_98914_g3ruh9k6.ogg` | [15388314](https://network.satnogs.org/observations/15388314/) | NORAD 98914, 9k6 G3RUH FSK (HDLC, not AX.25) | UX5UL | 240-345 | 6 frames | 6 frames |
 | `satnogs_15383314_98193_g3ruh9k6.ogg` | [15383314](https://network.satnogs.org/observations/15383314/) | NORAD 98193, 9k6 G3RUH FSK | Swallowview | 365-450 | 12 frames | 6 (the case to improve) |
+| `phone_fm_g3ruh9k6_114dBm.ogg` | lab, not SatNOGS | HackRF 9k6 G3RUH lab frames, -114 dBm at the LNA input | the phone's own discriminator (`/fm`, 64 kHz), Vorbis q8 | 0-12 | - | 66 of 77 frames (75 from the original WAV) |
 
 Whole passes, 9k6 (unique frames, ours / station's, every one of ours also in the station's list): 57175 23 / 22,
 98914 28 / 29, 98193 5 / 26.

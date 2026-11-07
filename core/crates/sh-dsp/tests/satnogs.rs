@@ -103,3 +103,13 @@ fn g3ruh_9k6_weak_station() {
     let f = g3ruh("satnogs_15383314_98193_g3ruh9k6.ogg");
     assert!(f.len() >= 4, "{} frames", f.len());
 }
+
+#[test]
+fn g3ruh_9k6_phone_discriminator() {
+    // The phone's own FM discriminator (lab /fm, 2026-11-07), HackRF 9k6 G3RUH at -114 dBm, 12 s
+    // (77 frames sent). Stored as Vorbis q8, which costs some frames: 75 from the WAV, 66 from this.
+    // With the SatNOGS-tuned settings alone the phone decoded half of them.
+    let f = g3ruh("phone_fm_g3ruh9k6_114dBm.ogg");
+    let ok = f.iter().filter(|f| f.ax25.as_ref().is_some_and(|a| String::from_utf8_lossy(&a.info).contains("SatHunter 9k6 lab frame"))).count();
+    assert!(ok >= 60, "{ok} lab frames of {}", f.len());
+}
