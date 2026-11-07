@@ -2,6 +2,7 @@
 #   powershell -File tools/lab/satnogs_get.ps1 -ids 15383314,15388314 -out C:\Users\User\satnogs
 param([string[]]$ids, [string]$out = "$env:USERPROFILE\satnogs")
 $ProgressPreference = "SilentlyContinue"
+$ids = $ids | ForEach-Object { $_ -split "," } | Where-Object { $_ }
 foreach ($id in $ids) {
   $d = Join-Path $out $id; New-Item -ItemType Directory -Force $d | Out-Null
   $w = Invoke-WebRequest "https://network.satnogs.org/api/observations/?id=$id&format=json" -TimeoutSec 20 -UseBasicParsing
