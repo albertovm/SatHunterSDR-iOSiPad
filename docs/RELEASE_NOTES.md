@@ -1,4 +1,4 @@
-# SatHunterSDR 0.2.0 beta 11
+# SatHunterSDR 0.2.0 beta 12
 
 Android satellite-hunting SDR receiver. Install the APK below (allow installs from your browser or
 file manager when asked).
@@ -6,6 +6,19 @@ file manager when asked).
 **Coming from beta 1 or beta 2: uninstall the old app once** (Android says it "conflicts with an
 existing package"). Those builds had a throw-away signature; from beta 3 on every APK is signed
 with the same Z2Labs key and installs over the previous one.
+
+## New in beta 12
+
+- **9600 bd G3RUH FSK telemetry** (Settings, "9600 bd FSK"): the most common cubesat downlink. AX.25 frames
+  appear in the frame list with the APRS ones, other HDLC frames (AX.100, CSP) as hex; the new
+  `hdlc-telemetry` plugin turns them into readable lines and puts positions on the map. NFM is widened to
+  20 kHz when it is switched on. On the phone: 90 % of the frames at about -115 dBm at the LNA input; on
+  SatNOGS recordings as many frames as the stations' own decoders.
+- **Receiver view**: the VFO is a red marker on the spectrum's top edge and the channel a faint band, so a
+  signal right on the VFO is no longer hidden; the lab, SSTV and APRS panels fold into one-line chips (tap to
+  open), and their ✕ switches the decoder off.
+- **Fixes**: an RTL-SDR whose EEPROM read failed kept its bias tee on; the status line now shows a bias tee
+  forced on by the dongle.
 
 ## New in beta 11
 
