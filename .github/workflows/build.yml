@@ -67,6 +67,15 @@ jobs:
             cp "$SYSROOT/$triple/libc++_shared.so" "../android/app/src/main/jniLibs/$abi/"
           done
           ls -l ../android/app/src/main/jniLibs/*/
+      # Keep the Gradle distribution and dependencies between runs: the wrapper download comes from
+      # GitHub release assets, which returned 504 for over an hour on 2026-11-08
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/**/*.gradle*', 'android/gradle/libs.versions.toml') }}
+          restore-keys: gradle-
       - name: Build the APK
         working-directory: android
         env:
