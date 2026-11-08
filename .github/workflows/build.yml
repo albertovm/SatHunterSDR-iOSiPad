@@ -96,6 +96,8 @@ jobs:
             exit 1
           fi
           chmod +x gradlew
+          # fetch the Gradle distribution first, with retries (GitHub release assets were flaky)
+          for i in 1 2 3 4 5; do ./gradlew --no-daemon --version >/dev/null 2>&1 && break; echo "Gradle download failed, retry $i"; sleep 30; done
           set -o pipefail
           if ! ./gradlew --no-daemon assembleRelease 2>&1 | tee gradle.log; then
             msg=$(grep -E "^e: |error:|What went wrong" -A6 gradle.log | head -c 3500 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
