@@ -13,8 +13,14 @@ whole text comes out right.
 | 100 Hz/s | 1 letter wrong | 1 letter wrong | 1 letter wrong |
 | 200 Hz/s | broken | broken | broken |
 
-- Up to 25 Hz/s the decoder copies perfectly down to 32 dB-Hz; at 50-100 Hz/s it loses single characters,
-  at 200 Hz/s it falls apart. The level hardly matters: the limit is tracking speed, not the signal.
-- Uncorrected Doppler on 437 MHz changes by up to about 170 Hz/s at TCA on an overhead 500 km pass
-  (f v^2 / (c h)), lower on low passes, so CW needs TLE tracking on (residual drift then stays well below 10 Hz/s). Worth adding faster tracking of the CW tone in
-  the decoder for passes without TLE.
+- Up to 25 Hz/s the decoder copied perfectly down to 32 dB-Hz; at 50-100 Hz/s it lost single characters,
+  at 200 Hz/s it fell apart. The level hardly mattered.
+- **Correction (2026-11-08):** most of these failures were the test, not the decoder. The waveform was one
+  chirp looped, so at every loop seam the tone jumped back by the whole sweep (692 Hz at 50 Hz/s, 1384 Hz at
+  100 Hz/s), and every error sits on the first letter after the seam ("TEST UVV"). At 200 Hz/s the sweep
+  (2.8 kHz) also ran out of the 2 kHz CW filter. The reported drift (one tenth of the ramp) is the fit over
+  that sawtooth. Offline with a continuous ramp the old decoder copied 100 Hz/s at 10 dB in 100 Hz, but lost
+  letters at 150-200 Hz/s and below 8 dB.
+- Fixed since: the decoder sums each 0.5 s block along drift lines up to 400 Hz/s and extrapolates the tone
+  along the end slope (`sh-dsp/src/cw.rs`, test `follows_uncorrected_doppler`); the lab chirp now ramps up
+  and down (no jump at the seam) and the CW filter is 3 kHz. To be measured again with the HackRF.

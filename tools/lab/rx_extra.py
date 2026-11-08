@@ -28,10 +28,16 @@ def two_tone(rate, df, n=10_000):
 
 
 def keyed_chirp(text, wpm, rate, hz_per_s):
-    env = np.array(cw_keying(text, wpm, rate))
-    t = np.arange(len(env)) / rate
-    tc = t - t[-1] / 2  # frequency 0 in the middle of the message
-    ph = 2 * np.pi * 0.5 * hz_per_s * tc ** 2
+    """The message twice: the tone ramps up through the first copy and down through the second, so
+    the looped waveform has no frequency jump at the seam (a jump there made the decoder lose the
+    first letter after it, which the 2026-11-07 run counted as a Doppler failure)."""
+    env1 = np.array(cw_keying(text, wpm, rate))
+    env = np.concatenate([env1, env1])
+    n1 = len(env1)
+    t1 = np.arange(n1) / rate
+    span = hz_per_s * t1[-1] if n1 > 1 else 0.0
+    f = np.concatenate([-span / 2 + hz_per_s * t1, span / 2 - hz_per_s * t1])
+    ph = 2 * np.pi * np.cumsum(f) / rate
     return [complex(v) for v in env * np.exp(1j * ph)]
 
 
@@ -100,7 +106,7 @@ def main():
     ap.add_argument("--text", default="VVV DE HG0LAB TEST")
     ap.add_argument("--wpm", type=float, default=15)
     ap.add_argument("--arb-rate", type=float, default=25e3, help="doppler: waveform rate (long files at 100 kS/s crash the VSG software)")
-    ap.add_argument("--cw-bw", type=float, default=2000.0, help="doppler: CW filter bandwidth, Hz")
+    ap.add_argument("--cw-bw", type=float, default=3000.0, help="doppler: CW filter bandwidth, Hz")
     ap.add_argument("--aprs-levels", default="-105,-110,-115,-118,-120,-122,-124,-126,-128", help="aprs: dBm")
     ap.add_argument("--aprs-dev", type=float, default=3000.0, help="aprs: FM deviation, Hz")
     ap.add_argument("--aprs-bws", default="12500", help="aprs: NFM channel bandwidths, Hz")

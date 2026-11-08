@@ -1,5 +1,5 @@
 //! Morse (CW) decoder for demodulated audio: finds the beat tone and follows it as it drifts
-//! (Doppler left over after tracking), measures the keying envelope with an adaptive
+//! (Doppler left over after tracking, or uncorrected Doppler up to a few hundred Hz/s), measures the keying envelope with an adaptive
 //! threshold, learns the speed from the marks and turns the timing into text.
 //! Also reports what it saw (tone, drift, speed, signal-to-noise), so a recording doubles as a
 //! measurement of the receiving chain.
@@ -9,6 +9,8 @@ use rustfft::FftPlanner;
 
 const FRAME_N: usize = 2048; // FFT size (~43 ms at 48 kHz, ~23 Hz bins)
 const HOP_S: f64 = 0.005; // envelope resolution
+/// Fastest tone drift the tracker looks for, Hz/s (uncorrected Doppler on 70 cm reaches ~170 Hz/s)
+const MAX_RATE: f64 = 400.0;
 
 #[derive(Debug, Clone, Default)]
 pub struct CwReport {
@@ -76,7 +78,7 @@ fn percentile(v: &mut [f64], p: f64) -> f64 {
     if v.is_empty() {
         return 0.0;
     }
-    v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    v.sort_by(|a, b| a.total_cmp(b));
     v[((v.len() - 1) as f64 * p).round() as usize]
 }
 
@@ -137,16 +139,35 @@ pub fn decode(audio: &[f32], fs: f64, band: (f64, f64)) -> CwReport {
 
     // Tone: strongest bin of each 0.5 s block, kept where it stands out, smoothed, then
     // interpolated to every frame
+    // Each block is summed along a few straight lines in time-frequency (drift hypotheses up to
+    // +-MAX_RATE Hz/s), so a tone that moves several bins within the block (uncorrected Doppler)
+    // still adds up in one bin instead of smearing; the best line wins.
     let blk = (0.5 / HOP_S) as usize;
-    let mut tones: Vec<(usize, f64, f64)> = Vec::new(); // (frame, bin (fractional), prominence dB)
+    let rate_step = 0.5 * bin_hz / 0.5; // half a bin of error over a block
+    let n_rates = (MAX_RATE / rate_step).ceil() as i64;
+    let mut tones: Vec<(usize, f64, f64, f64)> = Vec::new(); // (frame, bin (fractional), prominence dB, slope bins/frame)
+    let mut acc = vec![0.0f64; nb];
     for s in (0..nf).step_by(blk) {
         let e = (s + blk).min(nf);
-        let mut acc = vec![0.0f64; nb];
-        for f in &frames[s..e] {
-            for (a, v) in acc.iter_mut().zip(f) {
-                *a += *v as f64;
+        let mid = (s + e) as f64 / 2.0;
+        let mut best: (f64, Vec<f64>, f64) = (-1.0, Vec::new(), 0.0);
+        for ri in -n_rates..=n_rates {
+            let bins_per_frame = ri as f64 * rate_step * HOP_S / bin_hz;
+            acc.iter_mut().for_each(|a| *a = 0.0);
+            for (fi, f) in frames[s..e].iter().enumerate() {
+                let sh = (bins_per_frame * (s as f64 + fi as f64 - mid)).round() as i64;
+                // acc[k] collects the bin where a tone at k (at the block centre) is in this frame
+                let (k0, k1) = ((-sh).max(0) as usize, ((nb as i64 - sh).min(nb as i64)).max(0) as usize);
+                for k in k0..k1 {
+                    acc[k] += f[(k as i64 + sh) as usize] as f64;
+                }
+            }
+            let pk = acc.iter().cloned().fold(0.0, f64::max);
+            if pk > best.0 {
+                best = (pk, acc.clone(), bins_per_frame);
             }
         }
+        let (acc, slope) = (best.1, best.2);
         let (k, pk) = acc.iter().enumerate().fold((0, 0.0), |m, (k, v)| if *v > m.1 { (k, *v) } else { m });
         let mut sorted = acc.clone();
         let med = percentile(&mut sorted, 0.5).max(1e-30);
@@ -159,11 +180,11 @@ pub fn decode(audio: &[f32], fs: f64, band: (f64, f64)) -> CwReport {
         } else {
             0.0
         };
-        tones.push(((s + e) / 2, k as f64 + frac, prom));
+        tones.push(((s + e) / 2, k as f64 + frac, prom, slope));
     }
     // Keep blocks with a clear tone, reject jumps against the neighbours (median of 3)
-    let good: Vec<(usize, f64)> = tones.iter().filter(|t| t.2 > 8.0).map(|t| (t.0, t.1)).collect();
-    let mut track: Vec<(usize, f64)> = Vec::new();
+    let good: Vec<(usize, f64, f64)> = tones.iter().filter(|t| t.2 > 8.0).map(|t| (t.0, t.1, t.3)).collect();
+    let mut track: Vec<(usize, f64, f64)> = Vec::new();
     for j in 0..good.len() {
         let lo = j.saturating_sub(1);
         let hi = (j + 1).min(good.len() - 1);
@@ -177,15 +198,29 @@ pub fn decode(audio: &[f32], fs: f64, band: (f64, f64)) -> CwReport {
     if track.is_empty() {
         return rep;
     }
+    // Tone at any frame: each reading carries its block's best drift line, so between two readings
+    // the two local lines are blended (a chord between block centres would cut the corner where the
+    // drift turns, or across a word gap at a few hundred Hz/s).
+    let line = |t: (usize, f64, f64), f: usize| t.1 + t.2 * (f as f64 - t.0 as f64);
+    let chord = |a: usize, b: usize, f: usize| -> f64 {
+        let (p, q) = (track[a], track[b]);
+        if p.0 == q.0 {
+            return line(p, f);
+        }
+        p.1 + (q.1 - p.1) * (f as f64 - p.0 as f64) / (q.0 as f64 - p.0 as f64)
+    };
     let tone_at = |f: usize| -> f64 {
         match track.iter().position(|t| t.0 >= f) {
-            Some(0) => track[0].1,
-            None => track[track.len() - 1].1,
+            // past the ends: the chord of the two outer readings (one block's own line is noisy there)
+            Some(0) => chord(0, 1.min(track.len() - 1), f),
+            None => chord(track.len() - 1, track.len().saturating_sub(2), f),
             Some(p) => {
                 let (a, b) = (track[p - 1], track[p]);
-                a.1 + (b.1 - a.1) * (f - a.0) as f64 / (b.0 - a.0).max(1) as f64
+                let w = (f - a.0) as f64 / (b.0 - a.0).max(1) as f64;
+                (1.0 - w) * line(a, f) + w * line(b, f)
             }
         }
+        .clamp(0.0, (nb - 1) as f64)
     };
     rep.tone = track.iter().map(|t| (t_of(t.0), (b0 as f64 + t.1) * bin_hz)).collect();
     if rep.tone.len() >= 2 {
@@ -346,6 +381,11 @@ mod tests {
 
     /// Keyed tone with drift and Gaussian noise; `snr_db` in 100 Hz.
     fn synth(text: &str, wpm: f64, tone: f64, drift: f64, snr_db: f64, fs: f64) -> Vec<f32> {
+        synth_f(text, wpm, |t| tone + drift * t, snr_db, fs)
+    }
+
+    /// Keyed tone whose frequency follows `freq(t)`.
+    fn synth_f(text: &str, wpm: f64, freq: impl Fn(f64) -> f64, snr_db: f64, fs: f64) -> Vec<f32> {
         let dot = 1.2 / wpm;
         let mut pat = vec![false; 10];
         pat.extend(key_pattern(text));
@@ -366,7 +406,7 @@ mod tests {
                 let t = i as f64 / fs;
                 let on = pat[((t / dot) as usize).min(pat.len() - 1)];
                 env += ((if on { 1.0 } else { 0.0 }) - env) * 0.01; // soft keying
-                ph += 2.0 * std::f64::consts::PI * (tone + drift * t) / fs;
+                ph += 2.0 * std::f64::consts::PI * freq(t) / fs;
                 (env * ph.sin() + noise_sigma * rnd()) as f32
             })
             .collect()
@@ -381,6 +421,31 @@ mod tests {
         assert!((r.wpm - 20.0).abs() < 2.0, "{} wpm", r.wpm);
         assert!((r.drift_hz_s + 4.0).abs() < 1.0, "drift {}", r.drift_hz_s);
         assert!((r.tone[0].1 - 2300.0).abs() < 20.0, "{:?}", r.tone[0]);
+    }
+
+    #[test]
+    fn follows_uncorrected_doppler() {
+        // 70 cm without TLE tracking: the beat tone moves up to ~170 Hz/s near TCA. The tone moves
+        // several FFT bins per 0.5 s analysis block; summing along drift lines keeps it together.
+        let fs = 48_000.0;
+        for (rate, snr) in [(150.0, 8.0), (-150.0, 8.0), (200.0, 10.0), (-200.0, 10.0)] {
+            let x = synth("VVV DE HG0LAB TEST", 15.0, 1900.0 - rate * 7.0, rate, snr, fs);
+            let r = decode(&x, fs, (300.0, 3500.0));
+            assert!(r.text.ends_with("VVV DE HG0LAB TEST"), "{rate} Hz/s, {snr} dB: {r:?}");
+            assert!((r.drift_hz_s - rate).abs() < 3.0, "{rate} Hz/s: drift {}", r.drift_hz_s);
+        }
+    }
+
+    #[test]
+    fn follows_a_turning_drift() {
+        // The tone ramps up 200 Hz/s through the first copy and down through the second (the lab's
+        // looped chirp): the turn must not cost the letters around it
+        let fs = 48_000.0;
+        let text = "VVV DE HG0LAB TEST VVV DE HG0LAB TEST";
+        let half = (10 + crate::cw::key_pattern("VVV DE HG0LAB TEST").len() + 4) as f64 * 1.2 / 15.0;
+        let x = synth_f(text, 15.0, |t| 1900.0 + 200.0 * (half - (t - half).abs()) - 200.0 * half / 2.0, 12.0, fs);
+        let r = decode(&x, fs, (300.0, 3500.0));
+        assert_eq!(r.text, text, "{r:?}");
     }
 
     #[test]
