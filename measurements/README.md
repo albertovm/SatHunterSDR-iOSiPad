@@ -30,6 +30,11 @@ lab link (see [docs/LAB.md](../docs/LAB.md)).
 | 2026-11-05 | [LNA reverse isolation](2026-11-05_1053_lna-reverse-s12/report.md) | LNA reversed, VSG60 + BB60C | S12 -74...-79 dB in the passband, -84...-106 dB out of band, -44 dB at 900 MHz |
 | 2026-11-05 | [RTL-SDR warm-up drift](2026-11-05_1148_rtl-drift-hub/report.md) | RTL-SDR V3 on a powered OTG hub, cold start, 90 min | 130 Hz (0.3 ppm) warm-up in 5 min at 436 MHz, then within ±8 Hz; plug in 5-10 min before AOS |
 | 2026-11-05 | [SSTV Robot 36](2026-11-05_sstv-summary/report.md) | VSG60 -> LNA -> RTL-SDR -> Mi 10 (lab11), NFM 12.5 kHz | clean picture down to -132 dBm, usable at -134 dBm, VIS lost at -138 dBm |
+| 2026-11-07 | [9k6 G3RUH on beta 12: level and deviation](2026-11-07_2253_g3ruh-beta12/report.md) | HackRF -> 70.5 dB -> LNA -> RTL-SDR -> Mi 10 (v0.2.0-beta12) | 90 % frames: -110.8 / -114.7 / -117.1 dBm at 2 / 3 / 4.5 kHz deviation (NFM 20 kHz); 25 kHz filter 0.3-1 dB worse |
+| 2026-11-07 | [APRS regression on beta 12](2026-11-07_2336_aprs-beta12/report.md) | as above | 90 % at about -119.3 dBm, unchanged |
+| 2026-11-07 | [CW decoder vs Doppler ramp](2026-11-07_2342_doppler-hackrf/report.md) | as above | clean to 25 Hz/s down to 32 dB-Hz; single errors at 50-100 Hz/s; fails at 200 Hz/s |
+| 2026-11-07 | [Two-tone in-band IM (HackRF)](2026-11-07_2352_twotone-hackrf/report.md) | as above, RTL gain 12.5 / 29.7 dB | ADC clips at about -85 / -105 dBm per tone; IM3 below that limited by the HackRF, real IIP3 needs the VSG |
+| 2026-11-07 | [Drift, second night (aborted)](2026-11-07_2354_drift-hackrf-night2/report.md) | as above | +40 Hz for 4.5 min, then stale scheduled tasks took over the HackRF |
 | 2026-11-07 | [9k6 G3RUH, retuned decoder](2026-11-07_1829_g3ruh-hackrf/report.md) | as above (lab22) | 90 % frames at about -114.8 dBm, 2.3 dB better; found with the phone's discriminator recorded over /fm |
 | 2026-11-07 | [9k6 G3RUH frame success](2026-11-07_1624_g3ruh-hackrf/report.md) | HackRF -> 70.5 dB -> LNA -> RTL-SDR -> Mi 10 (lab20) | 90 % frames at about -112.5 dBm (NFM 20 kHz); about 5 dB short of the simulation |
 | 2026-11-07 | [5 h drift, HackRF vs RTL-SDR](2026-11-07_0356_drift-hackrf-night/report.md) | HackRF CW -> LNA -> RTL-SDR -> Mi 10, 30 s readings | +33 Hz median (+0.08 ppm), 12 Hz peak to peak over 5 h |

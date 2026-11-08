@@ -1,0 +1,214 @@
+{
+ "started": "2026-11-07 23:42:12",
+ "part": "doppler",
+ "freq_hz": 436600000.0,
+ "atten_db": 70.5,
+ "phone": {
+  "source_status": "tuner r820t [eeprom7 16], 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "decimation": 8,
+  "ppm": -0.2,
+  "gain": 12.5
+ },
+ "doppler": [
+  {
+   "hz_per_s": 0.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 0.0,
+   "text": "VVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.378640776699031,
+   "cn0_dbhz": 38.74166646106069,
+   "drift_hz_s": 0.1019953049912838
+  },
+  {
+   "hz_per_s": 0.0,
+   "level_dbm": -135.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 0.0,
+   "text": "E VVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.250473869482807,
+   "cn0_dbhz": 34.84431263902726,
+   "drift_hz_s": -0.038066295488608876
+  },
+  {
+   "hz_per_s": 0.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 0.0,
+   "text": "EE VVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.08118440614907,
+   "cn0_dbhz": 32.583194962794686,
+   "drift_hz_s": 0.046693734067584404
+  },
+  {
+   "hz_per_s": 10.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 138.4,
+   "text": "EE VVV DE HG0LAB TEST VVV DE HG0LAB TEST VS",
+   "ok": true,
+   "wpm": 15.428297488630228,
+   "cn0_dbhz": 38.95268665945067,
+   "drift_hz_s": 1.1083084329021953
+  },
+  {
+   "hz_per_s": 10.0,
+   "level_dbm": -135.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 138.4,
+   "text": "E VVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.214920355399023,
+   "cn0_dbhz": 34.63909200562752,
+   "drift_hz_s": 1.0439127350895747
+  },
+  {
+   "hz_per_s": 10.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 138.4,
+   "text": "E VVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.028982857368762,
+   "cn0_dbhz": 32.33808517566881,
+   "drift_hz_s": 1.1940567282074557
+  },
+  {
+   "hz_per_s": 25.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 346.0,
+   "text": "I VVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.42645241038319,
+   "cn0_dbhz": 39.27353022646156,
+   "drift_hz_s": 2.212733380833198
+  },
+  {
+   "hz_per_s": 25.0,
+   "level_dbm": -135.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 346.0,
+   "text": "EEVVV DE HG0LAB TEST VVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.29756406795946,
+   "cn0_dbhz": 35.14009718533665,
+   "drift_hz_s": 2.5940760127646865
+  },
+  {
+   "hz_per_s": 25.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 346.0,
+   "text": "EE VVV DE HG0LAB TEST VVV DE HG0LAB TEST UH",
+   "ok": true,
+   "wpm": 15.058227045868653,
+   "cn0_dbhz": 32.24765971036957,
+   "drift_hz_s": 3.0783967455649295
+  },
+  {
+   "hz_per_s": 50.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 692.0,
+   "text": "T VVV DE HG0LAB TEST UVV DE HG0LAB TEST VH",
+   "ok": true,
+   "wpm": 15.519415117973363,
+   "cn0_dbhz": 38.932064493992954,
+   "drift_hz_s": 4.8100757128911384
+  },
+  {
+   "hz_per_s": 50.0,
+   "level_dbm": -135.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 692.0,
+   "text": "E VVV DE HG0LAB TESE UVV DE HG0LAB TEST VH",
+   "ok": false,
+   "wpm": 15.161635271859836,
+   "cn0_dbhz": 35.176276292615434,
+   "drift_hz_s": 4.8775828430476285
+  },
+  {
+   "hz_per_s": 50.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 692.0,
+   "text": "E VVV DE HG0LAB TEST UVV DE HG0LAB TEST AH",
+   "ok": true,
+   "wpm": 15.065211798671076,
+   "cn0_dbhz": 32.041657671720515,
+   "drift_hz_s": 6.194955806255074
+  },
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 1384.0,
+   "text": "T VVV DE HG0LAB TESE UVV DE HG0LAB TEST VH",
+   "ok": false,
+   "wpm": 15.507330831449153,
+   "cn0_dbhz": 39.22075877568354,
+   "drift_hz_s": 9.493366336469498
+  },
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -135.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 1384.0,
+   "text": "E VVV DE HG0LAB TESE UVV DE HG0LAB TEST VH",
+   "ok": false,
+   "wpm": 15.296265560165976,
+   "cn0_dbhz": 35.14518492350985,
+   "drift_hz_s": 10.294544582247719
+  },
+  {
+   "hz_per_s": 100.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 1384.0,
+   "text": "E VVV DE HG0LAB TESE UVV DE HG0LAB TEST AH",
+   "ok": false,
+   "wpm": 14.91394475968741,
+   "cn0_dbhz": 32.570145412969474,
+   "drift_hz_s": 13.267556155853358
+  },
+  {
+   "hz_per_s": 200.0,
+   "level_dbm": -130.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 2768.0,
+   "text": "A T DE HG0LAB E E V DE HG0LAB TE E S EI",
+   "ok": false,
+   "wpm": 15.249662118378906,
+   "cn0_dbhz": 38.12539930423326,
+   "drift_hz_s": 22.85509561736659
+  },
+  {
+   "hz_per_s": 200.0,
+   "level_dbm": -135.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 2768.0,
+   "text": "T DE HG0LAB E EE U DE HG0LAB TE E E",
+   "ok": false,
+   "wpm": 15.069896559701245,
+   "cn0_dbhz": 34.39755672178047,
+   "drift_hz_s": 26.99864507533372
+  },
+  {
+   "hz_per_s": 200.0,
+   "level_dbm": -138.0,
+   "cw_bw_hz": 2000.0,
+   "sweep_hz": 2768.0,
+   "text": "E E T DE HG0LAT U DE HG0LAB T",
+   "ok": false,
+   "wpm": 15.275116342731998,
+   "cn0_dbhz": 31.558135620764155,
+   "drift_hz_s": 24.429503653989237
+  }
+ ],
+ "finished": "2026-11-07 23:52:18"
+}
