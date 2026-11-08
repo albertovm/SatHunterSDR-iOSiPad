@@ -18,6 +18,7 @@ attenuators.
 import json
 import math
 import os
+import zlib
 import socket
 import time
 
@@ -94,14 +95,17 @@ class HackRfGen:
     # ---- waveforms
     def _file(self, name, iq, rate, dig, offset=None):
         offset = self.OFFSET if offset is None else offset
-        key = "%s_%d_%+.1f_%+d.iq8" % (os.path.splitext(name)[0], int(rate), dig, round(offset))
+        x = np.asarray(iq, dtype=np.complex64)
+        # the waveform's checksum is part of the name: a changed generator under the same name must not
+        # play a stale cached file (on 2026-11-08 the old looped chirps played under the new name)
+        crc = zlib.crc32(x.tobytes())
+        key = "%s_%d_%+.1f_%+d_%08x.iq8" % (os.path.splitext(name)[0], int(rate), dig, round(offset), crc)
         path = os.path.join(self.dir, key)
         if os.path.exists(path):
             return path
         # Linear interpolation to RATE, in blocks (a 127 s SSTV picture is 254 M samples at 2 MS/s).
         # Its images sit at multiples of the waveform rate (25 kHz and up for SSTV), outside the
         # receiver channel and 30+ dB down; waveforms at 100 kS/s and more put them further out.
-        x = np.asarray(iq, dtype=np.complex64)
         m = len(x)
         n = int(round(m * self.RATE / rate))
         cyc = round(offset * n / self.RATE)  # whole offset cycles over the loop: no phase step
