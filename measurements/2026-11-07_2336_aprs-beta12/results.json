@@ -1,0 +1,111 @@
+{
+ "started": "2026-11-07 23:36:25",
+ "part": "aprs",
+ "freq_hz": 436600000.0,
+ "atten_db": 70.5,
+ "phone": {
+  "source_status": "tuner r820t [eeprom7 16], 1.024 MS/s, gain 12.5 dB, bias tee ON",
+  "rate": 1024000.0,
+  "decimation": 8,
+  "ppm": -0.2,
+  "gain": 12.5
+ },
+ "aprs": {
+  "deviation_hz": 3000.0,
+  "packets_per_loop": 10,
+  "loop_s": 10.41912,
+  "rows": [
+   {
+    "cpu_pct_after": 21.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -110.0,
+    "decoded": 29,
+    "expected": 28.838500925012145,
+    "success": 1.0,
+    "bad_crc_total": 5
+   },
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -115.0,
+    "decoded": 29,
+    "expected": 28.8804688849565,
+    "success": 1.0,
+    "bad_crc_total": 5
+   },
+   {
+    "cpu_pct_after": 9.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -117.0,
+    "decoded": 29,
+    "expected": 28.8879378289958,
+    "success": 1.0,
+    "bad_crc_total": 5
+   },
+   {
+    "cpu_pct_after": 7.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -118.0,
+    "decoded": 29,
+    "expected": 28.86708542509049,
+    "success": 1.0,
+    "bad_crc_total": 5
+   },
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -119.0,
+    "decoded": 29,
+    "expected": 28.87342693385768,
+    "success": 1.0,
+    "bad_crc_total": 8
+   },
+   {
+    "cpu_pct_after": 4.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -120.0,
+    "decoded": 19,
+    "expected": 28.868077623048652,
+    "success": 0.6581664441982154,
+    "bad_crc_total": 19
+   },
+   {
+    "cpu_pct_after": 4.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -121.0,
+    "decoded": 20,
+    "expected": 28.900419249112943,
+    "success": 0.6920314832669381,
+    "bad_crc_total": 31
+   },
+   {
+    "cpu_pct_after": 7.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -122.0,
+    "decoded": 2,
+    "expected": 28.894225105540645,
+    "success": 0.06921798361764987,
+    "bad_crc_total": 63
+   },
+   {
+    "cpu_pct_after": 10.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -124.0,
+    "decoded": 0,
+    "expected": 28.809347787496982,
+    "success": 0.0,
+    "bad_crc_total": 90
+   },
+   {
+    "cpu_pct_after": 6.0,
+    "bw_hz": 12500.0,
+    "level_dbm": -126.0,
+    "decoded": 0,
+    "expected": 28.83224843031454,
+    "success": 0.0,
+    "bad_crc_total": 109
+   }
+  ]
+ },
+ "finished": "2026-11-07 23:42:11"
+}
