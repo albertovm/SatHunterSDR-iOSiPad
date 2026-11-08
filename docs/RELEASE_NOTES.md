@@ -1,4 +1,4 @@
-# SatHunterSDR 0.2.0 beta 12
+# SatHunterSDR 0.2.0 beta 13
 
 Android satellite-hunting SDR receiver. Install the APK below (allow installs from your browser or
 file manager when asked).
@@ -6,6 +6,14 @@ file manager when asked).
 **Coming from beta 1 or beta 2: uninstall the old app once** (Android says it "conflicts with an
 existing package"). Those builds had a throw-away signature; from beta 3 on every APK is signed
 with the same Z2Labs key and installs over the previous one.
+
+## New in beta 13
+
+- **CW without TLE tracking**: the Morse decoder now follows the beat tone while it drifts by up to a few
+  hundred Hz/s (uncorrected Doppler on 70 cm reaches about 170 Hz/s at the closest approach). Measured with
+  the HackRF: clean copy from 0 to 200 Hz/s down to about 32 dB-Hz (13 of 15 runs perfect, the other two
+  with one wrong letter). With tracking on it behaves as before.
+- **Build**: the Android build no longer fails when GitHub's Gradle download is slow.
 
 ## New in beta 12
 
