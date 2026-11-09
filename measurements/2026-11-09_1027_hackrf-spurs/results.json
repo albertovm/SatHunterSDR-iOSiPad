@@ -1,0 +1,73 @@
+{
+ "hz": 436600000.0,
+ "atten_db": 72.8,
+ "rbw_hz": 100.0,
+ "span_hz": 200000.0,
+ "lo_offset_hz": 250000.0,
+ "rows": [
+  {
+   "txvga": 0,
+   "scale": 1.0,
+   "tone_dbm": -122.5,
+   "floor_dbm": -142.9,
+   "spurs": []
+  },
+  {
+   "txvga": 0,
+   "scale": 0.3,
+   "tone_dbm": -130.0,
+   "floor_dbm": -142.9,
+   "spurs": []
+  },
+  {
+   "txvga": 0,
+   "scale": 0.1,
+   "tone_dbm": -138.0,
+   "floor_dbm": -143.0,
+   "spurs": []
+  },
+  {
+   "txvga": 20,
+   "scale": 1.0,
+   "tone_dbm": -97.4,
+   "floor_dbm": -142.9,
+   "spurs": []
+  },
+  {
+   "txvga": 20,
+   "scale": 0.3,
+   "tone_dbm": -107.7,
+   "floor_dbm": -142.8,
+   "spurs": []
+  },
+  {
+   "txvga": 20,
+   "scale": 0.1,
+   "tone_dbm": -116.7,
+   "floor_dbm": -142.9,
+   "spurs": []
+  },
+  {
+   "txvga": 40,
+   "scale": 1.0,
+   "tone_dbm": -79.1,
+   "floor_dbm": -141.6,
+   "spurs": []
+  },
+  {
+   "txvga": 40,
+   "scale": 0.3,
+   "tone_dbm": -89.4,
+   "floor_dbm": -142.8,
+   "spurs": []
+  },
+  {
+   "txvga": 40,
+   "scale": 0.1,
+   "tone_dbm": -98.7,
+   "floor_dbm": -142.9,
+   "spurs": []
+  }
+ ],
+ "made": "2026-11-09 10:28"
+}
