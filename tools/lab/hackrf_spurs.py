@@ -41,7 +41,7 @@ def main():
                 gen.settings = lambda hz, dbm, tx=tx: (tx, False, 0.0)
                 gen.cw(a.hz, 0.0)
                 gen._cmd(cmd="cw", offset=round(a.hz - gen.lo), scale=scale)
-                time.sleep(0.4)
+                time.sleep(2.0)  # the server has about a second of samples queued
                 tone, fpk = bb.peak(a.hz, span=20e3, rbw=a.rbw, ref_dbm=tone_ref(tx, a.atten))
                 f, p = bb.trace(a.hz, a.span, a.rbw, ref_dbm=tone + 5, sweeps=5)
                 f, p = np.asarray(f), np.asarray(p)
