@@ -41,7 +41,18 @@ def main():
     bb = BB60()
     rows = []
     try:
+        last = [-1.0]
+
+        def alive():
+            # the HackRF stream stalls if the device was replugged under the server: refuse to go on
+            w = gen._cmd(cmd="status")["written_s"]
+            if w <= last[0]:
+                raise SystemExit("HackRF server is not streaming any more (written_s stuck at %.1f): "
+                                 "hackrf_ctl.py quit, then start hackrf_server.py again" % w)
+            last[0] = w
+
         for f in freqs:
+            alive()
             for amp in (False, True):
                 for tx in tvs:
                     gen.cal = {}
