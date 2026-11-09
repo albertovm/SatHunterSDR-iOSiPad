@@ -1,5 +1,7 @@
 # Home lab with a HackRF: calibration, panorama, APRS and SSTV (2026-11-07 night)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 First unattended measurements away from the lab. The VSG60A was replaced by a HackRF One (TCXO, firmware 2026.01.3) on
 a second PC (HP ProBook, `tools/lab/setup_probook.ps1`), driven over SSH/ZeroTier from the lab PC.
 
@@ -43,6 +45,7 @@ so every threshold below is about 3 dB worse than the lab's for that reason alon
   to the edge, or the display should blank the outer 5 %.
 - Every tone carries sidebands at +-36.6 kHz, -40 dBc, at every decimation: from the HackRF or from the receiver's
   supply (OTG hub). The VSG60A will tell which.
+  **2026-11-09:** not from the HackRF: nothing within +-100 kHz of its tone down to about -48 dBc on the BB60C ([hackrf-spurs](../2026-11-09_1027_hackrf-spurs/report.md)); the receiver makes them.
 - At decimation 1 the span edges are asymmetric (the low side falls 75 kHz earlier): the R820T IF filter.
 
 ## 3. APRS (AFSK1200): [3 kHz](../2026-11-07_0324_aprs-hackrf-3k/results.json), [1 kHz](../2026-11-07_0335_aprs-hackrf-1k/results.json) deviation

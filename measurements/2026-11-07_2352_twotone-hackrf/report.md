@@ -1,5 +1,7 @@
 # Two-tone in-band intermodulation (HackRF)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 2026-11-07 23:52, same chain as the [9k6 run](../2026-11-07_2253_g3ruh-beta12/report.md), beta 12. Two equal
 tones 10 kHz apart, levels per tone at the LNA input, USB, RTL gain 12.5 and 29.7 dB.
 

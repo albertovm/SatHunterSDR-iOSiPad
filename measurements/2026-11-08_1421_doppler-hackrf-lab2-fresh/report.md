@@ -1,5 +1,7 @@
 # CW decoder against Doppler ramps, after the tracking rework (HackRF, lab2)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 2026-11-08 14:21, SatHunterSDR v0.2.0-beta12-lab2 on the Mi 10. Chain: HackRF -> 30+30+10 dB -> 1 m coax ->
 Spacewalker LNA -> RTL-SDR V3 (gain 12.5 dB). Levels at the LNA input. Keyed CW "VVV DE HG0LAB TEST" at
 15 WPM, CW filter 3 kHz. The tone ramps up through one copy of the text and down through the next, so the

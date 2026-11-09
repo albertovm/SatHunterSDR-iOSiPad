@@ -1,5 +1,7 @@
 # 9600 bd G3RUH FSK: frame success vs level (HackRF, home)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 2026-11-07 16:24, `tools/lab/rx_extra.py --gen hackrf --part g3ruh`, SatHunterSDR v0.2.0-beta11-lab20 (first 9k6
 decoder). Chain and calibration as in the [home HackRF report](../2026-11-07_home-hackrf/report.md): HackRF ->
 70.5 dB -> Spacewalker LNA -> RTL-SDR V3 (gain 12.5 dB, 1.024 MS/s / 8) -> Mi 10; levels at the LNA input (+-2 dB).

@@ -1,9 +1,19 @@
 {
- "method": "receiver transfer (system-a VSG60 scale), levels at the LNA input; hackrf_rxcal.py 2026-11-07 02:15 and 02:31, txvga 4-32: 1.00 dB/dB, +-0.5 dB",
- "atten_db": 70.5,
- "p0": {"436600000": -45.6},
+ "method": "BB60C through the home chain (30+30+10 dB + 1 m coax, 72.8 dB at 436 MHz by path_cal 2026-11-09 10:07), measurements/2026-11-09_1009_hackrf-cal-bb60c; P0 = median of (BB60C level + 72.8 - txvga) over txvga 0-30, amp off. Use --atten 72.8 at every frequency with this chain: P0 - 72.8 is then the level at the chain output (LNA input) as the BB60C reads it.",
+ "atten_db": 72.8,
+ "p0": {
+  "144800000": -45.5,
+  "145800000": -45.41,
+  "435000000": -44.93,
+  "436000000": -45.48,
+  "436600000": -45.3,
+  "437000000": -46.7,
+  "438000000": -44.9
+ },
  "p0_amp": {},
- "ppm": 2.07,
  "allow_amp": false,
- "made": "2026-11-07 02:31"
+ "ppm": -0.8,
+ "ppm_note": "HackRF against the BB60C (the VSG60 reads +0.11 ppm against the same BB60C)",
+ "amp_note": "amplifier on gives 22-24 dB LESS than off (broken); never used",
+ "made": "2026-11-09 10:23 (P0 refit 2026-11-09)"
 }
