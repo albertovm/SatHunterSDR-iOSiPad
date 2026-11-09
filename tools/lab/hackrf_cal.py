@@ -30,6 +30,7 @@ def main():
     ap.add_argument("--txvga", default="0,5,10,15,20,25,30,35,40,45,47")
     ap.add_argument("--warm", type=float, default=20, help="minutes of drift readings at 436 MHz")
     ap.add_argument("--name", default="hackrf-cal")
+    ap.add_argument("--install", action="store_true", help="also write tools/lab/hackrf_cal.json (the file the lab scripts read)")
     a = ap.parse_args()
     freqs = [float(x) for x in a.freqs.split(",")]
     tvs = [int(x) for x in a.txvga.split(",")]
@@ -57,12 +58,29 @@ def main():
                 for tx in tvs:
                     gen.cal = {}
                     gen.settings = lambda hz, dbm, tx=tx, amp=amp: (tx, amp, 0.0)  # this txvga, full scale
-                    gen.cw(f, 0.0)
-                    time.sleep(1.5)  # the server has about a second of samples queued
-                    p, fh = bb.peak(f, span=50e3, rbw=100, ref_dbm=10.0 - a.atten)
+                    for k in range(3):  # a slow server reply is not a reason to lose the run
+                        try:
+                            gen.cw(f, 0.0)
+                            break
+                        except (TimeoutError, OSError):
+                            if k == 2:
+                                raise
+                            time.sleep(2)
+                    # the server has about a second of samples queued, and a change can take longer:
+                    # read until two readings 0.6 s apart agree within 0.3 dB (2026-11-09: the first
+                    # reading after a change was sometimes the previous setting's level)
+                    time.sleep(1.0)
+                    prev = None
+                    for _ in range(8):
+                        p, fh = bb.peak(f, span=50e3, rbw=100, ref_dbm=10.0 - a.atten)
+                        if prev is not None and abs(p - prev) < 0.3:
+                            break
+                        prev = p
+                        time.sleep(0.6)
                     lo, _ = bb.peak(f - gen.OFFSET, span=20e3, rbw=100, ref_dbm=10.0 - a.atten)
                     row = {"hz": f, "amp": amp, "txvga": tx, "out_dbm": p + a.atten, "err_hz": fh - f, "lo_dbc": lo - p}
                     rows.append(row)
+                    json.dump({"rows": rows, "partial": True}, open(os.path.join(out, "results.json"), "w"), indent=1)
                     print("%8.3f MHz amp %d txvga %2d: %+6.1f dBm out, %+7.0f Hz, LO %+5.1f dBc" % (
                         f / 1e6, amp, tx, row["out_dbm"], row["err_hz"], row["lo_dbc"]))
         drift = []
@@ -89,10 +107,14 @@ def main():
             cal["txvga_slope"]["%.0f_%d" % (f, amp)] = round(float(k), 3)
     errs = [x["err_hz"] / x["hz"] * 1e6 for x in rows if x["hz"] >= 100e6]
     cal["ppm"] = round(float(np.median(errs)), 3)
-    json.dump(cal, open(os.path.join(os.path.dirname(__file__), "hackrf_cal.json"), "w"), indent=1)
+    json.dump(cal, open(os.path.join(out, "hackrf_cal.json"), "w"), indent=1)
+    if a.install:
+        json.dump(cal, open(os.path.join(os.path.dirname(__file__), "hackrf_cal.json"), "w"), indent=1)
     json.dump({"rows": rows, "drift": drift, "cal": cal}, open(os.path.join(out, "results.json"), "w"), indent=1)
-    print("\nppm %.3f; P0 at 436 MHz %.1f dBm (amp off) / %.1f dBm (amp on); written hackrf_cal.json and %s" % (
-        cal["ppm"], cal["p0"]["436000000"], cal["p0_amp"]["436000000"], out))
+    near = min(cal["p0"], key=lambda k: abs(float(k) - 436e6))
+    print("\nppm %.3f; P0 at %.1f MHz %.1f dBm (amp off) / %.1f dBm (amp on); written %s%s" % (
+        cal["ppm"], float(near) / 1e6, cal["p0"][near], cal["p0_amp"][near], out,
+        " and tools/lab/hackrf_cal.json" if a.install else " (tools/lab/hackrf_cal.json unchanged; --install to use it)"))
 
 
 if __name__ == "__main__":
