@@ -1,0 +1,56 @@
+{
+ "hz": 436600000.0,
+ "atten_db": 72.8,
+ "set_dbm": -90.0,
+ "rows": [
+  {
+   "kind": "cw",
+   "arb_rate": null,
+   "set_dbm": -90.0,
+   "read_dbm": -90.33,
+   "spread_db": 0.09,
+   "error_db": -0.33
+  },
+  {
+   "kind": "sstv_robot36",
+   "arb_rate": 25000.0,
+   "set_dbm": -90.0,
+   "read_dbm": -90.29,
+   "spread_db": 0.04,
+   "error_db": -0.29
+  },
+  {
+   "kind": "sstv_robot36",
+   "arb_rate": 50000.0,
+   "set_dbm": -90.0,
+   "read_dbm": -90.3,
+   "spread_db": 0.02,
+   "error_db": -0.3
+  },
+  {
+   "kind": "sstv_robot36",
+   "arb_rate": 100000.0,
+   "set_dbm": -90.0,
+   "read_dbm": -90.3,
+   "spread_db": 0.01,
+   "error_db": -0.3
+  },
+  {
+   "kind": "sstv_robot36",
+   "arb_rate": 1000000.0,
+   "set_dbm": -90.0,
+   "read_dbm": -90.31,
+   "spread_db": 0.01,
+   "error_db": -0.31
+  },
+  {
+   "kind": "fm_tone_1900",
+   "arb_rate": 25000.0,
+   "set_dbm": -90.0,
+   "read_dbm": -90.3,
+   "spread_db": 0.01,
+   "error_db": -0.3
+  }
+ ],
+ "made": "2026-11-09 11:14"
+}
