@@ -45,6 +45,7 @@ so every threshold below is about 3 dB worse than the lab's for that reason alon
   to the edge, or the display should blank the outer 5 %.
 - Every tone carries sidebands at +-36.6 kHz, -40 dBc, at every decimation: from the HackRF or from the receiver's
   supply (OTG hub). The VSG60A will tell which.
+  **2026-11-09:** not from the HackRF: nothing within +-100 kHz of its tone down to about -48 dBc on the BB60C ([hackrf-spurs](../2026-11-09_1027_hackrf-spurs/report.md)); the receiver makes them.
 - At decimation 1 the span edges are asymmetric (the low side falls 75 kHz earlier): the R820T IF filter.
 
 ## 3. APRS (AFSK1200): [3 kHz](../2026-11-07_0324_aprs-hackrf-3k/results.json), [1 kHz](../2026-11-07_0335_aprs-hackrf-1k/results.json) deviation
