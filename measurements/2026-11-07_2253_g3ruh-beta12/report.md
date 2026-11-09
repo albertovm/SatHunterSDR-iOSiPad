@@ -1,5 +1,7 @@
 # 9600 bd G3RUH on the release build: level and FM deviation (beta 12)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 2026-11-07 22:53-23:36, unattended (`tools/lab/night_m10.ps1`). Chain: HackRF -> 30+30+10 dB -> 1 m coax ->
 Spacewalker LNA -> RTL-SDR V3 (gain 12.5 dB) -> Mi 10, SatHunterSDR **v0.2.0-beta12** (release APK).
 Levels at the LNA input, +-2 dB (HackRF calibrated through the receiver, BB60C check pending). 10 AX.25

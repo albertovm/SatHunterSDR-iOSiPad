@@ -1,5 +1,7 @@
 # Home lab with a HackRF: calibration, panorama, APRS and SSTV (2026-11-07 night)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 First unattended measurements away from the lab. The VSG60A was replaced by a HackRF One (TCXO, firmware 2026.01.3) on
 a second PC (HP ProBook, `tools/lab/setup_probook.ps1`), driven over SSH/ZeroTier from the lab PC.
 

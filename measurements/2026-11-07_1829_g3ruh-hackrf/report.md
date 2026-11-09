@@ -1,5 +1,7 @@
 # 9600 bd G3RUH: frame success with the retuned decoder (lab22)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 2026-11-07 18:29, same chain and waveform as the [first run](../2026-11-07_1624_g3ruh-hackrf/report.md) (HackRF -> 70.5 dB
 -> LNA -> RTL-SDR -> Mi 10, levels at the LNA input +-2 dB), SatHunterSDR v0.2.0-beta11-lab22.
 

@@ -1,5 +1,7 @@
 # APRS 1200 bd regression on the release build (beta 12)
 
+> **Level correction (2026-11-09):** the HackRF levels in this report are 1.8-2.1 dB too high; the BB60C calibration ([2026-11-09_1009](../2026-11-09_1009_hackrf-cal-bb60c/report.md)) shows the signal at the LNA was weaker, so sensitivities are about 2 dB better than written here.
+
 2026-11-07 23:36, same chain as the [9k6 run](../2026-11-07_2253_g3ruh-beta12/report.md), 3 kHz deviation,
 NFM 12.5 kHz, 30 s per level (about 29 packets).
 
