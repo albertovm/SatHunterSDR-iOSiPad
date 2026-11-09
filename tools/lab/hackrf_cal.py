@@ -47,7 +47,7 @@ def main():
                     gen.cal = {}
                     gen.settings = lambda hz, dbm, tx=tx, amp=amp: (tx, amp, 0.0)  # this txvga, full scale
                     gen.cw(f, 0.0)
-                    time.sleep(0.3)
+                    time.sleep(1.5)  # the server has about a second of samples queued
                     p, fh = bb.peak(f, span=50e3, rbw=100, ref_dbm=10.0 - a.atten)
                     lo, _ = bb.peak(f - gen.OFFSET, span=20e3, rbw=100, ref_dbm=10.0 - a.atten)
                     row = {"hz": f, "amp": amp, "txvga": tx, "out_dbm": p + a.atten, "err_hz": fh - f, "lo_dbc": lo - p}
