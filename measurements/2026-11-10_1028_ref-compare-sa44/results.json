@@ -1,0 +1,148 @@
+{
+ "analyzer": "sa44",
+ "serial": 30300380,
+ "note": "VSG60A - SMA adapter - 100 pF DC block - SMA adapter - analyzer",
+ "rows": [
+  {
+   "mhz": 50.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.14,
+   "diff_db": 1.14,
+   "peak_offset_hz": 119
+  },
+  {
+   "mhz": 145.8,
+   "set_dbm": 0.0,
+   "read_dbm": 1.27,
+   "diff_db": -1.27,
+   "peak_offset_hz": 267
+  },
+  {
+   "mhz": 300.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.19,
+   "diff_db": -0.19,
+   "peak_offset_hz": 504
+  },
+  {
+   "mhz": 325.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.42,
+   "diff_db": -0.42,
+   "peak_offset_hz": 534
+  },
+  {
+   "mhz": 350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.09,
+   "diff_db": 3.09,
+   "peak_offset_hz": 515
+  },
+  {
+   "mhz": 375.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.78,
+   "diff_db": 2.78,
+   "peak_offset_hz": 593
+  },
+  {
+   "mhz": 436.6,
+   "set_dbm": 0.0,
+   "read_dbm": -2.64,
+   "diff_db": 2.64,
+   "peak_offset_hz": 712
+  },
+  {
+   "mhz": 1000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.89,
+   "diff_db": 2.89,
+   "peak_offset_hz": 1573
+  },
+  {
+   "mhz": 2400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.8,
+   "diff_db": 0.8,
+   "peak_offset_hz": 3738
+  },
+  {
+   "mhz": 4000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.98,
+   "diff_db": 2.98,
+   "peak_offset_hz": 6201
+  },
+  {
+   "mhz": 50.0,
+   "set_dbm": -60.0,
+   "read_dbm": -116.33,
+   "diff_db": 56.33,
+   "peak_offset_hz": 119
+  },
+  {
+   "mhz": 145.8,
+   "set_dbm": -60.0,
+   "read_dbm": -103.58,
+   "diff_db": 43.58,
+   "peak_offset_hz": 267
+  },
+  {
+   "mhz": 300.0,
+   "set_dbm": -60.0,
+   "read_dbm": -97.89,
+   "diff_db": 37.89,
+   "peak_offset_hz": 504
+  },
+  {
+   "mhz": 325.0,
+   "set_dbm": -60.0,
+   "read_dbm": -95.71,
+   "diff_db": 35.71,
+   "peak_offset_hz": 534
+  },
+  {
+   "mhz": 350.0,
+   "set_dbm": -60.0,
+   "read_dbm": -99.83,
+   "diff_db": 39.83,
+   "peak_offset_hz": 515
+  },
+  {
+   "mhz": 375.0,
+   "set_dbm": -60.0,
+   "read_dbm": -99.14,
+   "diff_db": 39.14,
+   "peak_offset_hz": 593
+  },
+  {
+   "mhz": 436.6,
+   "set_dbm": -60.0,
+   "read_dbm": -97.6,
+   "diff_db": 37.6,
+   "peak_offset_hz": 712
+  },
+  {
+   "mhz": 1000.0,
+   "set_dbm": -60.0,
+   "read_dbm": -89.95,
+   "diff_db": 29.95,
+   "peak_offset_hz": 1573
+  },
+  {
+   "mhz": 2400.0,
+   "set_dbm": -60.0,
+   "read_dbm": -82.17,
+   "diff_db": 22.17,
+   "peak_offset_hz": 3738
+  },
+  {
+   "mhz": 4000.0,
+   "set_dbm": -60.0,
+   "read_dbm": -63.89,
+   "diff_db": 3.89,
+   "peak_offset_hz": 6231
+  }
+ ],
+ "made": "2026-11-10 10:29"
+}

@@ -1,0 +1,5212 @@
+{
+ "analyzer": "bb60",
+ "serial": 19162106,
+ "note": "VSG60A - SMA adapter - 100 pF DC block - SMA adapter - analyzer",
+ "vsg": {
+  "*IDN?": "SignalHound,VSG60,23041470,6",
+  ":SYSTem:TEMPerature?": "45.875"
+ },
+ "rows": [
+  {
+   "mode": "cw",
+   "mhz": 50.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.8,
+   "diff_db": 0.8,
+   "peak_offset_hz": -1
+  },
+  {
+   "mode": "cw",
+   "mhz": 60.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.02,
+   "diff_db": 1.02,
+   "peak_offset_hz": 19
+  },
+  {
+   "mode": "cw",
+   "mhz": 70.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.1,
+   "diff_db": 1.1,
+   "peak_offset_hz": 20
+  },
+  {
+   "mode": "cw",
+   "mhz": 80.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.84,
+   "diff_db": 0.84,
+   "peak_offset_hz": 22
+  },
+  {
+   "mode": "cw",
+   "mhz": 90.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.81,
+   "diff_db": 0.81,
+   "peak_offset_hz": 23
+  },
+  {
+   "mode": "cw",
+   "mhz": 100.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.92,
+   "diff_db": 0.92,
+   "peak_offset_hz": 24
+  },
+  {
+   "mode": "cw",
+   "mhz": 110.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.64,
+   "diff_db": 0.64,
+   "peak_offset_hz": 26
+  },
+  {
+   "mode": "cw",
+   "mhz": 120.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.48,
+   "diff_db": -0.48,
+   "peak_offset_hz": 27
+  },
+  {
+   "mode": "cw",
+   "mhz": 130.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.65,
+   "diff_db": -0.65,
+   "peak_offset_hz": 28
+  },
+  {
+   "mode": "cw",
+   "mhz": 140.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.37,
+   "diff_db": -0.37,
+   "peak_offset_hz": 30
+  },
+  {
+   "mode": "cw",
+   "mhz": 150.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.63,
+   "diff_db": -0.63,
+   "peak_offset_hz": 31
+  },
+  {
+   "mode": "cw",
+   "mhz": 160.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.38,
+   "diff_db": -0.38,
+   "peak_offset_hz": 32
+  },
+  {
+   "mode": "cw",
+   "mhz": 170.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.59,
+   "diff_db": -0.59,
+   "peak_offset_hz": 34
+  },
+  {
+   "mode": "cw",
+   "mhz": 180.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.35,
+   "diff_db": -0.35,
+   "peak_offset_hz": 35
+  },
+  {
+   "mode": "cw",
+   "mhz": 190.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.63,
+   "diff_db": -0.63,
+   "peak_offset_hz": 36
+  },
+  {
+   "mode": "cw",
+   "mhz": 200.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.5,
+   "diff_db": -0.5,
+   "peak_offset_hz": 38
+  },
+  {
+   "mode": "cw",
+   "mhz": 210.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.59,
+   "diff_db": -0.59,
+   "peak_offset_hz": 39
+  },
+  {
+   "mode": "cw",
+   "mhz": 220.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.47,
+   "diff_db": -0.47,
+   "peak_offset_hz": 40
+  },
+  {
+   "mode": "cw",
+   "mhz": 230.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.5,
+   "diff_db": -0.5,
+   "peak_offset_hz": 42
+  },
+  {
+   "mode": "cw",
+   "mhz": 240.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.35,
+   "diff_db": -0.35,
+   "peak_offset_hz": 43
+  },
+  {
+   "mode": "cw",
+   "mhz": 250.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.43,
+   "diff_db": -0.43,
+   "peak_offset_hz": 44
+  },
+  {
+   "mode": "cw",
+   "mhz": 260.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.36,
+   "diff_db": -0.36,
+   "peak_offset_hz": 46
+  },
+  {
+   "mode": "cw",
+   "mhz": 270.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.56,
+   "diff_db": -0.56,
+   "peak_offset_hz": 47
+  },
+  {
+   "mode": "cw",
+   "mhz": 280.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.51,
+   "diff_db": -0.51,
+   "peak_offset_hz": 48
+  },
+  {
+   "mode": "cw",
+   "mhz": 290.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.82,
+   "diff_db": -0.82,
+   "peak_offset_hz": 50
+  },
+  {
+   "mode": "cw",
+   "mhz": 300.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.55,
+   "diff_db": -0.55,
+   "peak_offset_hz": 51
+  },
+  {
+   "mode": "cw",
+   "mhz": 310.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.9,
+   "diff_db": -0.9,
+   "peak_offset_hz": 52
+  },
+  {
+   "mode": "cw",
+   "mhz": 320.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.73,
+   "diff_db": -0.73,
+   "peak_offset_hz": 54
+  },
+  {
+   "mode": "cw",
+   "mhz": 330.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.83,
+   "diff_db": -0.83,
+   "peak_offset_hz": 55
+  },
+  {
+   "mode": "cw",
+   "mhz": 331.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.84,
+   "diff_db": -0.84,
+   "peak_offset_hz": 55
+  },
+  {
+   "mode": "cw",
+   "mhz": 332.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.47,
+   "diff_db": -0.47,
+   "peak_offset_hz": 55
+  },
+  {
+   "mode": "cw",
+   "mhz": 333.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.48,
+   "diff_db": -0.48,
+   "peak_offset_hz": 55
+  },
+  {
+   "mode": "cw",
+   "mhz": 334.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.75,
+   "diff_db": -0.75,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 335.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.92,
+   "diff_db": -0.92,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 336.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.55,
+   "diff_db": -0.55,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 337.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.56,
+   "diff_db": -0.56,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 338.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.83,
+   "diff_db": -0.83,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 339.0,
+   "set_dbm": 0.0,
+   "read_dbm": 1.0,
+   "diff_db": -1.0,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 340.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.63,
+   "diff_db": -0.63,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 341.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.53,
+   "diff_db": 2.53,
+   "peak_offset_hz": 56
+  },
+  {
+   "mode": "cw",
+   "mhz": 342.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.24,
+   "diff_db": 2.24,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 343.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.09,
+   "diff_db": 2.09,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 344.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.43,
+   "diff_db": 2.43,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 345.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.4,
+   "diff_db": 2.4,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 346.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.11,
+   "diff_db": 2.11,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 347.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.96,
+   "diff_db": 1.96,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 348.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.3,
+   "diff_db": 2.3,
+   "peak_offset_hz": 57
+  },
+  {
+   "mode": "cw",
+   "mhz": 349.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.28,
+   "diff_db": 2.28,
+   "peak_offset_hz": 58
+  },
+  {
+   "mode": "cw",
+   "mhz": 350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.16,
+   "diff_db": 2.16,
+   "peak_offset_hz": 58
+  },
+  {
+   "mode": "cw",
+   "mhz": 360.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.32,
+   "diff_db": 2.32,
+   "peak_offset_hz": 59
+  },
+  {
+   "mode": "cw",
+   "mhz": 370.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.93,
+   "diff_db": 1.93,
+   "peak_offset_hz": 60
+  },
+  {
+   "mode": "cw",
+   "mhz": 380.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.17,
+   "diff_db": 2.17,
+   "peak_offset_hz": 62
+  },
+  {
+   "mode": "cw",
+   "mhz": 390.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.76,
+   "diff_db": 1.76,
+   "peak_offset_hz": 63
+  },
+  {
+   "mode": "cw",
+   "mhz": 400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.06,
+   "diff_db": 2.06,
+   "peak_offset_hz": 64
+  },
+  {
+   "mode": "cw",
+   "mhz": 410.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.76,
+   "diff_db": 1.76,
+   "peak_offset_hz": 66
+  },
+  {
+   "mode": "cw",
+   "mhz": 420.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.09,
+   "diff_db": 2.09,
+   "peak_offset_hz": 67
+  },
+  {
+   "mode": "cw",
+   "mhz": 430.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.75,
+   "diff_db": 1.75,
+   "peak_offset_hz": 68
+  },
+  {
+   "mode": "cw",
+   "mhz": 440.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.05,
+   "diff_db": 2.05,
+   "peak_offset_hz": 70
+  },
+  {
+   "mode": "cw",
+   "mhz": 450.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.75,
+   "diff_db": 1.75,
+   "peak_offset_hz": 71
+  },
+  {
+   "mode": "cw",
+   "mhz": 460.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.08,
+   "diff_db": 2.08,
+   "peak_offset_hz": 72
+  },
+  {
+   "mode": "cw",
+   "mhz": 470.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.84,
+   "diff_db": 1.84,
+   "peak_offset_hz": 74
+  },
+  {
+   "mode": "cw",
+   "mhz": 480.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.33,
+   "diff_db": 2.33,
+   "peak_offset_hz": 75
+  },
+  {
+   "mode": "cw",
+   "mhz": 490.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.31,
+   "diff_db": 2.31,
+   "peak_offset_hz": 76
+  },
+  {
+   "mode": "cw",
+   "mhz": 500.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.79,
+   "diff_db": 2.79,
+   "peak_offset_hz": 78
+  },
+  {
+   "mode": "cw",
+   "mhz": 510.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.13,
+   "diff_db": 3.13,
+   "peak_offset_hz": 79
+  },
+  {
+   "mode": "cw",
+   "mhz": 520.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.83,
+   "diff_db": 2.83,
+   "peak_offset_hz": 80
+  },
+  {
+   "mode": "cw",
+   "mhz": 530.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.81,
+   "diff_db": 2.81,
+   "peak_offset_hz": 82
+  },
+  {
+   "mode": "cw",
+   "mhz": 540.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.51,
+   "diff_db": 2.51,
+   "peak_offset_hz": 83
+  },
+  {
+   "mode": "cw",
+   "mhz": 550.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.26,
+   "diff_db": 2.26,
+   "peak_offset_hz": 84
+  },
+  {
+   "mode": "cw",
+   "mhz": 560.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.39,
+   "diff_db": 2.39,
+   "peak_offset_hz": 86
+  },
+  {
+   "mode": "cw",
+   "mhz": 570.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.13,
+   "diff_db": 2.13,
+   "peak_offset_hz": 87
+  },
+  {
+   "mode": "cw",
+   "mhz": 580.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.41,
+   "diff_db": 2.41,
+   "peak_offset_hz": 88
+  },
+  {
+   "mode": "cw",
+   "mhz": 590.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.09,
+   "diff_db": 2.09,
+   "peak_offset_hz": 90
+  },
+  {
+   "mode": "cw",
+   "mhz": 600.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.34,
+   "diff_db": 2.34,
+   "peak_offset_hz": 91
+  },
+  {
+   "mode": "cw",
+   "mhz": 610.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.06,
+   "diff_db": 2.06,
+   "peak_offset_hz": 92
+  },
+  {
+   "mode": "cw",
+   "mhz": 620.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.37,
+   "diff_db": 2.37,
+   "peak_offset_hz": 94
+  },
+  {
+   "mode": "cw",
+   "mhz": 630.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.08,
+   "diff_db": 2.08,
+   "peak_offset_hz": 95
+  },
+  {
+   "mode": "cw",
+   "mhz": 640.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.37,
+   "diff_db": 2.37,
+   "peak_offset_hz": 96
+  },
+  {
+   "mode": "cw",
+   "mhz": 650.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.05,
+   "diff_db": 2.05,
+   "peak_offset_hz": 98
+  },
+  {
+   "mode": "cw",
+   "mhz": 660.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.39,
+   "diff_db": 2.39,
+   "peak_offset_hz": 99
+  },
+  {
+   "mode": "cw",
+   "mhz": 670.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.13,
+   "diff_db": 2.13,
+   "peak_offset_hz": 100
+  },
+  {
+   "mode": "cw",
+   "mhz": 680.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.51,
+   "diff_db": 2.51,
+   "peak_offset_hz": 102
+  },
+  {
+   "mode": "cw",
+   "mhz": 690.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.11,
+   "diff_db": 2.11,
+   "peak_offset_hz": 103
+  },
+  {
+   "mode": "cw",
+   "mhz": 700.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.5,
+   "diff_db": 2.5,
+   "peak_offset_hz": 104
+  },
+  {
+   "mode": "cw",
+   "mhz": 710.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.4,
+   "diff_db": 1.4,
+   "peak_offset_hz": 106
+  },
+  {
+   "mode": "cw",
+   "mhz": 720.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.79,
+   "diff_db": 1.79,
+   "peak_offset_hz": 126
+  },
+  {
+   "mode": "cw",
+   "mhz": 730.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.44,
+   "diff_db": 1.44,
+   "peak_offset_hz": 128
+  },
+  {
+   "mode": "cw",
+   "mhz": 740.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.84,
+   "diff_db": 1.84,
+   "peak_offset_hz": 129
+  },
+  {
+   "mode": "cw",
+   "mhz": 750.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.49,
+   "diff_db": 1.49,
+   "peak_offset_hz": 130
+  },
+  {
+   "mode": "cw",
+   "mhz": 760.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.72,
+   "diff_db": 1.72,
+   "peak_offset_hz": 112
+  },
+  {
+   "mode": "cw",
+   "mhz": 770.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.38,
+   "diff_db": 1.38,
+   "peak_offset_hz": 133
+  },
+  {
+   "mode": "cw",
+   "mhz": 780.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.8,
+   "diff_db": 1.8,
+   "peak_offset_hz": 134
+  },
+  {
+   "mode": "cw",
+   "mhz": 790.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.52,
+   "diff_db": 1.52,
+   "peak_offset_hz": 116
+  },
+  {
+   "mode": "cw",
+   "mhz": 800.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.92,
+   "diff_db": 1.92,
+   "peak_offset_hz": 137
+  },
+  {
+   "mode": "cw",
+   "mhz": 810.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.71,
+   "diff_db": 1.71,
+   "peak_offset_hz": 119
+  },
+  {
+   "mode": "cw",
+   "mhz": 820.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.06,
+   "diff_db": 2.06,
+   "peak_offset_hz": 120
+  },
+  {
+   "mode": "cw",
+   "mhz": 830.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.87,
+   "diff_db": 1.87,
+   "peak_offset_hz": 141
+  },
+  {
+   "mode": "cw",
+   "mhz": 840.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.22,
+   "diff_db": 2.22,
+   "peak_offset_hz": 123
+  },
+  {
+   "mode": "cw",
+   "mhz": 850.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.07,
+   "diff_db": 2.07,
+   "peak_offset_hz": 144
+  },
+  {
+   "mode": "cw",
+   "mhz": 860.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.34,
+   "diff_db": 2.34,
+   "peak_offset_hz": 145
+  },
+  {
+   "mode": "cw",
+   "mhz": 870.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.2,
+   "diff_db": 2.2,
+   "peak_offset_hz": 127
+  },
+  {
+   "mode": "cw",
+   "mhz": 880.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.52,
+   "diff_db": 2.52,
+   "peak_offset_hz": 148
+  },
+  {
+   "mode": "cw",
+   "mhz": 890.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.36,
+   "diff_db": 2.36,
+   "peak_offset_hz": 130
+  },
+  {
+   "mode": "cw",
+   "mhz": 900.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.51,
+   "diff_db": 2.51,
+   "peak_offset_hz": 150
+  },
+  {
+   "mode": "cw",
+   "mhz": 910.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.26,
+   "diff_db": 2.26,
+   "peak_offset_hz": 152
+  },
+  {
+   "mode": "cw",
+   "mhz": 920.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.54,
+   "diff_db": 2.54,
+   "peak_offset_hz": 153
+  },
+  {
+   "mode": "cw",
+   "mhz": 930.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.18,
+   "diff_db": 2.18,
+   "peak_offset_hz": 154
+  },
+  {
+   "mode": "cw",
+   "mhz": 940.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.5,
+   "diff_db": 2.5,
+   "peak_offset_hz": 156
+  },
+  {
+   "mode": "cw",
+   "mhz": 950.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.21,
+   "diff_db": 2.21,
+   "peak_offset_hz": 157
+  },
+  {
+   "mode": "cw",
+   "mhz": 960.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.38,
+   "diff_db": 2.38,
+   "peak_offset_hz": 158
+  },
+  {
+   "mode": "cw",
+   "mhz": 970.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.15,
+   "diff_db": 2.15,
+   "peak_offset_hz": 160
+  },
+  {
+   "mode": "cw",
+   "mhz": 980.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.67,
+   "diff_db": 2.67,
+   "peak_offset_hz": 161
+  },
+  {
+   "mode": "cw",
+   "mhz": 990.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.34,
+   "diff_db": 2.34,
+   "peak_offset_hz": 162
+  },
+  {
+   "mode": "cw",
+   "mhz": 1000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.65,
+   "diff_db": 2.65,
+   "peak_offset_hz": 164
+  },
+  {
+   "mode": "cw",
+   "mhz": 1010.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.3,
+   "diff_db": 2.3,
+   "peak_offset_hz": 165
+  },
+  {
+   "mode": "cw",
+   "mhz": 1020.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.74,
+   "diff_db": 2.74,
+   "peak_offset_hz": 166
+  },
+  {
+   "mode": "cw",
+   "mhz": 1030.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.38,
+   "diff_db": 2.38,
+   "peak_offset_hz": 168
+  },
+  {
+   "mode": "cw",
+   "mhz": 1040.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.82,
+   "diff_db": 2.82,
+   "peak_offset_hz": 169
+  },
+  {
+   "mode": "cw",
+   "mhz": 1050.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.49,
+   "diff_db": 2.49,
+   "peak_offset_hz": 170
+  },
+  {
+   "mode": "cw",
+   "mhz": 1060.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 172
+  },
+  {
+   "mode": "cw",
+   "mhz": 1070.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.6,
+   "diff_db": 2.6,
+   "peak_offset_hz": 173
+  },
+  {
+   "mode": "cw",
+   "mhz": 1080.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.03,
+   "diff_db": 3.03,
+   "peak_offset_hz": 174
+  },
+  {
+   "mode": "cw",
+   "mhz": 1090.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.8,
+   "diff_db": 2.8,
+   "peak_offset_hz": 176
+  },
+  {
+   "mode": "cw",
+   "mhz": 1100.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.09,
+   "diff_db": 3.09,
+   "peak_offset_hz": 177
+  },
+  {
+   "mode": "cw",
+   "mhz": 1110.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 178
+  },
+  {
+   "mode": "cw",
+   "mhz": 1120.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.05,
+   "diff_db": 3.05,
+   "peak_offset_hz": 180
+  },
+  {
+   "mode": "cw",
+   "mhz": 1130.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 181
+  },
+  {
+   "mode": "cw",
+   "mhz": 1140.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.09,
+   "diff_db": 3.09,
+   "peak_offset_hz": 182
+  },
+  {
+   "mode": "cw",
+   "mhz": 1150.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 184
+  },
+  {
+   "mode": "cw",
+   "mhz": 1160.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.12,
+   "diff_db": 3.12,
+   "peak_offset_hz": 185
+  },
+  {
+   "mode": "cw",
+   "mhz": 1170.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.9,
+   "diff_db": 2.9,
+   "peak_offset_hz": 186
+  },
+  {
+   "mode": "cw",
+   "mhz": 1180.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.16,
+   "diff_db": 3.16,
+   "peak_offset_hz": 188
+  },
+  {
+   "mode": "cw",
+   "mhz": 1190.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 189
+  },
+  {
+   "mode": "cw",
+   "mhz": 1200.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.16,
+   "diff_db": 3.16,
+   "peak_offset_hz": 190
+  },
+  {
+   "mode": "cw",
+   "mhz": 1210.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.74,
+   "diff_db": 2.74,
+   "peak_offset_hz": 192
+  },
+  {
+   "mode": "cw",
+   "mhz": 1220.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.12,
+   "diff_db": 3.12,
+   "peak_offset_hz": 193
+  },
+  {
+   "mode": "cw",
+   "mhz": 1230.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.69,
+   "diff_db": 2.69,
+   "peak_offset_hz": 194
+  },
+  {
+   "mode": "cw",
+   "mhz": 1240.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.05,
+   "diff_db": 3.05,
+   "peak_offset_hz": 196
+  },
+  {
+   "mode": "cw",
+   "mhz": 1250.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.7,
+   "diff_db": 2.7,
+   "peak_offset_hz": 197
+  },
+  {
+   "mode": "cw",
+   "mhz": 1260.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.0,
+   "diff_db": 3.0,
+   "peak_offset_hz": 198
+  },
+  {
+   "mode": "cw",
+   "mhz": 1270.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.73,
+   "diff_db": 2.73,
+   "peak_offset_hz": 200
+  },
+  {
+   "mode": "cw",
+   "mhz": 1280.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.0,
+   "diff_db": 3.0,
+   "peak_offset_hz": 201
+  },
+  {
+   "mode": "cw",
+   "mhz": 1290.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.69,
+   "diff_db": 2.69,
+   "peak_offset_hz": 202
+  },
+  {
+   "mode": "cw",
+   "mhz": 1300.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.05,
+   "diff_db": 3.05,
+   "peak_offset_hz": 204
+  },
+  {
+   "mode": "cw",
+   "mhz": 1310.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.72,
+   "diff_db": 2.72,
+   "peak_offset_hz": 205
+  },
+  {
+   "mode": "cw",
+   "mhz": 1320.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.18,
+   "diff_db": 3.18,
+   "peak_offset_hz": 206
+  },
+  {
+   "mode": "cw",
+   "mhz": 1330.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.85,
+   "diff_db": 2.85,
+   "peak_offset_hz": 208
+  },
+  {
+   "mode": "cw",
+   "mhz": 1340.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.29,
+   "diff_db": 3.29,
+   "peak_offset_hz": 209
+  },
+  {
+   "mode": "cw",
+   "mhz": 1350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.1,
+   "diff_db": 3.1,
+   "peak_offset_hz": 210
+  },
+  {
+   "mode": "cw",
+   "mhz": 1360.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.43,
+   "diff_db": 3.43,
+   "peak_offset_hz": 212
+  },
+  {
+   "mode": "cw",
+   "mhz": 1370.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.35,
+   "diff_db": 3.35,
+   "peak_offset_hz": 213
+  },
+  {
+   "mode": "cw",
+   "mhz": 1380.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.45,
+   "diff_db": 3.45,
+   "peak_offset_hz": 214
+  },
+  {
+   "mode": "cw",
+   "mhz": 1390.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.39,
+   "diff_db": 3.39,
+   "peak_offset_hz": 216
+  },
+  {
+   "mode": "cw",
+   "mhz": 1400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.6,
+   "diff_db": 3.6,
+   "peak_offset_hz": 217
+  },
+  {
+   "mode": "cw",
+   "mhz": 1410.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.53,
+   "diff_db": 3.53,
+   "peak_offset_hz": 218
+  },
+  {
+   "mode": "cw",
+   "mhz": 1420.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.52,
+   "diff_db": 3.52,
+   "peak_offset_hz": 220
+  },
+  {
+   "mode": "cw",
+   "mhz": 1430.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.39,
+   "diff_db": 3.39,
+   "peak_offset_hz": 221
+  },
+  {
+   "mode": "cw",
+   "mhz": 1440.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.53,
+   "diff_db": 3.53,
+   "peak_offset_hz": 222
+  },
+  {
+   "mode": "cw",
+   "mhz": 1450.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.34,
+   "diff_db": 3.34,
+   "peak_offset_hz": 243
+  },
+  {
+   "mode": "cw",
+   "mhz": 1460.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.42,
+   "diff_db": 3.42,
+   "peak_offset_hz": 225
+  },
+  {
+   "mode": "cw",
+   "mhz": 1470.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.2,
+   "diff_db": 3.2,
+   "peak_offset_hz": 226
+  },
+  {
+   "mode": "cw",
+   "mhz": 1480.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.32,
+   "diff_db": 3.32,
+   "peak_offset_hz": 228
+  },
+  {
+   "mode": "cw",
+   "mhz": 1490.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.06,
+   "diff_db": 3.06,
+   "peak_offset_hz": 248
+  },
+  {
+   "mode": "cw",
+   "mhz": 1500.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.34,
+   "diff_db": 3.34,
+   "peak_offset_hz": 230
+  },
+  {
+   "mode": "cw",
+   "mhz": 1510.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.06,
+   "diff_db": 3.06,
+   "peak_offset_hz": 251
+  },
+  {
+   "mode": "cw",
+   "mhz": 1520.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.28,
+   "diff_db": 3.28,
+   "peak_offset_hz": 252
+  },
+  {
+   "mode": "cw",
+   "mhz": 1530.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.95,
+   "diff_db": 2.95,
+   "peak_offset_hz": 254
+  },
+  {
+   "mode": "cw",
+   "mhz": 1540.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.23,
+   "diff_db": 3.23,
+   "peak_offset_hz": 236
+  },
+  {
+   "mode": "cw",
+   "mhz": 1550.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.9,
+   "diff_db": 2.9,
+   "peak_offset_hz": 256
+  },
+  {
+   "mode": "cw",
+   "mhz": 1560.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.12,
+   "diff_db": 3.12,
+   "peak_offset_hz": 258
+  },
+  {
+   "mode": "cw",
+   "mhz": 1570.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.76,
+   "diff_db": 2.76,
+   "peak_offset_hz": 259
+  },
+  {
+   "mode": "cw",
+   "mhz": 1580.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.13,
+   "diff_db": 3.13,
+   "peak_offset_hz": 260
+  },
+  {
+   "mode": "cw",
+   "mhz": 1590.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.76,
+   "diff_db": 2.76,
+   "peak_offset_hz": 262
+  },
+  {
+   "mode": "cw",
+   "mhz": 1600.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.0,
+   "diff_db": 3.0,
+   "peak_offset_hz": 263
+  },
+  {
+   "mode": "cw",
+   "mhz": 1610.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.6,
+   "diff_db": 2.6,
+   "peak_offset_hz": 245
+  },
+  {
+   "mode": "cw",
+   "mhz": 1620.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.86,
+   "diff_db": 2.86,
+   "peak_offset_hz": 266
+  },
+  {
+   "mode": "cw",
+   "mhz": 1630.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.48,
+   "diff_db": 2.48,
+   "peak_offset_hz": 267
+  },
+  {
+   "mode": "cw",
+   "mhz": 1640.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.67,
+   "diff_db": 2.67,
+   "peak_offset_hz": 268
+  },
+  {
+   "mode": "cw",
+   "mhz": 1650.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.29,
+   "diff_db": 2.29,
+   "peak_offset_hz": 270
+  },
+  {
+   "mode": "cw",
+   "mhz": 1660.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.61,
+   "diff_db": 2.61,
+   "peak_offset_hz": 271
+  },
+  {
+   "mode": "cw",
+   "mhz": 1670.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.18,
+   "diff_db": 2.18,
+   "peak_offset_hz": 272
+  },
+  {
+   "mode": "cw",
+   "mhz": 1680.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.55,
+   "diff_db": 2.55,
+   "peak_offset_hz": 274
+  },
+  {
+   "mode": "cw",
+   "mhz": 1690.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.25,
+   "diff_db": 2.25,
+   "peak_offset_hz": 275
+  },
+  {
+   "mode": "cw",
+   "mhz": 1691.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.45,
+   "diff_db": 2.45,
+   "peak_offset_hz": 275
+  },
+  {
+   "mode": "cw",
+   "mhz": 1692.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.77,
+   "diff_db": 2.77,
+   "peak_offset_hz": 275
+  },
+  {
+   "mode": "cw",
+   "mhz": 1693.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.73,
+   "diff_db": 2.73,
+   "peak_offset_hz": 275
+  },
+  {
+   "mode": "cw",
+   "mhz": 1694.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.41,
+   "diff_db": 2.41,
+   "peak_offset_hz": 275
+  },
+  {
+   "mode": "cw",
+   "mhz": 1695.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.41,
+   "diff_db": 2.41,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1696.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.73,
+   "diff_db": 2.73,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1697.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.69,
+   "diff_db": 2.69,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1698.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.38,
+   "diff_db": 2.38,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1699.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.38,
+   "diff_db": 2.38,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1700.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.71,
+   "diff_db": 2.71,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1701.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.26,
+   "diff_db": -0.26,
+   "peak_offset_hz": 276
+  },
+  {
+   "mode": "cw",
+   "mhz": 1702.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.58,
+   "diff_db": -0.58,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1703.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.57,
+   "diff_db": -0.57,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1704.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.26,
+   "diff_db": -0.26,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1705.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.3,
+   "diff_db": -0.3,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1706.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.62,
+   "diff_db": -0.62,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1707.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.61,
+   "diff_db": -0.61,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1708.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.29,
+   "diff_db": -0.29,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1709.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.34,
+   "diff_db": -0.34,
+   "peak_offset_hz": 277
+  },
+  {
+   "mode": "cw",
+   "mhz": 1710.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.65,
+   "diff_db": -0.65,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1711.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.52,
+   "diff_db": -0.52,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1712.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.2,
+   "diff_db": -0.2,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1713.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.25,
+   "diff_db": -0.25,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1714.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.56,
+   "diff_db": -0.56,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1715.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.54,
+   "diff_db": -0.54,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1716.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.23,
+   "diff_db": -0.23,
+   "peak_offset_hz": 278
+  },
+  {
+   "mode": "cw",
+   "mhz": 1717.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.28,
+   "diff_db": -0.28,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1718.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.59,
+   "diff_db": -0.59,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1719.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.57,
+   "diff_db": -0.57,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1720.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.26,
+   "diff_db": -0.26,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1721.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.3,
+   "diff_db": -0.3,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1722.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.62,
+   "diff_db": -0.62,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1723.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.59,
+   "diff_db": -0.59,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1724.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.28,
+   "diff_db": -0.28,
+   "peak_offset_hz": 279
+  },
+  {
+   "mode": "cw",
+   "mhz": 1725.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.32,
+   "diff_db": -0.32,
+   "peak_offset_hz": 280
+  },
+  {
+   "mode": "cw",
+   "mhz": 1726.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.63,
+   "diff_db": -0.63,
+   "peak_offset_hz": 280
+  },
+  {
+   "mode": "cw",
+   "mhz": 1727.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.61,
+   "diff_db": -0.61,
+   "peak_offset_hz": 280
+  },
+  {
+   "mode": "cw",
+   "mhz": 1728.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.3,
+   "diff_db": -0.3,
+   "peak_offset_hz": 280
+  },
+  {
+   "mode": "cw",
+   "mhz": 1729.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.35,
+   "diff_db": -0.35,
+   "peak_offset_hz": 280
+  },
+  {
+   "mode": "cw",
+   "mhz": 1730.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.66,
+   "diff_db": -0.66,
+   "peak_offset_hz": 280
+  },
+  {
+   "mode": "cw",
+   "mhz": 1740.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.17,
+   "diff_db": -0.17,
+   "peak_offset_hz": 282
+  },
+  {
+   "mode": "cw",
+   "mhz": 1750.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.49,
+   "diff_db": -0.49,
+   "peak_offset_hz": 283
+  },
+  {
+   "mode": "cw",
+   "mhz": 1760.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.19,
+   "diff_db": -0.19,
+   "peak_offset_hz": 284
+  },
+  {
+   "mode": "cw",
+   "mhz": 1770.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.45,
+   "diff_db": -0.45,
+   "peak_offset_hz": 286
+  },
+  {
+   "mode": "cw",
+   "mhz": 1780.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.01,
+   "diff_db": -0.01,
+   "peak_offset_hz": 287
+  },
+  {
+   "mode": "cw",
+   "mhz": 1790.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.26,
+   "diff_db": -0.26,
+   "peak_offset_hz": 288
+  },
+  {
+   "mode": "cw",
+   "mhz": 1800.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.06,
+   "diff_db": 0.06,
+   "peak_offset_hz": 290
+  },
+  {
+   "mode": "cw",
+   "mhz": 1810.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.17,
+   "diff_db": -0.17,
+   "peak_offset_hz": 291
+  },
+  {
+   "mode": "cw",
+   "mhz": 1820.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.07,
+   "diff_db": -0.07,
+   "peak_offset_hz": 292
+  },
+  {
+   "mode": "cw",
+   "mhz": 1830.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.28,
+   "diff_db": -0.28,
+   "peak_offset_hz": 294
+  },
+  {
+   "mode": "cw",
+   "mhz": 1840.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.15,
+   "diff_db": -0.15,
+   "peak_offset_hz": 295
+  },
+  {
+   "mode": "cw",
+   "mhz": 1850.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.28,
+   "diff_db": -0.28,
+   "peak_offset_hz": 296
+  },
+  {
+   "mode": "cw",
+   "mhz": 1860.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.05,
+   "diff_db": 0.05,
+   "peak_offset_hz": 298
+  },
+  {
+   "mode": "cw",
+   "mhz": 1870.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.04,
+   "diff_db": 0.04,
+   "peak_offset_hz": 299
+  },
+  {
+   "mode": "cw",
+   "mhz": 1880.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.0,
+   "diff_db": -0.0,
+   "peak_offset_hz": 300
+  },
+  {
+   "mode": "cw",
+   "mhz": 1890.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.17,
+   "diff_db": 0.17,
+   "peak_offset_hz": 302
+  },
+  {
+   "mode": "cw",
+   "mhz": 1900.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.16,
+   "diff_db": -0.16,
+   "peak_offset_hz": 303
+  },
+  {
+   "mode": "cw",
+   "mhz": 1910.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.49,
+   "diff_db": -0.49,
+   "peak_offset_hz": 304
+  },
+  {
+   "mode": "cw",
+   "mhz": 1920.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.15,
+   "diff_db": -0.15,
+   "peak_offset_hz": 306
+  },
+  {
+   "mode": "cw",
+   "mhz": 1930.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.41,
+   "diff_db": -0.41,
+   "peak_offset_hz": 307
+  },
+  {
+   "mode": "cw",
+   "mhz": 1940.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.16,
+   "diff_db": -0.16,
+   "peak_offset_hz": 308
+  },
+  {
+   "mode": "cw",
+   "mhz": 1950.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.43,
+   "diff_db": -0.43,
+   "peak_offset_hz": 310
+  },
+  {
+   "mode": "cw",
+   "mhz": 1960.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.13,
+   "diff_db": -0.13,
+   "peak_offset_hz": 311
+  },
+  {
+   "mode": "cw",
+   "mhz": 1970.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.35,
+   "diff_db": -0.35,
+   "peak_offset_hz": 312
+  },
+  {
+   "mode": "cw",
+   "mhz": 1980.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.16,
+   "diff_db": -0.16,
+   "peak_offset_hz": 314
+  },
+  {
+   "mode": "cw",
+   "mhz": 1990.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.33,
+   "diff_db": -0.33,
+   "peak_offset_hz": 315
+  },
+  {
+   "mode": "cw",
+   "mhz": 2000.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.12,
+   "diff_db": -0.12,
+   "peak_offset_hz": 316
+  },
+  {
+   "mode": "cw",
+   "mhz": 2010.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.25,
+   "diff_db": -0.25,
+   "peak_offset_hz": 318
+  },
+  {
+   "mode": "cw",
+   "mhz": 2020.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.12,
+   "diff_db": -0.12,
+   "peak_offset_hz": 319
+  },
+  {
+   "mode": "cw",
+   "mhz": 2030.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.28,
+   "diff_db": -0.28,
+   "peak_offset_hz": 320
+  },
+  {
+   "mode": "cw",
+   "mhz": 2040.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.17,
+   "diff_db": -0.17,
+   "peak_offset_hz": 322
+  },
+  {
+   "mode": "cw",
+   "mhz": 2050.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.34,
+   "diff_db": -0.34,
+   "peak_offset_hz": 323
+  },
+  {
+   "mode": "cw",
+   "mhz": 2060.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.22,
+   "diff_db": -0.22,
+   "peak_offset_hz": 324
+  },
+  {
+   "mode": "cw",
+   "mhz": 2070.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.41,
+   "diff_db": -0.41,
+   "peak_offset_hz": 326
+  },
+  {
+   "mode": "cw",
+   "mhz": 2080.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.38,
+   "diff_db": -0.38,
+   "peak_offset_hz": 327
+  },
+  {
+   "mode": "cw",
+   "mhz": 2090.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.52,
+   "diff_db": -0.52,
+   "peak_offset_hz": 328
+  },
+  {
+   "mode": "cw",
+   "mhz": 2100.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.27,
+   "diff_db": -0.27,
+   "peak_offset_hz": 330
+  },
+  {
+   "mode": "cw",
+   "mhz": 2110.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.45,
+   "diff_db": -0.45,
+   "peak_offset_hz": 331
+  },
+  {
+   "mode": "cw",
+   "mhz": 2120.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.21,
+   "diff_db": -0.21,
+   "peak_offset_hz": 332
+  },
+  {
+   "mode": "cw",
+   "mhz": 2130.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.41,
+   "diff_db": -0.41,
+   "peak_offset_hz": 334
+  },
+  {
+   "mode": "cw",
+   "mhz": 2140.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.08,
+   "diff_db": -0.08,
+   "peak_offset_hz": 335
+  },
+  {
+   "mode": "cw",
+   "mhz": 2150.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.38,
+   "diff_db": -0.38,
+   "peak_offset_hz": 336
+  },
+  {
+   "mode": "cw",
+   "mhz": 2160.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.13,
+   "diff_db": -0.13,
+   "peak_offset_hz": 338
+  },
+  {
+   "mode": "cw",
+   "mhz": 2170.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.37,
+   "diff_db": -0.37,
+   "peak_offset_hz": 339
+  },
+  {
+   "mode": "cw",
+   "mhz": 2180.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.06,
+   "diff_db": -0.06,
+   "peak_offset_hz": 340
+  },
+  {
+   "mode": "cw",
+   "mhz": 2190.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.36,
+   "diff_db": -0.36,
+   "peak_offset_hz": 342
+  },
+  {
+   "mode": "cw",
+   "mhz": 2200.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.01,
+   "diff_db": 0.01,
+   "peak_offset_hz": 343
+  },
+  {
+   "mode": "cw",
+   "mhz": 2210.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.06,
+   "diff_db": -0.06,
+   "peak_offset_hz": 344
+  },
+  {
+   "mode": "cw",
+   "mhz": 2220.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.28,
+   "diff_db": 0.28,
+   "peak_offset_hz": 346
+  },
+  {
+   "mode": "cw",
+   "mhz": 2230.0,
+   "set_dbm": 0.0,
+   "read_dbm": 0.03,
+   "diff_db": -0.03,
+   "peak_offset_hz": 347
+  },
+  {
+   "mode": "cw",
+   "mhz": 2240.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.43,
+   "diff_db": 0.43,
+   "peak_offset_hz": 348
+  },
+  {
+   "mode": "cw",
+   "mhz": 2250.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.14,
+   "diff_db": 0.14,
+   "peak_offset_hz": 350
+  },
+  {
+   "mode": "cw",
+   "mhz": 2260.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.43,
+   "diff_db": 0.43,
+   "peak_offset_hz": 370
+  },
+  {
+   "mode": "cw",
+   "mhz": 2270.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.17,
+   "diff_db": 0.17,
+   "peak_offset_hz": 352
+  },
+  {
+   "mode": "cw",
+   "mhz": 2280.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.58,
+   "diff_db": 0.58,
+   "peak_offset_hz": 354
+  },
+  {
+   "mode": "cw",
+   "mhz": 2290.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.37,
+   "diff_db": 0.37,
+   "peak_offset_hz": 374
+  },
+  {
+   "mode": "cw",
+   "mhz": 2300.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.62,
+   "diff_db": 0.62,
+   "peak_offset_hz": 356
+  },
+  {
+   "mode": "cw",
+   "mhz": 2310.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.36,
+   "diff_db": 0.36,
+   "peak_offset_hz": 358
+  },
+  {
+   "mode": "cw",
+   "mhz": 2320.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.67,
+   "diff_db": 0.67,
+   "peak_offset_hz": 359
+  },
+  {
+   "mode": "cw",
+   "mhz": 2330.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.42,
+   "diff_db": 0.42,
+   "peak_offset_hz": 360
+  },
+  {
+   "mode": "cw",
+   "mhz": 2340.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.74,
+   "diff_db": 0.74,
+   "peak_offset_hz": 362
+  },
+  {
+   "mode": "cw",
+   "mhz": 2350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.41,
+   "diff_db": 0.41,
+   "peak_offset_hz": 363
+  },
+  {
+   "mode": "cw",
+   "mhz": 2360.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.55,
+   "diff_db": 0.55,
+   "peak_offset_hz": 364
+  },
+  {
+   "mode": "cw",
+   "mhz": 2370.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.28,
+   "diff_db": 0.28,
+   "peak_offset_hz": 366
+  },
+  {
+   "mode": "cw",
+   "mhz": 2380.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.68,
+   "diff_db": 0.68,
+   "peak_offset_hz": 367
+  },
+  {
+   "mode": "cw",
+   "mhz": 2390.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.43,
+   "diff_db": 0.43,
+   "peak_offset_hz": 368
+  },
+  {
+   "mode": "cw",
+   "mhz": 2400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.79,
+   "diff_db": 0.79,
+   "peak_offset_hz": 370
+  },
+  {
+   "mode": "cw",
+   "mhz": 2410.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.41,
+   "diff_db": 0.41,
+   "peak_offset_hz": 371
+  },
+  {
+   "mode": "cw",
+   "mhz": 2420.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.75,
+   "diff_db": 0.75,
+   "peak_offset_hz": 372
+  },
+  {
+   "mode": "cw",
+   "mhz": 2430.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.39,
+   "diff_db": 0.39,
+   "peak_offset_hz": 374
+  },
+  {
+   "mode": "cw",
+   "mhz": 2440.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.71,
+   "diff_db": 0.71,
+   "peak_offset_hz": 375
+  },
+  {
+   "mode": "cw",
+   "mhz": 2450.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.37,
+   "diff_db": 0.37,
+   "peak_offset_hz": 376
+  },
+  {
+   "mode": "cw",
+   "mhz": 2460.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.75,
+   "diff_db": 0.75,
+   "peak_offset_hz": 378
+  },
+  {
+   "mode": "cw",
+   "mhz": 2470.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.36,
+   "diff_db": 0.36,
+   "peak_offset_hz": 379
+  },
+  {
+   "mode": "cw",
+   "mhz": 2480.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.84,
+   "diff_db": 0.84,
+   "peak_offset_hz": 380
+  },
+  {
+   "mode": "cw",
+   "mhz": 2490.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.41,
+   "diff_db": 0.41,
+   "peak_offset_hz": 382
+  },
+  {
+   "mode": "cw",
+   "mhz": 2500.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.84,
+   "diff_db": 0.84,
+   "peak_offset_hz": 383
+  },
+  {
+   "mode": "cw",
+   "mhz": 2510.0,
+   "set_dbm": 0.0,
+   "read_dbm": -71.19,
+   "diff_db": 71.19,
+   "peak_offset_hz": 289
+  },
+  {
+   "mode": "cw",
+   "mhz": 2520.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.15,
+   "diff_db": 1.15,
+   "peak_offset_hz": 386
+  },
+  {
+   "mode": "cw",
+   "mhz": 2530.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.71,
+   "diff_db": 0.71,
+   "peak_offset_hz": 387
+  },
+  {
+   "mode": "cw",
+   "mhz": 2540.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.07,
+   "diff_db": 1.07,
+   "peak_offset_hz": 408
+  },
+  {
+   "mode": "cw",
+   "mhz": 2550.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.74,
+   "diff_db": 0.74,
+   "peak_offset_hz": 390
+  },
+  {
+   "mode": "cw",
+   "mhz": 2560.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.15,
+   "diff_db": 1.15,
+   "peak_offset_hz": 391
+  },
+  {
+   "mode": "cw",
+   "mhz": 2570.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.84,
+   "diff_db": 0.84,
+   "peak_offset_hz": 393
+  },
+  {
+   "mode": "cw",
+   "mhz": 2580.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.33,
+   "diff_db": 1.33,
+   "peak_offset_hz": 394
+  },
+  {
+   "mode": "cw",
+   "mhz": 2590.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.02,
+   "diff_db": 1.02,
+   "peak_offset_hz": 414
+  },
+  {
+   "mode": "cw",
+   "mhz": 2600.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.31,
+   "diff_db": 1.31,
+   "peak_offset_hz": 416
+  },
+  {
+   "mode": "cw",
+   "mhz": 2610.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.99,
+   "diff_db": 0.99,
+   "peak_offset_hz": 417
+  },
+  {
+   "mode": "cw",
+   "mhz": 2620.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.26,
+   "diff_db": 1.26,
+   "peak_offset_hz": 418
+  },
+  {
+   "mode": "cw",
+   "mhz": 2630.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.03,
+   "diff_db": 1.03,
+   "peak_offset_hz": 420
+  },
+  {
+   "mode": "cw",
+   "mhz": 2640.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.2,
+   "diff_db": 1.2,
+   "peak_offset_hz": 421
+  },
+  {
+   "mode": "cw",
+   "mhz": 2650.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.12,
+   "diff_db": 1.12,
+   "peak_offset_hz": 422
+  },
+  {
+   "mode": "cw",
+   "mhz": 2660.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.42,
+   "diff_db": 1.42,
+   "peak_offset_hz": 424
+  },
+  {
+   "mode": "cw",
+   "mhz": 2670.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.28,
+   "diff_db": 1.28,
+   "peak_offset_hz": 425
+  },
+  {
+   "mode": "cw",
+   "mhz": 2680.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.45,
+   "diff_db": 1.45,
+   "peak_offset_hz": 426
+  },
+  {
+   "mode": "cw",
+   "mhz": 2690.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.29,
+   "diff_db": 1.29,
+   "peak_offset_hz": 428
+  },
+  {
+   "mode": "cw",
+   "mhz": 2700.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.42,
+   "diff_db": 1.42,
+   "peak_offset_hz": 429
+  },
+  {
+   "mode": "cw",
+   "mhz": 2710.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.27,
+   "diff_db": 1.27,
+   "peak_offset_hz": 430
+  },
+  {
+   "mode": "cw",
+   "mhz": 2720.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.55,
+   "diff_db": 1.55,
+   "peak_offset_hz": 432
+  },
+  {
+   "mode": "cw",
+   "mhz": 2730.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.46,
+   "diff_db": 1.46,
+   "peak_offset_hz": 433
+  },
+  {
+   "mode": "cw",
+   "mhz": 2740.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.95,
+   "diff_db": 1.95,
+   "peak_offset_hz": 434
+  },
+  {
+   "mode": "cw",
+   "mhz": 2750.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.86,
+   "diff_db": 1.86,
+   "peak_offset_hz": 436
+  },
+  {
+   "mode": "cw",
+   "mhz": 2760.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.04,
+   "diff_db": 2.04,
+   "peak_offset_hz": 437
+  },
+  {
+   "mode": "cw",
+   "mhz": 2770.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.95,
+   "diff_db": 1.95,
+   "peak_offset_hz": 438
+  },
+  {
+   "mode": "cw",
+   "mhz": 2780.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.38,
+   "diff_db": 2.38,
+   "peak_offset_hz": 440
+  },
+  {
+   "mode": "cw",
+   "mhz": 2790.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.21,
+   "diff_db": 2.21,
+   "peak_offset_hz": 441
+  },
+  {
+   "mode": "cw",
+   "mhz": 2800.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.48,
+   "diff_db": 2.48,
+   "peak_offset_hz": 442
+  },
+  {
+   "mode": "cw",
+   "mhz": 2810.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.41,
+   "diff_db": 2.41,
+   "peak_offset_hz": 444
+  },
+  {
+   "mode": "cw",
+   "mhz": 2820.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.92,
+   "diff_db": 2.92,
+   "peak_offset_hz": 445
+  },
+  {
+   "mode": "cw",
+   "mhz": 2830.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.75,
+   "diff_db": 2.75,
+   "peak_offset_hz": 446
+  },
+  {
+   "mode": "cw",
+   "mhz": 2840.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.06,
+   "diff_db": 3.06,
+   "peak_offset_hz": 448
+  },
+  {
+   "mode": "cw",
+   "mhz": 2850.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.93,
+   "diff_db": 2.93,
+   "peak_offset_hz": 449
+  },
+  {
+   "mode": "cw",
+   "mhz": 2860.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.37,
+   "diff_db": 3.37,
+   "peak_offset_hz": 469
+  },
+  {
+   "mode": "cw",
+   "mhz": 2870.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.12,
+   "diff_db": 3.12,
+   "peak_offset_hz": 452
+  },
+  {
+   "mode": "cw",
+   "mhz": 2880.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.5,
+   "diff_db": 3.5,
+   "peak_offset_hz": 453
+  },
+  {
+   "mode": "cw",
+   "mhz": 2890.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.21,
+   "diff_db": 3.21,
+   "peak_offset_hz": 473
+  },
+  {
+   "mode": "cw",
+   "mhz": 2900.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.46,
+   "diff_db": 3.46,
+   "peak_offset_hz": 456
+  },
+  {
+   "mode": "cw",
+   "mhz": 2910.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.66,
+   "diff_db": 2.66,
+   "peak_offset_hz": 457
+  },
+  {
+   "mode": "cw",
+   "mhz": 2920.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.18,
+   "diff_db": 3.18,
+   "peak_offset_hz": 458
+  },
+  {
+   "mode": "cw",
+   "mhz": 2930.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 479
+  },
+  {
+   "mode": "cw",
+   "mhz": 2940.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.39,
+   "diff_db": 3.39,
+   "peak_offset_hz": 461
+  },
+  {
+   "mode": "cw",
+   "mhz": 2950.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.04,
+   "diff_db": 3.04,
+   "peak_offset_hz": 481
+  },
+  {
+   "mode": "cw",
+   "mhz": 2960.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.46,
+   "diff_db": 3.46,
+   "peak_offset_hz": 464
+  },
+  {
+   "mode": "cw",
+   "mhz": 2970.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.15,
+   "diff_db": 3.15,
+   "peak_offset_hz": 484
+  },
+  {
+   "mode": "cw",
+   "mhz": 2980.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.66,
+   "diff_db": 3.66,
+   "peak_offset_hz": 485
+  },
+  {
+   "mode": "cw",
+   "mhz": 2990.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.26,
+   "diff_db": 3.26,
+   "peak_offset_hz": 468
+  },
+  {
+   "mode": "cw",
+   "mhz": 3000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.67,
+   "diff_db": 3.67,
+   "peak_offset_hz": 488
+  },
+  {
+   "mode": "cw",
+   "mhz": 3010.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.4,
+   "diff_db": 3.4,
+   "peak_offset_hz": 489
+  },
+  {
+   "mode": "cw",
+   "mhz": 3020.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.94,
+   "diff_db": 3.94,
+   "peak_offset_hz": 491
+  },
+  {
+   "mode": "cw",
+   "mhz": 3030.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.58,
+   "diff_db": 3.58,
+   "peak_offset_hz": 492
+  },
+  {
+   "mode": "cw",
+   "mhz": 3040.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.05,
+   "diff_db": 4.05,
+   "peak_offset_hz": 493
+  },
+  {
+   "mode": "cw",
+   "mhz": 3050.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.7,
+   "diff_db": 3.7,
+   "peak_offset_hz": 495
+  },
+  {
+   "mode": "cw",
+   "mhz": 3060.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.1,
+   "diff_db": 4.1,
+   "peak_offset_hz": 496
+  },
+  {
+   "mode": "cw",
+   "mhz": 3070.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.76,
+   "diff_db": 3.76,
+   "peak_offset_hz": 497
+  },
+  {
+   "mode": "cw",
+   "mhz": 3080.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.13,
+   "diff_db": 4.13,
+   "peak_offset_hz": 499
+  },
+  {
+   "mode": "cw",
+   "mhz": 3090.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.91,
+   "diff_db": 3.91,
+   "peak_offset_hz": 500
+  },
+  {
+   "mode": "cw",
+   "mhz": 3100.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.26,
+   "diff_db": 4.26,
+   "peak_offset_hz": 501
+  },
+  {
+   "mode": "cw",
+   "mhz": 3110.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.15,
+   "diff_db": 4.15,
+   "peak_offset_hz": 503
+  },
+  {
+   "mode": "cw",
+   "mhz": 3120.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.36,
+   "diff_db": 4.36,
+   "peak_offset_hz": 504
+  },
+  {
+   "mode": "cw",
+   "mhz": 3130.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.36,
+   "diff_db": 4.36,
+   "peak_offset_hz": 506
+  },
+  {
+   "mode": "cw",
+   "mhz": 3140.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.35,
+   "diff_db": 4.35,
+   "peak_offset_hz": 507
+  },
+  {
+   "mode": "cw",
+   "mhz": 3150.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.19,
+   "diff_db": 4.19,
+   "peak_offset_hz": 508
+  },
+  {
+   "mode": "cw",
+   "mhz": 3160.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.33,
+   "diff_db": 3.33,
+   "peak_offset_hz": 510
+  },
+  {
+   "mode": "cw",
+   "mhz": 3170.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.07,
+   "diff_db": 3.07,
+   "peak_offset_hz": 511
+  },
+  {
+   "mode": "cw",
+   "mhz": 3180.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.28,
+   "diff_db": 3.28,
+   "peak_offset_hz": 512
+  },
+  {
+   "mode": "cw",
+   "mhz": 3190.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.21,
+   "diff_db": 3.21,
+   "peak_offset_hz": 514
+  },
+  {
+   "mode": "cw",
+   "mhz": 3200.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.43,
+   "diff_db": 3.43,
+   "peak_offset_hz": 515
+  },
+  {
+   "mode": "cw",
+   "mhz": 3210.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.2,
+   "diff_db": 3.2,
+   "peak_offset_hz": 516
+  },
+  {
+   "mode": "cw",
+   "mhz": 3220.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.46,
+   "diff_db": 3.46,
+   "peak_offset_hz": 518
+  },
+  {
+   "mode": "cw",
+   "mhz": 3230.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.21,
+   "diff_db": 3.21,
+   "peak_offset_hz": 519
+  },
+  {
+   "mode": "cw",
+   "mhz": 3240.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.48,
+   "diff_db": 3.48,
+   "peak_offset_hz": 520
+  },
+  {
+   "mode": "cw",
+   "mhz": 3250.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.26,
+   "diff_db": 3.26,
+   "peak_offset_hz": 522
+  },
+  {
+   "mode": "cw",
+   "mhz": 3260.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.57,
+   "diff_db": 3.57,
+   "peak_offset_hz": 523
+  },
+  {
+   "mode": "cw",
+   "mhz": 3270.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.27,
+   "diff_db": 3.27,
+   "peak_offset_hz": 524
+  },
+  {
+   "mode": "cw",
+   "mhz": 3280.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.62,
+   "diff_db": 3.62,
+   "peak_offset_hz": 545
+  },
+  {
+   "mode": "cw",
+   "mhz": 3290.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.32,
+   "diff_db": 3.32,
+   "peak_offset_hz": 527
+  },
+  {
+   "mode": "cw",
+   "mhz": 3300.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.67,
+   "diff_db": 3.67,
+   "peak_offset_hz": 528
+  },
+  {
+   "mode": "cw",
+   "mhz": 3310.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.23,
+   "diff_db": 3.23,
+   "peak_offset_hz": 530
+  },
+  {
+   "mode": "cw",
+   "mhz": 3320.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.62,
+   "diff_db": 3.62,
+   "peak_offset_hz": 531
+  },
+  {
+   "mode": "cw",
+   "mhz": 3330.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.27,
+   "diff_db": 3.27,
+   "peak_offset_hz": 532
+  },
+  {
+   "mode": "cw",
+   "mhz": 3340.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.68,
+   "diff_db": 3.68,
+   "peak_offset_hz": 553
+  },
+  {
+   "mode": "cw",
+   "mhz": 3350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.28,
+   "diff_db": 3.28,
+   "peak_offset_hz": 554
+  },
+  {
+   "mode": "cw",
+   "mhz": 3360.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.68,
+   "diff_db": 3.68,
+   "peak_offset_hz": 555
+  },
+  {
+   "mode": "cw",
+   "mhz": 3370.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.28,
+   "diff_db": 3.28,
+   "peak_offset_hz": 557
+  },
+  {
+   "mode": "cw",
+   "mhz": 3380.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.7,
+   "diff_db": 3.7,
+   "peak_offset_hz": 558
+  },
+  {
+   "mode": "cw",
+   "mhz": 3390.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.36,
+   "diff_db": 3.36,
+   "peak_offset_hz": 559
+  },
+  {
+   "mode": "cw",
+   "mhz": 3400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.8,
+   "diff_db": 3.8,
+   "peak_offset_hz": 561
+  },
+  {
+   "mode": "cw",
+   "mhz": 3410.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.2,
+   "diff_db": 3.2,
+   "peak_offset_hz": 562
+  },
+  {
+   "mode": "cw",
+   "mhz": 3420.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.56,
+   "diff_db": 3.56,
+   "peak_offset_hz": 563
+  },
+  {
+   "mode": "cw",
+   "mhz": 3430.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.2,
+   "diff_db": 3.2,
+   "peak_offset_hz": 565
+  },
+  {
+   "mode": "cw",
+   "mhz": 3440.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.49,
+   "diff_db": 3.49,
+   "peak_offset_hz": 566
+  },
+  {
+   "mode": "cw",
+   "mhz": 3450.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.12,
+   "diff_db": 3.12,
+   "peak_offset_hz": 567
+  },
+  {
+   "mode": "cw",
+   "mhz": 3460.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.44,
+   "diff_db": 3.44,
+   "peak_offset_hz": 569
+  },
+  {
+   "mode": "cw",
+   "mhz": 3470.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.06,
+   "diff_db": 3.06,
+   "peak_offset_hz": 570
+  },
+  {
+   "mode": "cw",
+   "mhz": 3480.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.37,
+   "diff_db": 3.37,
+   "peak_offset_hz": 571
+  },
+  {
+   "mode": "cw",
+   "mhz": 3490.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.01,
+   "diff_db": 3.01,
+   "peak_offset_hz": 573
+  },
+  {
+   "mode": "cw",
+   "mhz": 3500.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.33,
+   "diff_db": 3.33,
+   "peak_offset_hz": 574
+  },
+  {
+   "mode": "cw",
+   "mhz": 3510.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.13,
+   "diff_db": 1.13,
+   "peak_offset_hz": 575
+  },
+  {
+   "mode": "cw",
+   "mhz": 3520.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.51,
+   "diff_db": 1.51,
+   "peak_offset_hz": 577
+  },
+  {
+   "mode": "cw",
+   "mhz": 3530.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.24,
+   "diff_db": 1.24,
+   "peak_offset_hz": 578
+  },
+  {
+   "mode": "cw",
+   "mhz": 3540.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.64,
+   "diff_db": 1.64,
+   "peak_offset_hz": 579
+  },
+  {
+   "mode": "cw",
+   "mhz": 3550.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.35,
+   "diff_db": 1.35,
+   "peak_offset_hz": 581
+  },
+  {
+   "mode": "cw",
+   "mhz": 3560.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.6,
+   "diff_db": 1.6,
+   "peak_offset_hz": 582
+  },
+  {
+   "mode": "cw",
+   "mhz": 3570.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.35,
+   "diff_db": 1.35,
+   "peak_offset_hz": 583
+  },
+  {
+   "mode": "cw",
+   "mhz": 3580.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.83,
+   "diff_db": 1.83,
+   "peak_offset_hz": 585
+  },
+  {
+   "mode": "cw",
+   "mhz": 3590.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.61,
+   "diff_db": 1.61,
+   "peak_offset_hz": 586
+  },
+  {
+   "mode": "cw",
+   "mhz": 3600.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.01,
+   "diff_db": 2.01,
+   "peak_offset_hz": 587
+  },
+  {
+   "mode": "cw",
+   "mhz": 3610.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.75,
+   "diff_db": 1.75,
+   "peak_offset_hz": 589
+  },
+  {
+   "mode": "cw",
+   "mhz": 3620.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.15,
+   "diff_db": 2.15,
+   "peak_offset_hz": 590
+  },
+  {
+   "mode": "cw",
+   "mhz": 3630.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.89,
+   "diff_db": 1.89,
+   "peak_offset_hz": 591
+  },
+  {
+   "mode": "cw",
+   "mhz": 3640.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.23,
+   "diff_db": 2.23,
+   "peak_offset_hz": 593
+  },
+  {
+   "mode": "cw",
+   "mhz": 3650.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.98,
+   "diff_db": 1.98,
+   "peak_offset_hz": 594
+  },
+  {
+   "mode": "cw",
+   "mhz": 3660.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.3,
+   "diff_db": 2.3,
+   "peak_offset_hz": 595
+  },
+  {
+   "mode": "cw",
+   "mhz": 3670.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.04,
+   "diff_db": 2.04,
+   "peak_offset_hz": 616
+  },
+  {
+   "mode": "cw",
+   "mhz": 3680.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.37,
+   "diff_db": 2.37,
+   "peak_offset_hz": 598
+  },
+  {
+   "mode": "cw",
+   "mhz": 3690.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.07,
+   "diff_db": 2.07,
+   "peak_offset_hz": 618
+  },
+  {
+   "mode": "cw",
+   "mhz": 3700.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.46,
+   "diff_db": 2.46,
+   "peak_offset_hz": 601
+  },
+  {
+   "mode": "cw",
+   "mhz": 3710.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.14,
+   "diff_db": 2.14,
+   "peak_offset_hz": 602
+  },
+  {
+   "mode": "cw",
+   "mhz": 3720.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.5,
+   "diff_db": 2.5,
+   "peak_offset_hz": 603
+  },
+  {
+   "mode": "cw",
+   "mhz": 3730.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.15,
+   "diff_db": 2.15,
+   "peak_offset_hz": 624
+  },
+  {
+   "mode": "cw",
+   "mhz": 3740.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.56,
+   "diff_db": 2.56,
+   "peak_offset_hz": 606
+  },
+  {
+   "mode": "cw",
+   "mhz": 3750.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.17,
+   "diff_db": 2.17,
+   "peak_offset_hz": 607
+  },
+  {
+   "mode": "cw",
+   "mhz": 3760.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.63,
+   "diff_db": 2.63,
+   "peak_offset_hz": 628
+  },
+  {
+   "mode": "cw",
+   "mhz": 3770.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.3,
+   "diff_db": 2.3,
+   "peak_offset_hz": 629
+  },
+  {
+   "mode": "cw",
+   "mhz": 3780.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.73,
+   "diff_db": 2.73,
+   "peak_offset_hz": 631
+  },
+  {
+   "mode": "cw",
+   "mhz": 3790.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.35,
+   "diff_db": 2.35,
+   "peak_offset_hz": 632
+  },
+  {
+   "mode": "cw",
+   "mhz": 3800.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.77,
+   "diff_db": 2.77,
+   "peak_offset_hz": 633
+  },
+  {
+   "mode": "cw",
+   "mhz": 3810.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.34,
+   "diff_db": 2.34,
+   "peak_offset_hz": 635
+  },
+  {
+   "mode": "cw",
+   "mhz": 3820.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.73,
+   "diff_db": 2.73,
+   "peak_offset_hz": 636
+  },
+  {
+   "mode": "cw",
+   "mhz": 3830.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.38,
+   "diff_db": 2.38,
+   "peak_offset_hz": 637
+  },
+  {
+   "mode": "cw",
+   "mhz": 3840.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.8,
+   "diff_db": 2.8,
+   "peak_offset_hz": 639
+  },
+  {
+   "mode": "cw",
+   "mhz": 3850.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.47,
+   "diff_db": 2.47,
+   "peak_offset_hz": 640
+  },
+  {
+   "mode": "cw",
+   "mhz": 3860.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.88,
+   "diff_db": 2.88,
+   "peak_offset_hz": 641
+  },
+  {
+   "mode": "cw",
+   "mhz": 3870.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.42,
+   "diff_db": 2.42,
+   "peak_offset_hz": 643
+  },
+  {
+   "mode": "cw",
+   "mhz": 3880.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.8,
+   "diff_db": 2.8,
+   "peak_offset_hz": 644
+  },
+  {
+   "mode": "cw",
+   "mhz": 3890.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.56,
+   "diff_db": 2.56,
+   "peak_offset_hz": 645
+  },
+  {
+   "mode": "cw",
+   "mhz": 3900.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.98,
+   "diff_db": 2.98,
+   "peak_offset_hz": 647
+  },
+  {
+   "mode": "cw",
+   "mhz": 3910.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.52,
+   "diff_db": 2.52,
+   "peak_offset_hz": 648
+  },
+  {
+   "mode": "cw",
+   "mhz": 3920.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.9,
+   "diff_db": 2.9,
+   "peak_offset_hz": 649
+  },
+  {
+   "mode": "cw",
+   "mhz": 3930.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.46,
+   "diff_db": 2.46,
+   "peak_offset_hz": 651
+  },
+  {
+   "mode": "cw",
+   "mhz": 3940.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.74,
+   "diff_db": 2.74,
+   "peak_offset_hz": 652
+  },
+  {
+   "mode": "cw",
+   "mhz": 3950.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.3,
+   "diff_db": 2.3,
+   "peak_offset_hz": 653
+  },
+  {
+   "mode": "cw",
+   "mhz": 3960.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.69,
+   "diff_db": 2.69,
+   "peak_offset_hz": 655
+  },
+  {
+   "mode": "cw",
+   "mhz": 3970.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.43,
+   "diff_db": 2.43,
+   "peak_offset_hz": 656
+  },
+  {
+   "mode": "cw",
+   "mhz": 3980.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.84,
+   "diff_db": 2.84,
+   "peak_offset_hz": 657
+  },
+  {
+   "mode": "cw",
+   "mhz": 3990.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.37,
+   "diff_db": 2.37,
+   "peak_offset_hz": 659
+  },
+  {
+   "mode": "cw",
+   "mhz": 4000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.74,
+   "diff_db": 2.74,
+   "peak_offset_hz": 660
+  },
+  {
+   "mode": "cw",
+   "mhz": 4010.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.36,
+   "diff_db": 2.36,
+   "peak_offset_hz": 661
+  },
+  {
+   "mode": "cw",
+   "mhz": 4020.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.87,
+   "diff_db": 2.87,
+   "peak_offset_hz": 663
+  },
+  {
+   "mode": "cw",
+   "mhz": 4030.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.49,
+   "diff_db": 2.49,
+   "peak_offset_hz": 664
+  },
+  {
+   "mode": "cw",
+   "mhz": 4040.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.94,
+   "diff_db": 2.94,
+   "peak_offset_hz": 665
+  },
+  {
+   "mode": "cw",
+   "mhz": 4050.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.54,
+   "diff_db": 2.54,
+   "peak_offset_hz": 667
+  },
+  {
+   "mode": "cw",
+   "mhz": 4060.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.03,
+   "diff_db": 3.03,
+   "peak_offset_hz": 668
+  },
+  {
+   "mode": "cw",
+   "mhz": 4070.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.7,
+   "diff_db": 2.7,
+   "peak_offset_hz": 669
+  },
+  {
+   "mode": "cw",
+   "mhz": 4080.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.05,
+   "diff_db": 3.05,
+   "peak_offset_hz": 671
+  },
+  {
+   "mode": "cw",
+   "mhz": 4090.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.69,
+   "diff_db": 2.69,
+   "peak_offset_hz": 672
+  },
+  {
+   "mode": "cw",
+   "mhz": 4100.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.06,
+   "diff_db": 3.06,
+   "peak_offset_hz": 673
+  },
+  {
+   "mode": "cw",
+   "mhz": 4110.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.76,
+   "diff_db": 2.76,
+   "peak_offset_hz": 694
+  },
+  {
+   "mode": "cw",
+   "mhz": 4120.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.18,
+   "diff_db": 3.18,
+   "peak_offset_hz": 695
+  },
+  {
+   "mode": "cw",
+   "mhz": 4130.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.99,
+   "diff_db": 2.99,
+   "peak_offset_hz": 677
+  },
+  {
+   "mode": "cw",
+   "mhz": 4140.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.46,
+   "diff_db": 3.46,
+   "peak_offset_hz": 698
+  },
+  {
+   "mode": "cw",
+   "mhz": 4150.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.25,
+   "diff_db": 3.25,
+   "peak_offset_hz": 699
+  },
+  {
+   "mode": "cw",
+   "mhz": 4160.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.57,
+   "diff_db": 3.57,
+   "peak_offset_hz": 700
+  },
+  {
+   "mode": "cw",
+   "mhz": 4170.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.46,
+   "diff_db": 3.46,
+   "peak_offset_hz": 702
+  },
+  {
+   "mode": "cw",
+   "mhz": 4180.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.95,
+   "diff_db": 3.95,
+   "peak_offset_hz": 703
+  },
+  {
+   "mode": "cw",
+   "mhz": 4190.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.93,
+   "diff_db": 3.93,
+   "peak_offset_hz": 704
+  },
+  {
+   "mode": "cw",
+   "mhz": 4200.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.07,
+   "diff_db": 4.07,
+   "peak_offset_hz": 706
+  },
+  {
+   "mode": "cw",
+   "mhz": 4210.0,
+   "set_dbm": 0.0,
+   "read_dbm": -71.25,
+   "diff_db": 71.25,
+   "peak_offset_hz": 421
+  },
+  {
+   "mode": "cw",
+   "mhz": 4220.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.45,
+   "diff_db": 3.45,
+   "peak_offset_hz": 708
+  },
+  {
+   "mode": "cw",
+   "mhz": 4230.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.24,
+   "diff_db": 3.24,
+   "peak_offset_hz": 691
+  },
+  {
+   "mode": "cw",
+   "mhz": 4240.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.75,
+   "diff_db": 3.75,
+   "peak_offset_hz": 711
+  },
+  {
+   "mode": "cw",
+   "mhz": 4250.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.48,
+   "diff_db": 3.48,
+   "peak_offset_hz": 712
+  },
+  {
+   "mode": "cw",
+   "mhz": 4260.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.08,
+   "diff_db": 4.08,
+   "peak_offset_hz": 714
+  },
+  {
+   "mode": "cw",
+   "mhz": 4270.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.62,
+   "diff_db": 3.62,
+   "peak_offset_hz": 715
+  },
+  {
+   "mode": "cw",
+   "mhz": 4280.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.28,
+   "diff_db": 4.28,
+   "peak_offset_hz": 716
+  },
+  {
+   "mode": "cw",
+   "mhz": 4290.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.95,
+   "diff_db": 3.95,
+   "peak_offset_hz": 718
+  },
+  {
+   "mode": "cw",
+   "mhz": 4300.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.65,
+   "diff_db": 4.65,
+   "peak_offset_hz": 719
+  },
+  {
+   "mode": "cw",
+   "mhz": 4310.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.26,
+   "diff_db": 4.26,
+   "peak_offset_hz": 720
+  },
+  {
+   "mode": "cw",
+   "mhz": 4320.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.02,
+   "diff_db": 5.02,
+   "peak_offset_hz": 722
+  },
+  {
+   "mode": "cw",
+   "mhz": 4330.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.59,
+   "diff_db": 4.59,
+   "peak_offset_hz": 723
+  },
+  {
+   "mode": "cw",
+   "mhz": 4340.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.11,
+   "diff_db": 5.11,
+   "peak_offset_hz": 724
+  },
+  {
+   "mode": "cw",
+   "mhz": 4350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.72,
+   "diff_db": 4.72,
+   "peak_offset_hz": 726
+  },
+  {
+   "mode": "cw",
+   "mhz": 4360.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.22,
+   "diff_db": 5.22,
+   "peak_offset_hz": 727
+  },
+  {
+   "mode": "cw",
+   "mhz": 4370.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.77,
+   "diff_db": 4.77,
+   "peak_offset_hz": 728
+  },
+  {
+   "mode": "cw",
+   "mhz": 4380.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.4,
+   "diff_db": 5.4,
+   "peak_offset_hz": 730
+  },
+  {
+   "mode": "cw",
+   "mhz": 4390.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.95,
+   "diff_db": 4.95,
+   "peak_offset_hz": 731
+  },
+  {
+   "mode": "cw",
+   "mhz": 4400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.52,
+   "diff_db": 5.52,
+   "peak_offset_hz": 732
+  },
+  {
+   "mode": "cw",
+   "mhz": 4410.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.0,
+   "diff_db": 5.0,
+   "peak_offset_hz": 753
+  },
+  {
+   "mode": "cw",
+   "mhz": 4420.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.58,
+   "diff_db": 5.58,
+   "peak_offset_hz": 735
+  },
+  {
+   "mode": "cw",
+   "mhz": 4430.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.03,
+   "diff_db": 5.03,
+   "peak_offset_hz": 736
+  },
+  {
+   "mode": "cw",
+   "mhz": 4440.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.49,
+   "diff_db": 5.49,
+   "peak_offset_hz": 738
+  },
+  {
+   "mode": "cw",
+   "mhz": 4450.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.15,
+   "diff_db": 5.15,
+   "peak_offset_hz": 739
+  },
+  {
+   "mode": "cw",
+   "mhz": 4460.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.7,
+   "diff_db": 5.7,
+   "peak_offset_hz": 740
+  },
+  {
+   "mode": "cw",
+   "mhz": 4470.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.18,
+   "diff_db": 5.18,
+   "peak_offset_hz": 761
+  },
+  {
+   "mode": "cw",
+   "mhz": 4480.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.71,
+   "diff_db": 5.71,
+   "peak_offset_hz": 743
+  },
+  {
+   "mode": "cw",
+   "mhz": 4490.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.24,
+   "diff_db": 5.24,
+   "peak_offset_hz": 764
+  },
+  {
+   "mode": "cw",
+   "mhz": 4500.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.76,
+   "diff_db": 5.76,
+   "peak_offset_hz": 746
+  },
+  {
+   "mode": "cw",
+   "mhz": 4510.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.11,
+   "diff_db": 5.11,
+   "peak_offset_hz": 747
+  },
+  {
+   "mode": "cw",
+   "mhz": 4520.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.63,
+   "diff_db": 5.63,
+   "peak_offset_hz": 768
+  },
+  {
+   "mode": "cw",
+   "mhz": 4530.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.06,
+   "diff_db": 5.06,
+   "peak_offset_hz": 750
+  },
+  {
+   "mode": "cw",
+   "mhz": 4540.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.59,
+   "diff_db": 5.59,
+   "peak_offset_hz": 770
+  },
+  {
+   "mode": "cw",
+   "mhz": 4550.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.95,
+   "diff_db": 4.95,
+   "peak_offset_hz": 772
+  },
+  {
+   "mode": "cw",
+   "mhz": 4560.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.38,
+   "diff_db": 5.38,
+   "peak_offset_hz": 773
+  },
+  {
+   "mode": "cw",
+   "mhz": 4570.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.75,
+   "diff_db": 4.75,
+   "peak_offset_hz": 774
+  },
+  {
+   "mode": "cw",
+   "mhz": 4580.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.24,
+   "diff_db": 5.24,
+   "peak_offset_hz": 776
+  },
+  {
+   "mode": "cw",
+   "mhz": 4590.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.61,
+   "diff_db": 4.61,
+   "peak_offset_hz": 777
+  },
+  {
+   "mode": "cw",
+   "mhz": 4600.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.05,
+   "diff_db": 5.05,
+   "peak_offset_hz": 778
+  },
+  {
+   "mode": "cw",
+   "mhz": 4610.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.42,
+   "diff_db": 4.42,
+   "peak_offset_hz": 780
+  },
+  {
+   "mode": "cw",
+   "mhz": 4620.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.8,
+   "diff_db": 4.8,
+   "peak_offset_hz": 781
+  },
+  {
+   "mode": "cw",
+   "mhz": 4630.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.17,
+   "diff_db": 4.17,
+   "peak_offset_hz": 782
+  },
+  {
+   "mode": "cw",
+   "mhz": 4640.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.57,
+   "diff_db": 4.57,
+   "peak_offset_hz": 784
+  },
+  {
+   "mode": "cw",
+   "mhz": 4650.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.95,
+   "diff_db": 3.95,
+   "peak_offset_hz": 785
+  },
+  {
+   "mode": "cw",
+   "mhz": 4660.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.23,
+   "diff_db": 4.23,
+   "peak_offset_hz": 786
+  },
+  {
+   "mode": "cw",
+   "mhz": 4670.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.61,
+   "diff_db": 3.61,
+   "peak_offset_hz": 788
+  },
+  {
+   "mode": "cw",
+   "mhz": 4680.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.77,
+   "diff_db": 3.77,
+   "peak_offset_hz": 789
+  },
+  {
+   "mode": "cw",
+   "mhz": 4690.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.14,
+   "diff_db": 3.14,
+   "peak_offset_hz": 790
+  },
+  {
+   "mode": "cw",
+   "mhz": 4700.0,
+   "set_dbm": 0.0,
+   "read_dbm": -3.37,
+   "diff_db": 3.37,
+   "peak_offset_hz": 792
+  },
+  {
+   "mode": "cw",
+   "mhz": 4710.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.71,
+   "diff_db": 2.71,
+   "peak_offset_hz": 793
+  },
+  {
+   "mode": "cw",
+   "mhz": 4720.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.92,
+   "diff_db": 2.92,
+   "peak_offset_hz": 794
+  },
+  {
+   "mode": "cw",
+   "mhz": 4730.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.26,
+   "diff_db": 2.26,
+   "peak_offset_hz": 796
+  },
+  {
+   "mode": "cw",
+   "mhz": 4740.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.53,
+   "diff_db": 2.53,
+   "peak_offset_hz": 797
+  },
+  {
+   "mode": "cw",
+   "mhz": 4750.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.83,
+   "diff_db": 1.83,
+   "peak_offset_hz": 798
+  },
+  {
+   "mode": "cw",
+   "mhz": 4760.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.2,
+   "diff_db": 2.2,
+   "peak_offset_hz": 800
+  },
+  {
+   "mode": "cw",
+   "mhz": 4770.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.5,
+   "diff_db": 1.5,
+   "peak_offset_hz": 801
+  },
+  {
+   "mode": "cw",
+   "mhz": 4780.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.91,
+   "diff_db": 1.91,
+   "peak_offset_hz": 802
+  },
+  {
+   "mode": "cw",
+   "mhz": 4790.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.26,
+   "diff_db": 1.26,
+   "peak_offset_hz": 804
+  },
+  {
+   "mode": "cw",
+   "mhz": 4800.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.71,
+   "diff_db": 1.71,
+   "peak_offset_hz": 805
+  },
+  {
+   "mode": "cw",
+   "mhz": 4810.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.01,
+   "diff_db": 1.01,
+   "peak_offset_hz": 806
+  },
+  {
+   "mode": "cw",
+   "mhz": 4820.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.4,
+   "diff_db": 1.4,
+   "peak_offset_hz": 808
+  },
+  {
+   "mode": "cw",
+   "mhz": 4830.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.82,
+   "diff_db": 0.82,
+   "peak_offset_hz": 809
+  },
+  {
+   "mode": "cw",
+   "mhz": 4840.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.31,
+   "diff_db": 1.31,
+   "peak_offset_hz": 810
+  },
+  {
+   "mode": "cw",
+   "mhz": 4850.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.72,
+   "diff_db": 0.72,
+   "peak_offset_hz": 831
+  },
+  {
+   "mode": "cw",
+   "mhz": 4860.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.27,
+   "diff_db": 1.27,
+   "peak_offset_hz": 813
+  },
+  {
+   "mode": "cw",
+   "mhz": 4870.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.74,
+   "diff_db": 0.74,
+   "peak_offset_hz": 814
+  },
+  {
+   "mode": "cw",
+   "mhz": 4880.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.33,
+   "diff_db": 1.33,
+   "peak_offset_hz": 835
+  },
+  {
+   "mode": "cw",
+   "mhz": 4890.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.79,
+   "diff_db": 0.79,
+   "peak_offset_hz": 836
+  },
+  {
+   "mode": "cw",
+   "mhz": 4900.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.41,
+   "diff_db": 1.41,
+   "peak_offset_hz": 837
+  },
+  {
+   "mode": "cw",
+   "mhz": 4910.0,
+   "set_dbm": 0.0,
+   "read_dbm": -0.93,
+   "diff_db": 0.93,
+   "peak_offset_hz": 839
+  },
+  {
+   "mode": "cw",
+   "mhz": 4920.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.62,
+   "diff_db": 1.62,
+   "peak_offset_hz": 840
+  },
+  {
+   "mode": "cw",
+   "mhz": 4930.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.1,
+   "diff_db": 1.1,
+   "peak_offset_hz": 841
+  },
+  {
+   "mode": "cw",
+   "mhz": 4940.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.65,
+   "diff_db": 1.65,
+   "peak_offset_hz": 843
+  },
+  {
+   "mode": "cw",
+   "mhz": 4950.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.19,
+   "diff_db": 1.19,
+   "peak_offset_hz": 844
+  },
+  {
+   "mode": "cw",
+   "mhz": 4960.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.68,
+   "diff_db": 1.68,
+   "peak_offset_hz": 845
+  },
+  {
+   "mode": "cw",
+   "mhz": 4970.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.22,
+   "diff_db": 1.22,
+   "peak_offset_hz": 847
+  },
+  {
+   "mode": "cw",
+   "mhz": 4980.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.91,
+   "diff_db": 1.91,
+   "peak_offset_hz": 848
+  },
+  {
+   "mode": "cw",
+   "mhz": 4990.0,
+   "set_dbm": 0.0,
+   "read_dbm": -1.47,
+   "diff_db": 1.47,
+   "peak_offset_hz": 849
+  },
+  {
+   "mode": "cw",
+   "mhz": 5000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -2.06,
+   "diff_db": 2.06,
+   "peak_offset_hz": 851
+  },
+  {
+   "mode": "cw",
+   "mhz": 5010.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.79,
+   "diff_db": 4.79,
+   "peak_offset_hz": 852
+  },
+  {
+   "mode": "cw",
+   "mhz": 5020.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.31,
+   "diff_db": 5.31,
+   "peak_offset_hz": 853
+  },
+  {
+   "mode": "cw",
+   "mhz": 5030.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.78,
+   "diff_db": 4.78,
+   "peak_offset_hz": 855
+  },
+  {
+   "mode": "cw",
+   "mhz": 5040.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.35,
+   "diff_db": 5.35,
+   "peak_offset_hz": 856
+  },
+  {
+   "mode": "cw",
+   "mhz": 5050.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.85,
+   "diff_db": 4.85,
+   "peak_offset_hz": 857
+  },
+  {
+   "mode": "cw",
+   "mhz": 5060.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.42,
+   "diff_db": 5.42,
+   "peak_offset_hz": 859
+  },
+  {
+   "mode": "cw",
+   "mhz": 5070.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.93,
+   "diff_db": 4.93,
+   "peak_offset_hz": 860
+  },
+  {
+   "mode": "cw",
+   "mhz": 5080.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.45,
+   "diff_db": 5.45,
+   "peak_offset_hz": 861
+  },
+  {
+   "mode": "cw",
+   "mhz": 5090.0,
+   "set_dbm": 0.0,
+   "read_dbm": -4.94,
+   "diff_db": 4.94,
+   "peak_offset_hz": 863
+  },
+  {
+   "mode": "cw",
+   "mhz": 5100.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.42,
+   "diff_db": 5.42,
+   "peak_offset_hz": 864
+  },
+  {
+   "mode": "cw",
+   "mhz": 5110.0,
+   "set_dbm": 0.0,
+   "read_dbm": -71.57,
+   "diff_db": 71.57,
+   "peak_offset_hz": 484
+  },
+  {
+   "mode": "cw",
+   "mhz": 5120.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.0,
+   "diff_db": 6.0,
+   "peak_offset_hz": 867
+  },
+  {
+   "mode": "cw",
+   "mhz": 5130.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.63,
+   "diff_db": 5.63,
+   "peak_offset_hz": 868
+  },
+  {
+   "mode": "cw",
+   "mhz": 5140.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.1,
+   "diff_db": 6.1,
+   "peak_offset_hz": 870
+  },
+  {
+   "mode": "cw",
+   "mhz": 5150.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.68,
+   "diff_db": 5.68,
+   "peak_offset_hz": 871
+  },
+  {
+   "mode": "cw",
+   "mhz": 5160.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.1,
+   "diff_db": 6.1,
+   "peak_offset_hz": 891
+  },
+  {
+   "mode": "cw",
+   "mhz": 5170.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.72,
+   "diff_db": 5.72,
+   "peak_offset_hz": 874
+  },
+  {
+   "mode": "cw",
+   "mhz": 5180.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.2,
+   "diff_db": 6.2,
+   "peak_offset_hz": 894
+  },
+  {
+   "mode": "cw",
+   "mhz": 5190.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.83,
+   "diff_db": 5.83,
+   "peak_offset_hz": 895
+  },
+  {
+   "mode": "cw",
+   "mhz": 5200.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.19,
+   "diff_db": 6.19,
+   "peak_offset_hz": 897
+  },
+  {
+   "mode": "cw",
+   "mhz": 5210.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.82,
+   "diff_db": 5.82,
+   "peak_offset_hz": 898
+  },
+  {
+   "mode": "cw",
+   "mhz": 5220.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.25,
+   "diff_db": 6.25,
+   "peak_offset_hz": 899
+  },
+  {
+   "mode": "cw",
+   "mhz": 5230.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.89,
+   "diff_db": 5.89,
+   "peak_offset_hz": 901
+  },
+  {
+   "mode": "cw",
+   "mhz": 5240.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.31,
+   "diff_db": 6.31,
+   "peak_offset_hz": 902
+  },
+  {
+   "mode": "cw",
+   "mhz": 5250.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.93,
+   "diff_db": 5.93,
+   "peak_offset_hz": 903
+  },
+  {
+   "mode": "cw",
+   "mhz": 5260.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.32,
+   "diff_db": 6.32,
+   "peak_offset_hz": 905
+  },
+  {
+   "mode": "cw",
+   "mhz": 5270.0,
+   "set_dbm": 0.0,
+   "read_dbm": -5.93,
+   "diff_db": 5.93,
+   "peak_offset_hz": 906
+  },
+  {
+   "mode": "cw",
+   "mhz": 5280.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.39,
+   "diff_db": 6.39,
+   "peak_offset_hz": 907
+  },
+  {
+   "mode": "cw",
+   "mhz": 5290.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.04,
+   "diff_db": 6.04,
+   "peak_offset_hz": 909
+  },
+  {
+   "mode": "cw",
+   "mhz": 5300.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.54,
+   "diff_db": 6.54,
+   "peak_offset_hz": 910
+  },
+  {
+   "mode": "cw",
+   "mhz": 5310.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.16,
+   "diff_db": 6.16,
+   "peak_offset_hz": 911
+  },
+  {
+   "mode": "cw",
+   "mhz": 5320.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.57,
+   "diff_db": 6.57,
+   "peak_offset_hz": 913
+  },
+  {
+   "mode": "cw",
+   "mhz": 5330.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.22,
+   "diff_db": 6.22,
+   "peak_offset_hz": 914
+  },
+  {
+   "mode": "cw",
+   "mhz": 5340.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.52,
+   "diff_db": 6.52,
+   "peak_offset_hz": 915
+  },
+  {
+   "mode": "cw",
+   "mhz": 5350.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.18,
+   "diff_db": 6.18,
+   "peak_offset_hz": 917
+  },
+  {
+   "mode": "cw",
+   "mhz": 5360.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.77,
+   "diff_db": 6.77,
+   "peak_offset_hz": 918
+  },
+  {
+   "mode": "cw",
+   "mhz": 5370.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.48,
+   "diff_db": 6.48,
+   "peak_offset_hz": 919
+  },
+  {
+   "mode": "cw",
+   "mhz": 5380.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.98,
+   "diff_db": 6.98,
+   "peak_offset_hz": 921
+  },
+  {
+   "mode": "cw",
+   "mhz": 5390.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.62,
+   "diff_db": 6.62,
+   "peak_offset_hz": 922
+  },
+  {
+   "mode": "cw",
+   "mhz": 5400.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.89,
+   "diff_db": 6.89,
+   "peak_offset_hz": 923
+  },
+  {
+   "mode": "cw",
+   "mhz": 5410.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.61,
+   "diff_db": 6.61,
+   "peak_offset_hz": 925
+  },
+  {
+   "mode": "cw",
+   "mhz": 5420.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.13,
+   "diff_db": 7.13,
+   "peak_offset_hz": 926
+  },
+  {
+   "mode": "cw",
+   "mhz": 5430.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.86,
+   "diff_db": 6.86,
+   "peak_offset_hz": 927
+  },
+  {
+   "mode": "cw",
+   "mhz": 5440.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.14,
+   "diff_db": 7.14,
+   "peak_offset_hz": 948
+  },
+  {
+   "mode": "cw",
+   "mhz": 5450.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.86,
+   "diff_db": 6.86,
+   "peak_offset_hz": 949
+  },
+  {
+   "mode": "cw",
+   "mhz": 5460.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.22,
+   "diff_db": 7.22,
+   "peak_offset_hz": 950
+  },
+  {
+   "mode": "cw",
+   "mhz": 5470.0,
+   "set_dbm": 0.0,
+   "read_dbm": -6.96,
+   "diff_db": 6.96,
+   "peak_offset_hz": 952
+  },
+  {
+   "mode": "cw",
+   "mhz": 5480.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.36,
+   "diff_db": 7.36,
+   "peak_offset_hz": 934
+  },
+  {
+   "mode": "cw",
+   "mhz": 5490.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.12,
+   "diff_db": 7.12,
+   "peak_offset_hz": 935
+  },
+  {
+   "mode": "cw",
+   "mhz": 5500.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.48,
+   "diff_db": 7.48,
+   "peak_offset_hz": 956
+  },
+  {
+   "mode": "cw",
+   "mhz": 5510.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.18,
+   "diff_db": 7.18,
+   "peak_offset_hz": 957
+  },
+  {
+   "mode": "cw",
+   "mhz": 5520.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.65,
+   "diff_db": 7.65,
+   "peak_offset_hz": 958
+  },
+  {
+   "mode": "cw",
+   "mhz": 5530.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.34,
+   "diff_db": 7.34,
+   "peak_offset_hz": 960
+  },
+  {
+   "mode": "cw",
+   "mhz": 5540.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.71,
+   "diff_db": 7.71,
+   "peak_offset_hz": 961
+  },
+  {
+   "mode": "cw",
+   "mhz": 5550.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.34,
+   "diff_db": 7.34,
+   "peak_offset_hz": 943
+  },
+  {
+   "mode": "cw",
+   "mhz": 5560.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.68,
+   "diff_db": 7.68,
+   "peak_offset_hz": 964
+  },
+  {
+   "mode": "cw",
+   "mhz": 5570.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.3,
+   "diff_db": 7.3,
+   "peak_offset_hz": 965
+  },
+  {
+   "mode": "cw",
+   "mhz": 5580.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.71,
+   "diff_db": 7.71,
+   "peak_offset_hz": 966
+  },
+  {
+   "mode": "cw",
+   "mhz": 5590.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.32,
+   "diff_db": 7.32,
+   "peak_offset_hz": 968
+  },
+  {
+   "mode": "cw",
+   "mhz": 5600.0,
+   "set_dbm": 0.0,
+   "read_dbm": -7.95,
+   "diff_db": 7.95,
+   "peak_offset_hz": 969
+  },
+  {
+   "mode": "cw",
+   "mhz": 5610.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.06,
+   "diff_db": 8.06,
+   "peak_offset_hz": 970
+  },
+  {
+   "mode": "cw",
+   "mhz": 5620.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.74,
+   "diff_db": 8.74,
+   "peak_offset_hz": 972
+  },
+  {
+   "mode": "cw",
+   "mhz": 5630.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.28,
+   "diff_db": 8.28,
+   "peak_offset_hz": 973
+  },
+  {
+   "mode": "cw",
+   "mhz": 5640.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.88,
+   "diff_db": 8.88,
+   "peak_offset_hz": 974
+  },
+  {
+   "mode": "cw",
+   "mhz": 5650.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.39,
+   "diff_db": 8.39,
+   "peak_offset_hz": 976
+  },
+  {
+   "mode": "cw",
+   "mhz": 5660.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.9,
+   "diff_db": 8.9,
+   "peak_offset_hz": 977
+  },
+  {
+   "mode": "cw",
+   "mhz": 5670.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.47,
+   "diff_db": 8.47,
+   "peak_offset_hz": 978
+  },
+  {
+   "mode": "cw",
+   "mhz": 5680.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.01,
+   "diff_db": 9.01,
+   "peak_offset_hz": 980
+  },
+  {
+   "mode": "cw",
+   "mhz": 5690.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.59,
+   "diff_db": 8.59,
+   "peak_offset_hz": 981
+  },
+  {
+   "mode": "cw",
+   "mhz": 5700.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.18,
+   "diff_db": 9.18,
+   "peak_offset_hz": 982
+  },
+  {
+   "mode": "cw",
+   "mhz": 5710.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.77,
+   "diff_db": 8.77,
+   "peak_offset_hz": 984
+  },
+  {
+   "mode": "cw",
+   "mhz": 5720.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.33,
+   "diff_db": 9.33,
+   "peak_offset_hz": 985
+  },
+  {
+   "mode": "cw",
+   "mhz": 5730.0,
+   "set_dbm": 0.0,
+   "read_dbm": -8.93,
+   "diff_db": 8.93,
+   "peak_offset_hz": 1006
+  },
+  {
+   "mode": "cw",
+   "mhz": 5740.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.53,
+   "diff_db": 9.53,
+   "peak_offset_hz": 988
+  },
+  {
+   "mode": "cw",
+   "mhz": 5750.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.18,
+   "diff_db": 9.18,
+   "peak_offset_hz": 1008
+  },
+  {
+   "mode": "cw",
+   "mhz": 5760.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.67,
+   "diff_db": 9.67,
+   "peak_offset_hz": 991
+  },
+  {
+   "mode": "cw",
+   "mhz": 5770.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.35,
+   "diff_db": 9.35,
+   "peak_offset_hz": 1011
+  },
+  {
+   "mode": "cw",
+   "mhz": 5780.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.93,
+   "diff_db": 9.93,
+   "peak_offset_hz": 993
+  },
+  {
+   "mode": "cw",
+   "mhz": 5790.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.57,
+   "diff_db": 9.57,
+   "peak_offset_hz": 995
+  },
+  {
+   "mode": "cw",
+   "mhz": 5800.0,
+   "set_dbm": 0.0,
+   "read_dbm": -10.0,
+   "diff_db": 10.0,
+   "peak_offset_hz": 1015
+  },
+  {
+   "mode": "cw",
+   "mhz": 5810.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.7,
+   "diff_db": 9.7,
+   "peak_offset_hz": 1016
+  },
+  {
+   "mode": "cw",
+   "mhz": 5820.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.27,
+   "diff_db": 9.27,
+   "peak_offset_hz": 1018
+  },
+  {
+   "mode": "cw",
+   "mhz": 5830.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.03,
+   "diff_db": 9.03,
+   "peak_offset_hz": 1019
+  },
+  {
+   "mode": "cw",
+   "mhz": 5840.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.46,
+   "diff_db": 9.46,
+   "peak_offset_hz": 1020
+  },
+  {
+   "mode": "cw",
+   "mhz": 5850.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.17,
+   "diff_db": 9.17,
+   "peak_offset_hz": 1022
+  },
+  {
+   "mode": "cw",
+   "mhz": 5860.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.6,
+   "diff_db": 9.6,
+   "peak_offset_hz": 1023
+  },
+  {
+   "mode": "cw",
+   "mhz": 5870.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.38,
+   "diff_db": 9.38,
+   "peak_offset_hz": 1024
+  },
+  {
+   "mode": "cw",
+   "mhz": 5880.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.69,
+   "diff_db": 9.69,
+   "peak_offset_hz": 1026
+  },
+  {
+   "mode": "cw",
+   "mhz": 5890.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.41,
+   "diff_db": 9.41,
+   "peak_offset_hz": 1027
+  },
+  {
+   "mode": "cw",
+   "mhz": 5900.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.88,
+   "diff_db": 9.88,
+   "peak_offset_hz": 1028
+  },
+  {
+   "mode": "cw",
+   "mhz": 5910.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.65,
+   "diff_db": 9.65,
+   "peak_offset_hz": 1030
+  },
+  {
+   "mode": "cw",
+   "mhz": 5920.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.93,
+   "diff_db": 9.93,
+   "peak_offset_hz": 1031
+  },
+  {
+   "mode": "cw",
+   "mhz": 5930.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.66,
+   "diff_db": 9.66,
+   "peak_offset_hz": 1032
+  },
+  {
+   "mode": "cw",
+   "mhz": 5940.0,
+   "set_dbm": 0.0,
+   "read_dbm": -10.21,
+   "diff_db": 10.21,
+   "peak_offset_hz": 1034
+  },
+  {
+   "mode": "cw",
+   "mhz": 5950.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.9,
+   "diff_db": 9.9,
+   "peak_offset_hz": 1035
+  },
+  {
+   "mode": "cw",
+   "mhz": 5960.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.99,
+   "diff_db": 9.99,
+   "peak_offset_hz": 1036
+  },
+  {
+   "mode": "cw",
+   "mhz": 5970.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.69,
+   "diff_db": 9.69,
+   "peak_offset_hz": 1038
+  },
+  {
+   "mode": "cw",
+   "mhz": 5980.0,
+   "set_dbm": 0.0,
+   "read_dbm": -10.04,
+   "diff_db": 10.04,
+   "peak_offset_hz": 1039
+  },
+  {
+   "mode": "cw",
+   "mhz": 5990.0,
+   "set_dbm": 0.0,
+   "read_dbm": -9.73,
+   "diff_db": 9.73,
+   "peak_offset_hz": 1059
+  },
+  {
+   "mode": "cw",
+   "mhz": 6000.0,
+   "set_dbm": 0.0,
+   "read_dbm": -10.12,
+   "diff_db": 10.12,
+   "peak_offset_hz": 1042
+  }
+ ],
+ "made": "2026-11-10 11:45"
+}
