@@ -1,0 +1,50 @@
+{
+ "analyzer": "sa44",
+ "serial": 30300380,
+ "note": "VSG60A - SMA adapter - 100 pF DC block - SMA adapter - analyzer",
+ "rows": [
+  {
+   "mhz": 145.8,
+   "set_dbm": -30.0,
+   "read_dbm": -30.56,
+   "diff_db": 0.56,
+   "peak_offset_hz": 267
+  },
+  {
+   "mhz": 300.0,
+   "set_dbm": -30.0,
+   "read_dbm": -30.46,
+   "diff_db": 0.46,
+   "peak_offset_hz": 504
+  },
+  {
+   "mhz": 325.0,
+   "set_dbm": -30.0,
+   "read_dbm": -30.21,
+   "diff_db": 0.21,
+   "peak_offset_hz": 534
+  },
+  {
+   "mhz": 350.0,
+   "set_dbm": -30.0,
+   "read_dbm": -35.53,
+   "diff_db": 5.53,
+   "peak_offset_hz": 572
+  },
+  {
+   "mhz": 436.6,
+   "set_dbm": -30.0,
+   "read_dbm": -32.92,
+   "diff_db": 2.92,
+   "peak_offset_hz": 712
+  },
+  {
+   "mhz": 1000.0,
+   "set_dbm": -30.0,
+   "read_dbm": -33.06,
+   "diff_db": 3.06,
+   "peak_offset_hz": 1573
+  }
+ ],
+ "made": "2026-11-10 10:30"
+}
