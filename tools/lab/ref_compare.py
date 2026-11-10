@@ -19,6 +19,7 @@ def main():
     ap.add_argument("--analyzer", choices=["sa44", "bb60"], default="sa44")
     ap.add_argument("--levels", default="0,-30,-60")
     ap.add_argument("--freqs", default="50,145.8,300,325,350,375,436.6,1000,2400,4000")
+    ap.add_argument("--ref", type=float, default=None, help="analyzer reference level, dBm (default: level + 5)")
     ap.add_argument("--path-db", type=float, default=0.0, help="known loss between them (DC block, adapters)")
     ap.add_argument("--vsg", default="127.0.0.1:5124")
     ap.add_argument("--note", default="VSG60A - SMA adapter - 100 pF DC block - SMA adapter - analyzer")
@@ -41,7 +42,7 @@ def main():
                 hz = mhz * 1e6
                 gen.cw(hz, lvl)
                 time.sleep(0.5)
-                p, f = an.peak(hz, span=20e3, rbw=100, ref_dbm=lvl + 5)
+                p, f = an.peak(hz, span=20e3, rbw=100, ref_dbm=a.ref if a.ref is not None else lvl + 5)
                 rows.append({"mhz": mhz, "set_dbm": lvl, "read_dbm": round(p, 2), "diff_db": round(lvl - p, 2),
                              "peak_offset_hz": round(f - hz)})
                 print("%7.1f MHz %6.1f dBm: read %7.2f dBm, set - read %+.2f dB" % (mhz, lvl, p, lvl - p), flush=True)
