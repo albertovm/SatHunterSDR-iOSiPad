@@ -32,3 +32,5 @@ BB60C-referenced too. Lab and home numbers are therefore consistent with each ot
 is the BB60C's (Signal Hound specifies +-2 dB): if the VSG60A is the right one on 70 cm, every level in this
 repo is about 2.7 dB too low (sensitivities 2.7 dB worse than written); if the BB60C is right, nothing
 changes. Which one is right needs a third reference (a power meter or a recently calibrated analyzer).
+
+**Settled 2026-11-10 10:30:** the SA44 reads the VSG60A the same way as the BB60C (within 0.3 dB on 70 cm), so the VSG60A is the one that is off; the BB60C-referenced levels stand. See [the SA44 check](../2026-11-10_1028_ref-compare-sa44/report.md).
