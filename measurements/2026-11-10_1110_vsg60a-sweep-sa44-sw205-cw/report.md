@@ -27,4 +27,4 @@ do ([run](../2026-11-10_1048_vsg60a-sweep-sa44-sw205/results.json)).
 
 **Recommendation:** report it to Signal Hound support (unit 23041470, data above) and ask for a recalibration
 or a corrected correction table; until then, add +3.0 dB (342-1000 MHz) / +3.5 dB (1-1.7 GHz) to VSG60A set
-levels used without a BB60C path calibration. Measurements in this repo that used  are not affected.
+levels used without a BB60C path calibration. Measurements in this repo that used `path_cal.py` are not affected.
