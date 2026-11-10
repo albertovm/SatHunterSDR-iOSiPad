@@ -52,7 +52,8 @@ def main():
     out = os.path.join(root, "measurements", time.strftime("%Y-%m-%d_%H%M") + "_" + (a.name or "ref-compare-" + a.analyzer))
     os.makedirs(out, exist_ok=True)
     info = {}
-    for q in ("*IDN?", ":SYSTem:TEMPerature?", ":SOURce:POWer:OFFSet?", ":OUTPut:CORRection:IMBalance?"):
+    # only queries this firmware answers: an unanswered one times the socket out for good
+    for q in ("*IDN?", ":SYSTem:TEMPerature?"):
         try:
             info[q] = gen.query(q)
         except Exception as e:  # noqa: BLE001
