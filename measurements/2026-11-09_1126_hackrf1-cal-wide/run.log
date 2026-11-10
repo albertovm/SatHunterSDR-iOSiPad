@@ -1,0 +1,254 @@
+   HackRF: no calibration, nominal P0 -48.0 dBm (levels are approximate)
+   HackRF server: {'ok': True, 'lo': 436350000.0, 'vga': 0, 'amp': False, 'playing': 'silence', 'written_s': 41.5, 'underruns': 0}
+  50.000 MHz amp 0 txvga  0:  -45.5 dBm out,     -21 Hz, LO -17.0 dBc
+  50.000 MHz amp 0 txvga 10:  -32.1 dBm out,     -40 Hz, LO -30.2 dBc
+  50.000 MHz amp 0 txvga 20:  -21.7 dBm out,     -21 Hz, LO -36.7 dBc
+  50.000 MHz amp 0 txvga 30:  -12.9 dBm out,     -21 Hz, LO -42.5 dBc
+  50.000 MHz amp 0 txvga 40:   -4.0 dBm out,     -21 Hz, LO -43.2 dBc
+  50.000 MHz amp 0 txvga 47:   +0.4 dBm out,     -21 Hz, LO -44.6 dBc
+  50.000 MHz amp 1 txvga  0:  -41.2 dBm out,     -59 Hz, LO -21.3 dBc
+  50.000 MHz amp 1 txvga 10:  -41.2 dBm out,     -59 Hz, LO -20.7 dBc
+  50.000 MHz amp 1 txvga 20:  -40.9 dBm out,     -40 Hz, LO -21.9 dBc
+  50.000 MHz amp 1 txvga 30:  -41.2 dBm out,     -40 Hz, LO -21.3 dBc
+  50.000 MHz amp 1 txvga 40:  -41.2 dBm out,     -40 Hz, LO -20.7 dBc
+  50.000 MHz amp 1 txvga 47:  -32.7 dBm out,     -40 Hz, LO -29.8 dBc
+  75.000 MHz amp 0 txvga  0:  -43.7 dBm out,     -55 Hz, LO -18.1 dBc
+  75.000 MHz amp 0 txvga 10:  -34.5 dBm out,     -55 Hz, LO -27.6 dBc
+  75.000 MHz amp 0 txvga 20:  -23.4 dBm out,     -55 Hz, LO -37.6 dBc
+  75.000 MHz amp 0 txvga 30:  -14.3 dBm out,     -55 Hz, LO -45.8 dBc
+  75.000 MHz amp 0 txvga 40:   -5.2 dBm out,     -55 Hz, LO -42.4 dBc
+  75.000 MHz amp 0 txvga 47:   -0.6 dBm out,     -55 Hz, LO -43.8 dBc
+  75.000 MHz amp 1 txvga  0:  -61.7 dBm out,  +13391 Hz, LO  -0.6 dBc
+  75.000 MHz amp 1 txvga 10:  -63.0 dBm out,  +23291 Hz, LO  +1.5 dBc
+  75.000 MHz amp 1 txvga 20:  -59.0 dBm out,     -74 Hz, LO  -3.0 dBc
+  75.000 MHz amp 1 txvga 30:  -50.0 dBm out,     -55 Hz, LO -11.7 dBc
+  75.000 MHz amp 1 txvga 40:  -41.2 dBm out,     -55 Hz, LO -20.4 dBc
+  75.000 MHz amp 1 txvga 47:  -35.3 dBm out,     -55 Hz, LO -26.7 dBc
+ 100.000 MHz amp 0 txvga  0:  -44.5 dBm out,     -52 Hz, LO -18.2 dBc
+ 100.000 MHz amp 0 txvga 10:  -35.3 dBm out,     -71 Hz, LO -27.7 dBc
+ 100.000 MHz amp 0 txvga 20:  -23.8 dBm out,     -71 Hz, LO -37.6 dBc
+ 100.000 MHz amp 0 txvga 30:  -14.6 dBm out,     -71 Hz, LO -44.2 dBc
+ 100.000 MHz amp 0 txvga 40:   -5.6 dBm out,     -71 Hz, LO -43.4 dBc
+ 100.000 MHz amp 0 txvga 47:   -1.0 dBm out,     -71 Hz, LO -44.5 dBc
+ 100.000 MHz amp 1 txvga  0:  -62.4 dBm out,  -12202 Hz, LO  +0.2 dBc
+ 100.000 MHz amp 1 txvga 10:  -61.7 dBm out,  -21662 Hz, LO  -0.5 dBc
+ 100.000 MHz amp 1 txvga 20:  -57.0 dBm out,     -52 Hz, LO  -5.6 dBc
+ 100.000 MHz amp 1 txvga 30:  -51.2 dBm out,     -71 Hz, LO -11.1 dBc
+ 100.000 MHz amp 1 txvga 40:  -43.0 dBm out,     -71 Hz, LO -20.1 dBc
+ 100.000 MHz amp 1 txvga 47:  -37.1 dBm out,     -71 Hz, LO -25.0 dBc
+ 125.000 MHz amp 0 txvga  0:  -44.7 dBm out,    -106 Hz, LO -18.8 dBc
+ 125.000 MHz amp 0 txvga 10:  -35.3 dBm out,    -106 Hz, LO -28.4 dBc
+ 125.000 MHz amp 0 txvga 20:  -24.2 dBm out,     -87 Hz, LO -38.8 dBc
+ 125.000 MHz amp 0 txvga 30:  -15.0 dBm out,    -106 Hz, LO -44.9 dBc
+ 125.000 MHz amp 0 txvga 40:   -5.9 dBm out,     -87 Hz, LO -44.2 dBc
+ 125.000 MHz amp 0 txvga 47:   -1.3 dBm out,     -87 Hz, LO -45.7 dBc
+ 125.000 MHz amp 1 txvga  0:  -58.3 dBm out,   +1744 Hz, LO  -3.5 dBc
+ 125.000 MHz amp 1 txvga 10:  -60.6 dBm out,   +1725 Hz, LO  -2.0 dBc
+ 125.000 MHz amp 1 txvga 20:  -62.2 dBm out,  +11624 Hz, LO  -1.1 dBc
+ 125.000 MHz amp 1 txvga 30:  -53.1 dBm out,    -106 Hz, LO  -9.6 dBc
+ 125.000 MHz amp 1 txvga 40:  -43.4 dBm out,     -87 Hz, LO -19.3 dBc
+ 125.000 MHz amp 1 txvga 47:  -38.6 dBm out,     -87 Hz, LO -24.5 dBc
+ 150.000 MHz amp 0 txvga  0:  -33.8 dBm out,    -122 Hz, LO -27.6 dBc
+ 150.000 MHz amp 0 txvga 10:  -32.6 dBm out,    -103 Hz, LO -29.6 dBc
+ 150.000 MHz amp 0 txvga 20:  -25.8 dBm out,    -122 Hz, LO -35.7 dBc
+ 150.000 MHz amp 0 txvga 30:  -15.8 dBm out,    -122 Hz, LO -43.4 dBc
+ 150.000 MHz amp 0 txvga 40:   -6.4 dBm out,    -122 Hz, LO -45.3 dBc
+ 150.000 MHz amp 0 txvga 47:   -1.8 dBm out,    -122 Hz, LO -44.9 dBc
+ 150.000 MHz amp 1 txvga  0:  -35.1 dBm out,    -103 Hz, LO -28.1 dBc
+ 150.000 MHz amp 1 txvga 10:  -35.2 dBm out,    -103 Hz, LO -27.2 dBc
+ 150.000 MHz amp 1 txvga 20:  -35.5 dBm out,    -103 Hz, LO -26.6 dBc
+ 150.000 MHz amp 1 txvga 30:  -35.6 dBm out,    -103 Hz, LO -27.5 dBc
+ 150.000 MHz amp 1 txvga 40:  -37.5 dBm out,    -103 Hz, LO -25.6 dBc
+ 150.000 MHz amp 1 txvga 47:  -38.1 dBm out,    -103 Hz, LO -25.9 dBc
+ 175.000 MHz amp 0 txvga  0:  -45.9 dBm out,    -118 Hz, LO -17.0 dBc
+ 175.000 MHz amp 0 txvga 10:  -36.8 dBm out,    -137 Hz, LO -26.4 dBc
+ 175.000 MHz amp 0 txvga 20:  -25.7 dBm out,    -118 Hz, LO -34.3 dBc
+ 175.000 MHz amp 0 txvga 30:  -16.6 dBm out,    -118 Hz, LO -44.1 dBc
+ 175.000 MHz amp 0 txvga 40:   -7.5 dBm out,    -118 Hz, LO -44.0 dBc
+ 175.000 MHz amp 0 txvga 47:   -2.7 dBm out,    -118 Hz, LO -44.7 dBc
+ 175.000 MHz amp 1 txvga  0:  -63.4 dBm out,   +7282 Hz, LO  +0.1 dBc
+ 175.000 MHz amp 1 txvga 10:  -63.1 dBm out,  -11810 Hz, LO  +0.3 dBc
+ 175.000 MHz amp 1 txvga 20:  -58.6 dBm out,     -99 Hz, LO  -4.9 dBc
+ 175.000 MHz amp 1 txvga 30:  -51.8 dBm out,    -137 Hz, LO -11.6 dBc
+ 175.000 MHz amp 1 txvga 40:  -42.7 dBm out,    -137 Hz, LO -19.1 dBc
+ 175.000 MHz amp 1 txvga 47:  -37.5 dBm out,    -137 Hz, LO -24.6 dBc
+ 200.000 MHz amp 0 txvga  0:  -42.8 dBm out,    -134 Hz, LO -20.6 dBc
+ 200.000 MHz amp 0 txvga 10:  -36.8 dBm out,    -134 Hz, LO -24.7 dBc
+ 200.000 MHz amp 0 txvga 20:  -25.5 dBm out,    -153 Hz, LO -37.6 dBc
+ 200.000 MHz amp 0 txvga 30:  -16.7 dBm out,    -134 Hz, LO -42.8 dBc
+ 200.000 MHz amp 0 txvga 40:   -7.5 dBm out,    -134 Hz, LO -44.1 dBc
+ 200.000 MHz amp 0 txvga 47:   -2.8 dBm out,    -134 Hz, LO -45.3 dBc
+ 200.000 MHz amp 1 txvga  0:  -50.2 dBm out,    -153 Hz, LO -12.9 dBc
+ 200.000 MHz amp 1 txvga 10:  -50.0 dBm out,    -153 Hz, LO -14.1 dBc
+ 200.000 MHz amp 1 txvga 20:  -50.6 dBm out,    -134 Hz, LO -13.6 dBc
+ 200.000 MHz amp 1 txvga 30:  -46.4 dBm out,    -134 Hz, LO -16.6 dBc
+ 200.000 MHz amp 1 txvga 40:  -41.5 dBm out,    -134 Hz, LO -21.1 dBc
+ 200.000 MHz amp 1 txvga 47:  -38.8 dBm out,    -134 Hz, LO -23.8 dBc
+ 250.000 MHz amp 0 txvga  0:  -43.0 dBm out,    -185 Hz, LO -18.3 dBc
+ 250.000 MHz amp 0 txvga 10:  -38.5 dBm out,    -146 Hz, LO -24.4 dBc
+ 250.000 MHz amp 0 txvga 20:  -25.8 dBm out,    -166 Hz, LO -35.6 dBc
+ 250.000 MHz amp 0 txvga 30:  -16.5 dBm out,    -166 Hz, LO -42.0 dBc
+ 250.000 MHz amp 0 txvga 40:   -7.6 dBm out,    -166 Hz, LO -44.0 dBc
+ 250.000 MHz amp 0 txvga 47:   -2.9 dBm out,    -166 Hz, LO -46.6 dBc
+ 250.000 MHz amp 1 txvga  0:  -48.3 dBm out,    -166 Hz, LO -15.5 dBc
+ 250.000 MHz amp 1 txvga 10:  -48.6 dBm out,    -204 Hz, LO -14.6 dBc
+ 250.000 MHz amp 1 txvga 20:  -47.3 dBm out,    -185 Hz, LO -15.2 dBc
+ 250.000 MHz amp 1 txvga 30:  -50.4 dBm out,    -204 Hz, LO -12.9 dBc
+ 250.000 MHz amp 1 txvga 40:  -41.6 dBm out,    -166 Hz, LO -20.8 dBc
+ 250.000 MHz amp 1 txvga 47:  -41.4 dBm out,    -166 Hz, LO -22.1 dBc
+ 300.000 MHz amp 0 txvga  0:  -49.7 dBm out,    -197 Hz, LO -13.5 dBc
+ 300.000 MHz amp 0 txvga 10:  -38.7 dBm out,    -216 Hz, LO -24.3 dBc
+ 300.000 MHz amp 0 txvga 20:  -28.7 dBm out,    -216 Hz, LO -32.2 dBc
+ 300.000 MHz amp 0 txvga 30:  -19.2 dBm out,    -197 Hz, LO -44.9 dBc
+ 300.000 MHz amp 0 txvga 40:  -10.1 dBm out,    -216 Hz, LO -43.0 dBc
+ 300.000 MHz amp 0 txvga 47:   -5.4 dBm out,    -216 Hz, LO -46.8 dBc
+ 300.000 MHz amp 1 txvga  0:  -51.2 dBm out,   -2409 Hz, LO -12.5 dBc
+ 300.000 MHz amp 1 txvga 10:  -51.0 dBm out,   -2429 Hz, LO -11.7 dBc
+ 300.000 MHz amp 1 txvga 20:  -50.6 dBm out,   -2429 Hz, LO -11.1 dBc
+ 300.000 MHz amp 1 txvga 30:  -50.4 dBm out,   -2409 Hz, LO -13.4 dBc
+ 300.000 MHz amp 1 txvga 40:  -47.2 dBm out,    -197 Hz, LO -16.5 dBc
+ 300.000 MHz amp 1 txvga 47:  -46.4 dBm out,    -216 Hz, LO -17.1 dBc
+ 350.000 MHz amp 0 txvga  0:  -44.8 dBm out,    -267 Hz, LO -18.3 dBc
+ 350.000 MHz amp 0 txvga 10:  -39.4 dBm out,    -248 Hz, LO -23.4 dBc
+ 350.000 MHz amp 0 txvga 20:  -29.0 dBm out,    -267 Hz, LO -34.4 dBc
+ 350.000 MHz amp 0 txvga 30:  -19.5 dBm out,    -267 Hz, LO -40.5 dBc
+ 350.000 MHz amp 0 txvga 40:  -10.5 dBm out,    -267 Hz, LO -44.8 dBc
+ 350.000 MHz amp 0 txvga 47:   -5.8 dBm out,    -267 Hz, LO -45.0 dBc
+ 350.000 MHz amp 1 txvga  0:  -49.6 dBm out,    -248 Hz, LO -13.3 dBc
+ 350.000 MHz amp 1 txvga 10:  -49.7 dBm out,    -248 Hz, LO -13.8 dBc
+ 350.000 MHz amp 1 txvga 20:  -51.9 dBm out,    -228 Hz, LO -11.0 dBc
+ 350.000 MHz amp 1 txvga 30:  -49.6 dBm out,    -248 Hz, LO -14.4 dBc
+ 350.000 MHz amp 1 txvga 40:  -43.1 dBm out,    -267 Hz, LO -20.3 dBc
+ 350.000 MHz amp 1 txvga 47:  -38.8 dBm out,    -267 Hz, LO -24.4 dBc
+ 400.000 MHz amp 0 txvga  0:  -26.7 dBm out,     +45 Hz, LO -37.5 dBc
+ 400.000 MHz amp 0 txvga 10:  -26.7 dBm out,     +64 Hz, LO -37.4 dBc
+ 400.000 MHz amp 0 txvga 20:  -25.9 dBm out,    -298 Hz, LO -38.1 dBc
+ 400.000 MHz amp 0 txvga 30:  -16.6 dBm out,    -298 Hz, LO -46.1 dBc
+ 400.000 MHz amp 0 txvga 40:   -7.5 dBm out,    -298 Hz, LO -44.0 dBc
+ 400.000 MHz amp 0 txvga 47:   -2.9 dBm out,    -298 Hz, LO -47.3 dBc
+ 400.000 MHz amp 1 txvga  0:  -26.7 dBm out,     +45 Hz, LO -37.2 dBc
+ 400.000 MHz amp 1 txvga 10:  -26.7 dBm out,     +45 Hz, LO -37.6 dBc
+ 400.000 MHz amp 1 txvga 20:  -26.7 dBm out,     +45 Hz, LO -37.4 dBc
+ 400.000 MHz amp 1 txvga 30:  -26.7 dBm out,     +64 Hz, LO -37.1 dBc
+ 400.000 MHz amp 1 txvga 40:  -26.7 dBm out,     +45 Hz, LO -35.3 dBc
+ 400.000 MHz amp 1 txvga 47:  -26.7 dBm out,     +45 Hz, LO -36.3 dBc
+ 433.000 MHz amp 0 txvga  0:  -45.0 dBm out,    -332 Hz, LO -17.7 dBc
+ 433.000 MHz amp 0 txvga 10:  -35.8 dBm out,    -313 Hz, LO -26.6 dBc
+ 433.000 MHz amp 0 txvga 20:  -24.7 dBm out,    -313 Hz, LO -38.8 dBc
+ 433.000 MHz amp 0 txvga 30:  -15.5 dBm out,    -313 Hz, LO -44.2 dBc
+ 433.000 MHz amp 0 txvga 40:   -6.4 dBm out,    -313 Hz, LO -45.6 dBc
+ 433.000 MHz amp 0 txvga 47:   -1.7 dBm out,    -313 Hz, LO -48.1 dBc
+ 433.000 MHz amp 1 txvga  0:  -63.6 dBm out,  +20687 Hz, LO  +0.8 dBc
+ 433.000 MHz amp 1 txvga 10:  -63.6 dBm out,  +10407 Hz, LO  -1.3 dBc
+ 433.000 MHz amp 1 txvga 20:  -61.9 dBm out,    -332 Hz, LO  -2.1 dBc
+ 433.000 MHz amp 1 txvga 30:  -52.6 dBm out,    -294 Hz, LO -11.6 dBc
+ 433.000 MHz amp 1 txvga 40:  -43.0 dBm out,    -332 Hz, LO -21.3 dBc
+ 433.000 MHz amp 1 txvga 47:  -37.8 dBm out,    -313 Hz, LO -26.8 dBc
+ 436.600 MHz amp 0 txvga  0:  -45.3 dBm out,    -312 Hz, LO -16.8 dBc
+ 436.600 MHz amp 0 txvga 10:  -36.0 dBm out,    -331 Hz, LO -27.1 dBc
+ 436.600 MHz amp 0 txvga 20:  -25.1 dBm out,    -331 Hz, LO -37.2 dBc
+ 436.600 MHz amp 0 txvga 30:  -15.9 dBm out,    -331 Hz, LO -43.7 dBc
+ 436.600 MHz amp 0 txvga 40:   -6.7 dBm out,    -331 Hz, LO -43.9 dBc
+ 436.600 MHz amp 0 txvga 47:   -2.1 dBm out,    -331 Hz, LO -46.8 dBc
+ 436.600 MHz amp 1 txvga  0:  -64.1 dBm out,  -15628 Hz, LO  +1.1 dBc
+ 436.600 MHz amp 1 txvga 10:  -63.8 dBm out,   +8576 Hz, LO  +0.9 dBc
+ 436.600 MHz amp 1 txvga 20:  -59.7 dBm out,    -350 Hz, LO  -3.9 dBc
+ 436.600 MHz amp 1 txvga 30:  -52.3 dBm out,    -350 Hz, LO -10.6 dBc
+ 436.600 MHz amp 1 txvga 40:  -43.3 dBm out,    -331 Hz, LO -20.4 dBc
+ 436.600 MHz amp 1 txvga 47:  -38.0 dBm out,    -331 Hz, LO -22.9 dBc
+ 450.000 MHz amp 0 txvga  0:  -45.6 dBm out,    -310 Hz, LO -18.3 dBc
+ 450.000 MHz amp 0 txvga 10:  -35.2 dBm out,    -330 Hz, LO -28.5 dBc
+ 450.000 MHz amp 0 txvga 20:  -24.3 dBm out,    -330 Hz, LO -37.9 dBc
+ 450.000 MHz amp 0 txvga 30:  -15.2 dBm out,    -330 Hz, LO -46.7 dBc
+ 450.000 MHz amp 0 txvga 40:   -6.1 dBm out,    -330 Hz, LO -44.7 dBc
+ 450.000 MHz amp 0 txvga 47:   -1.5 dBm out,    -330 Hz, LO -47.8 dBc
+ 450.000 MHz amp 1 txvga  0:  -61.1 dBm out,    -349 Hz, LO  -2.1 dBc
+ 450.000 MHz amp 1 txvga 10:  -60.3 dBm out,    -349 Hz, LO  -3.2 dBc
+ 450.000 MHz amp 1 txvga 20:  -56.5 dBm out,    -349 Hz, LO  -7.3 dBc
+ 450.000 MHz amp 1 txvga 30:  -51.3 dBm out,    -349 Hz, LO -13.2 dBc
+ 450.000 MHz amp 1 txvga 40:  -42.0 dBm out,    -310 Hz, LO -21.0 dBc
+ 450.000 MHz amp 1 txvga 47:  -36.4 dBm out,    -330 Hz, LO -27.1 dBc
+ 500.000 MHz amp 0 txvga  0:  -45.4 dBm out,    -361 Hz, LO -19.1 dBc
+ 500.000 MHz amp 0 txvga 10:  -36.3 dBm out,    -361 Hz, LO -28.0 dBc
+ 500.000 MHz amp 0 txvga 20:  -25.1 dBm out,    -361 Hz, LO -38.2 dBc
+ 500.000 MHz amp 0 txvga 30:  -15.9 dBm out,    -361 Hz, LO -47.1 dBc
+ 500.000 MHz amp 0 txvga 40:   -6.8 dBm out,    -361 Hz, LO -44.9 dBc
+ 500.000 MHz amp 0 txvga 47:   -2.1 dBm out,    -361 Hz, LO -48.4 dBc
+ 500.000 MHz amp 1 txvga  0:  -59.1 dBm out,     +59 Hz, LO  -4.6 dBc
+ 500.000 MHz amp 1 txvga 10:  -58.0 dBm out,     +59 Hz, LO  -5.5 dBc
+ 500.000 MHz amp 1 txvga 20:  -58.0 dBm out,     +40 Hz, LO  -6.0 dBc
+ 500.000 MHz amp 1 txvga 30:  -48.2 dBm out,    -380 Hz, LO -16.6 dBc
+ 500.000 MHz amp 1 txvga 40:  -39.2 dBm out,    -380 Hz, LO -26.0 dBc
+ 500.000 MHz amp 1 txvga 47:  -32.9 dBm out,    -361 Hz, LO -30.7 dBc
+ 600.000 MHz amp 0 txvga  0:  -45.6 dBm out,    -462 Hz, LO -18.0 dBc
+ 600.000 MHz amp 0 txvga 10:  -35.6 dBm out,    -443 Hz, LO -27.5 dBc
+ 600.000 MHz amp 0 txvga 20:  -24.9 dBm out,    -443 Hz, LO -37.8 dBc
+ 600.000 MHz amp 0 txvga 30:  -15.8 dBm out,    -443 Hz, LO -44.0 dBc
+ 600.000 MHz amp 0 txvga 40:   -6.7 dBm out,    -443 Hz, LO -44.3 dBc
+ 600.000 MHz amp 0 txvga 47:   -1.9 dBm out,    -443 Hz, LO -46.3 dBc
+ 600.000 MHz amp 1 txvga  0:  -59.8 dBm out,    -462 Hz, LO  -3.1 dBc
+ 600.000 MHz amp 1 txvga 10:  -57.8 dBm out,    -443 Hz, LO  -6.0 dBc
+ 600.000 MHz amp 1 txvga 20:  -57.4 dBm out,    -443 Hz, LO  -6.4 dBc
+ 600.000 MHz amp 1 txvga 30:  -47.9 dBm out,    -462 Hz, LO -16.2 dBc
+ 600.000 MHz amp 1 txvga 40:  -37.0 dBm out,    -462 Hz, LO -26.2 dBc
+ 600.000 MHz amp 1 txvga 47:  -28.8 dBm out,    -443 Hz, LO -35.0 dBc
+ 700.000 MHz amp 0 txvga  0:  -44.3 dBm out,    -525 Hz, LO -18.9 dBc
+ 700.000 MHz amp 0 txvga 10:  -35.2 dBm out,    -525 Hz, LO -27.3 dBc
+ 700.000 MHz amp 0 txvga 20:  -24.2 dBm out,    -506 Hz, LO -38.2 dBc
+ 700.000 MHz amp 0 txvga 30:  -15.0 dBm out,    -506 Hz, LO -44.0 dBc
+ 700.000 MHz amp 0 txvga 40:   -5.9 dBm out,    -506 Hz, LO -43.6 dBc
+ 700.000 MHz amp 0 txvga 47:   -1.1 dBm out,    -525 Hz, LO -43.5 dBc
+ 700.000 MHz amp 1 txvga  0:  -56.2 dBm out,     +85 Hz, LO  -6.8 dBc
+ 700.000 MHz amp 1 txvga 10:  -60.0 dBm out,     +85 Hz, LO  -2.8 dBc
+ 700.000 MHz amp 1 txvga 20:  -57.2 dBm out,    -487 Hz, LO  -5.2 dBc
+ 700.000 MHz amp 1 txvga 30:  -49.3 dBm out,    -525 Hz, LO -13.8 dBc
+ 700.000 MHz amp 1 txvga 40:  -39.8 dBm out,    -525 Hz, LO -23.0 dBc
+ 700.000 MHz amp 1 txvga 47:  -34.1 dBm out,    -506 Hz, LO -28.2 dBc
+ 800.000 MHz amp 0 txvga  0:  -39.7 dBm out,     +99 Hz, LO -22.8 dBc
+ 800.000 MHz amp 0 txvga 10:  -35.3 dBm out,    -569 Hz, LO -27.1 dBc
+ 800.000 MHz amp 0 txvga 20:  -24.3 dBm out,    -569 Hz, LO -38.9 dBc
+ 800.000 MHz amp 0 txvga 30:  -15.1 dBm out,    -588 Hz, LO -44.7 dBc
+ 800.000 MHz amp 0 txvga 40:   -6.1 dBm out,    -569 Hz, LO -43.4 dBc
+ 800.000 MHz amp 0 txvga 47:   -1.2 dBm out,    -569 Hz, LO -46.5 dBc
+ 800.000 MHz amp 1 txvga  0:  -39.7 dBm out,     +99 Hz, LO -22.7 dBc
+ 800.000 MHz amp 1 txvga 10:  -39.8 dBm out,    +118 Hz, LO -22.8 dBc
+ 800.000 MHz amp 1 txvga 20:  -39.6 dBm out,     +99 Hz, LO -21.5 dBc
+ 800.000 MHz amp 1 txvga 30:  -39.7 dBm out,     +99 Hz, LO -22.9 dBc
+ 800.000 MHz amp 1 txvga 40:  -38.1 dBm out,    -569 Hz, LO -23.9 dBc
+ 800.000 MHz amp 1 txvga 47:  -32.5 dBm out,    -569 Hz, LO -29.6 dBc
+ 900.000 MHz amp 0 txvga  0:  -47.5 dBm out,    -651 Hz, LO -16.5 dBc
+ 900.000 MHz amp 0 txvga 10:  -38.4 dBm out,    -651 Hz, LO -24.8 dBc
+ 900.000 MHz amp 0 txvga 20:  -27.4 dBm out,    -670 Hz, LO -35.0 dBc
+ 900.000 MHz amp 0 txvga 30:  -18.3 dBm out,    -670 Hz, LO -41.7 dBc
+ 900.000 MHz amp 0 txvga 40:   -9.2 dBm out,    -670 Hz, LO -43.4 dBc
+ 900.000 MHz amp 0 txvga 47:   -4.4 dBm out,    -670 Hz, LO -46.0 dBc
+ 900.000 MHz amp 1 txvga  0:  -57.1 dBm out,    -689 Hz, LO  -6.2 dBc
+ 900.000 MHz amp 1 txvga 10:  -59.6 dBm out,    -632 Hz, LO  -3.2 dBc
+ 900.000 MHz amp 1 txvga 20:  -55.2 dBm out,    -689 Hz, LO  -7.3 dBc
+ 900.000 MHz amp 1 txvga 30:  -46.5 dBm out,    -651 Hz, LO -17.2 dBc
+ 900.000 MHz amp 1 txvga 40:  -36.4 dBm out,    -670 Hz, LO -25.6 dBc
+ 900.000 MHz amp 1 txvga 47:  -30.4 dBm out,    -670 Hz, LO -32.7 dBc
+1000.000 MHz amp 0 txvga  0:  -50.8 dBm out,    -714 Hz, LO -11.7 dBc
+1000.000 MHz amp 0 txvga 10:  -40.9 dBm out,    -733 Hz, LO -22.7 dBc
+1000.000 MHz amp 0 txvga 20:  -30.1 dBm out,    -733 Hz, LO -32.6 dBc
+1000.000 MHz amp 0 txvga 30:  -20.9 dBm out,    -733 Hz, LO -42.6 dBc
+1000.000 MHz amp 0 txvga 40:  -11.8 dBm out,    -714 Hz, LO -44.0 dBc
+1000.000 MHz amp 0 txvga 47:   -6.9 dBm out,    -733 Hz, LO -46.2 dBc
+1000.000 MHz amp 1 txvga  0:  -60.6 dBm out,  +13763 Hz, LO  -2.4 dBc
+1000.000 MHz amp 1 txvga 10:  -60.6 dBm out,  +13706 Hz, LO  -2.9 dBc
+1000.000 MHz amp 1 txvga 20:  -56.8 dBm out,    -714 Hz, LO  -5.2 dBc
+1000.000 MHz amp 1 txvga 30:  -48.2 dBm out,    -733 Hz, LO -15.2 dBc
+Traceback (most recent call last):
+  File "C:\Users\RF\SatHunter-SDR\tools\lab\hackrf_cal.py", line 99, in <module>
+    main()
+  File "C:\Users\RF\SatHunter-SDR\tools\lab\hackrf_cal.py", line 60, in main
+    gen.cw(f, 0.0)
+  File "C:\Users\RF\SatHunter-SDR\tools\lab\hackrf_gen.py", line 170, in cw
+    self._cmd(cmd="cw", offset=round(hz - self.lo), scale=10 ** (dig / 20))
+  File "C:\Users\RF\SatHunter-SDR\tools\lab\hackrf_gen.py", line 64, in _cmd
+    r = json.loads(self.rf.readline())
+                   ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\RF\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
