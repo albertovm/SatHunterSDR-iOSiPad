@@ -78,7 +78,16 @@ def main():
                         gen.write(":OUTPut:STATe ON")
                         gen.opc()
                     else:
-                        gen.cw(hz, lvl)
+                        for k in range(3):  # an *OPC that times out kills the socket: reconnect, retry
+                            try:
+                                gen.cw(hz, lvl)
+                                break
+                            except (OSError, TimeoutError) as e:
+                                print("   VSG60A: %s, reconnecting" % e, flush=True)
+                                if k == 2:
+                                    raise
+                                time.sleep(2)
+                                gen = Vsg60Gen(a.path_db, host, int(port), r"C:\sathunter_lab", None)
                     time.sleep(0.5)
                     p, f = an.peak(hz, span=20e3, rbw=100, ref_dbm=a.ref if a.ref is not None else lvl + 5)
                     rows.append({"mode": mode, "mhz": mhz, "set_dbm": lvl, "read_dbm": round(p, 2), "diff_db": round(lvl - p, 2),
