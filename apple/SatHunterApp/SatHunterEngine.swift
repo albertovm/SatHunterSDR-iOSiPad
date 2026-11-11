@@ -72,6 +72,7 @@ final class SatHunterEngine: ObservableObject {
     func sampleRate(_ hz: Double) { setting("rate", ["hz": hz]) }
     func simulatePass() { _ = command(["cmd": "simulate"]); refresh() }
     func realTime() { _ = command(["cmd": "real_time"]); refresh() }
+    func resetDopplerOffset() { _ = command(["cmd": "sat_reset_offset"]); refresh() }
     func tune(_ hz: Double) { _ = command(["cmd":"tune", "hz": hz]); refresh() }
     func changeVolume(_ delta: Float) { volume = max(0, min(1, volume + delta)); audio.setVolume(volume) }
     func start() { ensureInitialized(); _ = command(["cmd":"start"]); audio.start(); audio.setVolume(volume); refresh() }; func stop() { ensureInitialized(); _ = command(["cmd":"stop"]); audio.stop(); refresh() }; func updateSatellites() { ensureInitialized(); _ = command(["cmd":"sat_update"]); refresh() }
