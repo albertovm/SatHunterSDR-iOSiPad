@@ -36,6 +36,8 @@ private struct FrequencyScaleOverlay: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
+                let width: CGFloat = mode == "WFM" ? 0.42 : (mode == "AM" ? 0.12 : (mode == "USB" || mode == "LSB" ? 0.16 : 0.08))
+                Rectangle().fill(.blue.opacity(0.14)).frame(width: geo.size.width * width, height: geo.size.height).position(x: geo.size.width / 2, y: geo.size.height / 2)
                 Rectangle().fill(.red).frame(width: 2).position(x: geo.size.width / 2, y: geo.size.height / 2)
                 HStack {
                     ForEach(-2...2, id: \.self) { tick in
