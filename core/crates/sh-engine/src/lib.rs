@@ -917,6 +917,12 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
             let mut rec = lock(&i.recorder);
             let changed = matches!(rec.as_ref(), Some(r) if r.rate != b.rate);
             if changed {
+                if let Some(r) = rec.as_mut() {
+                    if r.adopt_rate_if_empty(b.rate) {
+                        // Continue with the first effective-rate block.
+                        continue;
+                    }
+                }
                 // a new sample rate / decimation cannot go on in the same file
                 if let Some(r) = rec.take() {
                     let name = r.name.clone();

@@ -176,6 +176,17 @@ impl Recorder {
         44 + self.frames.load(Ordering::Relaxed) * 4
     }
 
+    /// Decimation can be applied by a source only after the receiver starts. If no samples
+    /// have been written yet, adopt the effective DSP rate instead of closing an empty file.
+    pub fn adopt_rate_if_empty(&mut self, rate: f64) -> bool {
+        if self.frames.load(Ordering::Relaxed) == 0 {
+            self.rate = rate;
+            true
+        } else {
+            false
+        }
+    }
+
     /// Close the file (blocks until everything is on disk).
     pub fn finish(mut self, extra: Value) -> Result<Value, String> {
         let mut meta = self.meta.clone();
