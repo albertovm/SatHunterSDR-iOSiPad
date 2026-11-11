@@ -31,6 +31,7 @@ final class SatHunterEngine: ObservableObject {
         if let mode = UserDefaults.standard.string(forKey: "mode") { _ = command(["cmd":"mode", "mode":mode]) }
         if let norad = UserDefaults.standard.object(forKey: "selectedNorad") as? Int { _ = command(["cmd":"sat_select", "norad":norad]) }
         refresh()
+        if satelliteRows.isEmpty { _ = command(["cmd":"sat_update"]); refresh() }
     }
     func bootstrap() { ensureInitialized() }
     @discardableResult func command(_ object: [String: Any]) -> [String: Any] {
