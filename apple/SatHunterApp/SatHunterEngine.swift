@@ -42,6 +42,7 @@ final class SatHunterEngine: ObservableObject {
     }
     func refresh() { guard initialized else { return }; status = command(["cmd":"status"]); let l = command(["cmd":"sat_list"]); satelliteRows = l["rows"] as? [[String: Any]] ?? []; detail = command(["cmd":"sat_detail"]); var values = [Float](repeating: 0, count: 1024); var metadata = [Double](repeating: 0, count: 2); let packed = sh_apple_spectrum_rows(&values, values.count, &metadata, metadata.count); let rows = Int(packed >> 16); if rows > 0 { spectrum = Array(values.prefix(min(values.count, rows * 16))); waterfall.insert(spectrum, at: 0); if waterfall.count > 80 { waterfall.removeLast() } }; if timer == nil { timer = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: true) { [weak self] _ in self?.refresh() } } }
     func setting(_ cmd: String, _ values: [String:Any] = [:]) { var object = values; object["cmd"] = cmd; _ = command(object); refresh() }
+    func setDecimation(_ value: Int) { setting("decimation", ["factor": value]) }
     func recording(_ on: Bool) { let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path; _ = command(["cmd": on ? "record_start" : "record_stop", "dir": dir]); refresh() }
     func decoder(_ name: String, on: Bool) { _ = command(["cmd": name, "on": on]); refresh() }
     func tune(_ hz: Double) { _ = command(["cmd":"tune", "hz": hz]); refresh() }
