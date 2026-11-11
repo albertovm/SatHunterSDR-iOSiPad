@@ -927,6 +927,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "sh-apple"
+version = "0.1.0"
+dependencies = [
+ "sh-engine",
+]
+
+[[package]]
 name = "sh-dsp"
 version = "0.1.0"
 dependencies = [

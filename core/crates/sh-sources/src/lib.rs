@@ -8,9 +8,13 @@ use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::sync::{Arc, Mutex};
 
 pub mod demo;
+#[cfg(not(target_os = "ios"))]
 pub mod esp;
+#[cfg(not(target_os = "ios"))]
 pub mod rfsim;
+#[cfg(not(target_os = "ios"))]
 pub mod rtl;
+#[cfg(not(target_os = "ios"))]
 pub mod usb;
 
 #[derive(Debug, thiserror::Error)]

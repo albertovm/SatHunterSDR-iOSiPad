@@ -1,0 +1,4 @@
+module SatHunterCore {
+    header "SatHunterApple.h"
+    export *
+}

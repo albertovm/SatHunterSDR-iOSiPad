@@ -1,0 +1,30 @@
+name: SatHunterApp
+options:
+  deploymentTarget:
+    iOS: "18.0"
+targets:
+  SatHunterApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: SatHunterApp
+    resources: []
+    info:
+      path: SatHunterApp/Info.plist
+      properties:
+        CFBundleDisplayName: SatHunter SDR
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.z2labs.sathunter.ios
+        SWIFT_VERSION: 6.0
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+    dependencies:
+      - framework: Frameworks/SatHunterCore.xcframework
+        embed: false

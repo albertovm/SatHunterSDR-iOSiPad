@@ -673,6 +673,7 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
         Cmd::Status => Ok(status(i)),
         Cmd::Messages => Ok(json!({ "messages": lock(&i.messages).iter().cloned().collect::<Vec<_>>() })),
         Cmd::Config => serde_json::to_value(lock(&i.cfg).clone()).map_err(|e| e.to_string()),
+        #[cfg(not(target_os = "ios"))]
         Cmd::UsbAttach { fd, vid, pid, product } => {
             let blog_v4 = product.as_deref().map(|p| p.contains("Blog V4")).unwrap_or(false);
             let kind = if (vid, pid) == sh_sources::usb::ESP32S3_JTAG {
@@ -693,6 +694,9 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             }
             Ok(json!({ "source": kind }))
         }
+        #[cfg(target_os = "ios")]
+        Cmd::UsbAttach { .. } => Err("direct USB attachment is unavailable on iOS".into()),
+        #[cfg(not(target_os = "ios"))]
         Cmd::UsbDetach { vid, pid } => {
             let gone: Vec<UsbDev> = {
                 let mut d = lock(&i.devices);
@@ -710,6 +714,8 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             }
             Ok(json!({}))
         }
+        #[cfg(target_os = "ios")]
+        Cmd::UsbDetach { .. } => Ok(json!({})),
         Cmd::Source { id } => {
             switch_source(i, &id)?;
             Ok(json!({}))
@@ -734,6 +740,7 @@ impl Drop for Engine {
 // ---------------------------------------------------------------------------------------------
 // Source and tuning
 
+#[cfg(not(target_os = "ios"))]
 fn usb_id(i: &Inner, kind: &str) -> sh_sources::usb::UsbId {
     let d = lock(&i.devices).iter().find(|d| d.kind == kind).copied();
     match (d, kind) {
@@ -747,8 +754,12 @@ fn usb_id(i: &Inner, kind: &str) -> sh_sources::usb::UsbId {
 fn make_source(i: &Inner, id: &str) -> Result<Box<dyn Source>, String> {
     match id {
         "demo" => Ok(Box::new(DemoSource::new(i.sat_signal.clone()))),
+        #[cfg(not(target_os = "ios"))]
         "rtl" => Ok(Box::new(sh_sources::rtl::RtlSource::new(usb_id(i, "rtl")))),
+        #[cfg(not(target_os = "ios"))]
         "esp" => Ok(Box::new(sh_sources::esp::EspSource::new(usb_id(i, "esp")))),
+        #[cfg(target_os = "ios")]
+        "rtl" | "esp" => Err("direct USB sources are unavailable on iOS; use demo or a network source".into()),
         other => Err(format!("unknown source {other}")),
     }
 }
