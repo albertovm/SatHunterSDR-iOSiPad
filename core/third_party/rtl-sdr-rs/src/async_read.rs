@@ -405,7 +405,7 @@ impl OwnedReaderWorker {
 
 fn reserve_sample_slot(queued: &AtomicUsize, limit: usize) -> bool {
     queued
-        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
+        .try_update(Ordering::AcqRel, Ordering::Acquire, |count| {
             (count < limit).then_some(count + 1)
         })
         .is_ok()
