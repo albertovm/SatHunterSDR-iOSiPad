@@ -2,12 +2,15 @@ import AVFoundation
 import SatHunterCore
 
 final class AudioOutput {
+    private final class VolumeBox { var value: Float = 1 }
     private let engine = AVAudioEngine()
+    private let volumeBox = VolumeBox()
     private var source: AVAudioSourceNode?
 
     func start() {
         guard source == nil else { return }
         let format = AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1)!
+        let volumeBox = self.volumeBox
         let node = AVAudioSourceNode(format: format) { _, _, frameCount, audioBufferList in
             let buffers = UnsafeMutableAudioBufferListPointer(audioBufferList)
             var samples = [Float](repeating: 0, count: Int(frameCount))
@@ -15,7 +18,9 @@ final class AudioOutput {
             for buffer in buffers {
                 guard let data = buffer.mData else { continue }
                 samples.withUnsafeBufferPointer { source in
-                    data.assumingMemoryBound(to: Float.self).assign(from: source.baseAddress!, count: min(Int(buffer.mDataByteSize) / MemoryLayout<Float>.stride, count))
+                    let destination = data.assumingMemoryBound(to: Float.self)
+                    let limit = min(Int(buffer.mDataByteSize) / MemoryLayout<Float>.stride, count)
+                    for index in 0..<limit { destination[index] = source[index] * volumeBox.value }
                 }
             }
             return noErr
@@ -26,6 +31,8 @@ final class AudioOutput {
         try? AVAudioSession.sharedInstance().setActive(true)
         try? engine.start()
     }
+
+    func setVolume(_ value: Float) { volumeBox.value = max(0, min(1, value)) }
 
     func stop() { engine.stop(); if let node = source { engine.detach(node) }; source = nil }
 }

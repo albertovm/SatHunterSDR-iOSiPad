@@ -9,6 +9,7 @@ final class SatHunterEngine: ObservableObject {
     @Published private(set) var detail: [String: Any] = [:]
     @Published private(set) var spectrum: [Float] = []
     @Published private(set) var heading: Double = 0
+    @Published var volume: Float = 1
     @Published private(set) var waterfall: [[Float]] = []
     let location = LocationProvider()
     let audio = AudioOutput()
@@ -29,7 +30,8 @@ final class SatHunterEngine: ObservableObject {
     func recording(_ on: Bool) { let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path; _ = command(["cmd": on ? "record_start" : "record_stop", "dir": dir]); refresh() }
     func decoder(_ name: String, on: Bool) { _ = command(["cmd": name, "on": on]); refresh() }
     func tune(_ hz: Double) { _ = command(["cmd":"tune", "hz": hz]); refresh() }
-    func start() { _ = command(["cmd":"start"]); audio.start(); refresh() }; func stop() { _ = command(["cmd":"stop"]); audio.stop(); refresh() }; func updateSatellites() { _ = command(["cmd":"sat_update"]); refresh() }
+    func changeVolume(_ delta: Float) { volume = max(0, min(1, volume + delta)); audio.setVolume(volume) }
+    func start() { _ = command(["cmd":"start"]); audio.start(); audio.setVolume(volume); refresh() }; func stop() { _ = command(["cmd":"stop"]); audio.stop(); refresh() }; func updateSatellites() { _ = command(["cmd":"sat_update"]); refresh() }
     func favourite(_ norad: Int, on: Bool) { _ = command(["cmd":"favourite", "norad": norad, "on": on]); refresh() }
     func select(_ norad: Int) { UserDefaults.standard.set(norad, forKey: "selectedNorad"); _ = command(["cmd":"sat_select","norad":norad]); refresh() }; func track(_ on: Bool) { _ = command(["cmd":"sat_track","on":on]); refresh() }; func setMode(_ mode: String) { UserDefaults.standard.set(mode, forKey: "mode"); _ = command(["cmd":"mode","mode":mode]); refresh() }; func setSource(_ id: String) { UserDefaults.standard.set(id, forKey: "source"); _ = command(["cmd":"source","id":id]); refresh() }
 }
