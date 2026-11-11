@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2042BB96F17D1D82B657BA43 /* SatHunterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367F9DB29C87E856FD39C97 /* SatHunterApp.swift */; };
 		2864EA80FEAABCBA6F7035C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279FD2B9604EB5EB22DB6851 /* ContentView.swift */; };
+		64B2F6268E40369B87452D72 /* LocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EDACE4C0B8491106F8CA17 /* LocationProvider.swift */; };
 		69871FCCF56CB101B2399C03 /* SatHunterEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A118F9506AC148F01869D47 /* SatHunterEngine.swift */; };
 		887DF8614467FB044EA34F49 /* SatHunterCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8C5AE92C8CE24A35838C5CF /* SatHunterCore.xcframework */; };
 		A73F4D6401EFF4A3774B7551 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52E214637156398591D9593F /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 		279FD2B9604EB5EB22DB6851 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4A118F9506AC148F01869D47 /* SatHunterEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SatHunterEngine.swift; sourceTree = "<group>"; };
 		52E214637156398591D9593F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		88EDACE4C0B8491106F8CA17 /* LocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationProvider.swift; sourceTree = "<group>"; };
 		A8C5AE92C8CE24A35838C5CF /* SatHunterCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SatHunterCore.xcframework; path = Frameworks/SatHunterCore.xcframework; sourceTree = "<group>"; };
 		B55AA8B9432E7759085E4031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -44,6 +46,7 @@
 				52E214637156398591D9593F /* Assets.xcassets */,
 				279FD2B9604EB5EB22DB6851 /* ContentView.swift */,
 				B55AA8B9432E7759085E4031 /* Info.plist */,
+				88EDACE4C0B8491106F8CA17 /* LocationProvider.swift */,
 				2367F9DB29C87E856FD39C97 /* SatHunterApp.swift */,
 				4A118F9506AC148F01869D47 /* SatHunterEngine.swift */,
 				1C79EF9355C5059E34EDE149 /* SatHunterLogo.swift */,
@@ -148,6 +151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2864EA80FEAABCBA6F7035C1 /* ContentView.swift in Sources */,
+				64B2F6268E40369B87452D72 /* LocationProvider.swift in Sources */,
 				2042BB96F17D1D82B657BA43 /* SatHunterApp.swift in Sources */,
 				69871FCCF56CB101B2399C03 /* SatHunterEngine.swift in Sources */,
 				BED27904C0AD2FD7026BE714 /* SatHunterLogo.swift in Sources */,
