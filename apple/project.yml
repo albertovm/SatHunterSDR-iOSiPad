@@ -22,6 +22,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.z2labs.sathunter.ios
         SWIFT_VERSION: 6.0
+        OTHER_LDFLAGS: "-lc++"
         DEVELOPMENT_TEAM: ""
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGNING_REQUIRED: NO
