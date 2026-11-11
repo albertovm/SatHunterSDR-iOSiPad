@@ -158,7 +158,7 @@ private struct DecoderSummaryPanel: View {
             if let frames = aprs["frames"] as? [[String: Any]], let last = frames.last { Text("APRS: \(last["src"] as? String ?? "") → \(last["dst"] as? String ?? "")").font(.caption2).foregroundStyle(.yellow) }
             if (aprs["count"] as? Int ?? 0) > 0 { Button("Limpar frames APRS") { engine.clearAPRS() }.font(.caption2).buttonStyle(.bordered) }
             if let image = engine.sstvImage { Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 180).clipShape(RoundedRectangle(cornerRadius: 6)) }
-            if let plugins = status["plugins"] as? [String], !plugins.isEmpty { Text(plugins.suffix(3).joined(separator: "\n")).font(.caption2.monospaced()).foregroundStyle(.green) }
+            if let pluginState = status["plugins"] as? [String: Any], let plugins = pluginState["loaded"] as? [String], !plugins.isEmpty { Text(plugins.suffix(3).joined(separator: "\n")).font(.caption2.monospaced()).foregroundStyle(.green) }
         }.frame(maxWidth: .infinity, alignment: .leading).padding(8).background(Color.white.opacity(0.06)).clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
