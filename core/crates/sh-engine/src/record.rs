@@ -26,6 +26,7 @@ pub struct Recorder {
     pub rate: f64,
     pub start_unix: f64,
     frames: Arc<AtomicU64>,
+    submitted: u64,
     pub dropped: u64,
     retunes: Vec<(f64, f64)>,
     last_center: f64,
@@ -123,6 +124,7 @@ impl Recorder {
             rate,
             start_unix,
             frames,
+            submitted: 0,
             dropped: 0,
             retunes: vec![(0.0, center_hz)],
             last_center: center_hz,
@@ -138,6 +140,11 @@ impl Recorder {
     /// jump of more than 5 kHz (not the slow Doppler steps) and a satellite change are logged
     /// too, so a recording that hops between satellites can be cut apart afterwards.
     pub fn push(&mut self, samples: &[sh_dsp::Complex32], center_hz: f64, vfo_hz: f64, sat: Option<(u64, String)>) {
+        // Count frames when they enter the recorder. The writer thread updates the same
+        // atomic after persisting them, but `finish()` may be called before that thread drains
+        // its channel; counting here keeps duration metadata deterministic.
+        self.frames.fetch_add(samples.len() as u64, Ordering::Relaxed);
+        self.submitted += samples.len() as u64;
         if (center_hz - self.last_center).abs() > 0.5 {
             self.retunes.push((self.seconds(), center_hz));
             self.last_center = center_hz;
@@ -162,7 +169,7 @@ impl Recorder {
     }
 
     pub fn seconds(&self) -> f64 {
-        self.frames.load(Ordering::Relaxed) as f64 / self.rate
+        self.submitted as f64 / self.rate
     }
 
     pub fn bytes(&self) -> u64 {
