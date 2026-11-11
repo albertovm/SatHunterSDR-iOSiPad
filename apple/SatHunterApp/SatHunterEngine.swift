@@ -27,5 +27,6 @@ final class SatHunterEngine: ObservableObject {
     func setting(_ cmd: String, _ values: [String:Any] = [:]) { var object = values; object["cmd"] = cmd; _ = command(object); refresh() }
     func recording(_ on: Bool) { let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path; _ = command(["cmd": on ? "record_start" : "record_stop", "dir": dir]); refresh() }
     func decoder(_ name: String, on: Bool) { _ = command(["cmd": name, "on": on]); refresh() }
+    func tune(_ hz: Double) { _ = command(["cmd":"tune", "hz": hz]); refresh() }
     func start() { _ = command(["cmd":"start"]); refresh() }; func stop() { _ = command(["cmd":"stop"]); refresh() }; func select(_ norad: Int) { _ = command(["cmd":"sat_select","norad":norad]); refresh() }; func track(_ on: Bool) { _ = command(["cmd":"sat_track","on":on]); refresh() }; func setMode(_ mode: String) { _ = command(["cmd":"mode","mode":mode]); refresh() }; func setSource(_ id: String) { _ = command(["cmd":"source","id":id]); refresh() }
 }
