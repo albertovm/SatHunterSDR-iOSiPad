@@ -120,6 +120,7 @@ private struct ReceiverScreenView: View {
                 VStack(spacing: 6) {
                     HStack { FrequencyDisplay(hz: hz); Spacer(); Circle().fill(running ? .green : .red).frame(width: 10) }
                     Text("\(mode)  •  \(engine.status["source"] as? String ?? "demo")").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Heading \(String(format: "%.0f°", engine.heading))").font(.caption2.monospacedDigit()).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     ZStack { SpectrumView(values: engine.spectrum, centerHz: hz) { engine.tune($0) }; FrequencyScaleOverlay(centerHz: hz, mode: mode) }.frame(height: fullscreen ? 220 : 150)
                     WaterfallView(rows: engine.waterfall, centerHz: hz) { engine.tune($0) }.frame(maxHeight: .infinity).overlay { SatelliteMarkerOverlay(rows: engine.satelliteRows, centerHz: hz) { row in if let n = row["norad"] as? Int { engine.select(n) } } }
                     if !fullscreen {
