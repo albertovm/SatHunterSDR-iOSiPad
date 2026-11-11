@@ -127,8 +127,22 @@ private struct ReceiverScreenView: View {
                     }
                     HStack { Button("Vol −") { engine.changeVolume(-0.1) }; Text("Vol \(Int(engine.volume * 100))%").font(.caption.monospacedDigit()); Button("Vol +") { engine.changeVolume(0.1) }; RecordButton(engine: engine, active: engine.status["recording"] != nil) }
                     HStack { DecoderButton(title: "APRS", key: "aprs", status: engine.status["aprs"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "SSTV", key: "sstv", status: engine.status["sstv"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "FSK 9k6", key: "fsk9k6", status: engine.status["fsk9k6"] as? [String: Any] ?? [:], engine: engine) }
+                    DecoderSummaryPanel(status: engine.status)
                 }.padding(8)
             }.toolbar { ToolbarItem(placement: .topBarTrailing) { Button { fullscreen.toggle() } label: { Image(systemName: fullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right") } } }.navigationTitle(fullscreen ? "" : "SatHunter SDR").navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+private struct DecoderSummaryPanel: View {
+    let status: [String: Any]
+    private func decoder(_ key: String) -> [String: Any] { status[key] as? [String: Any] ?? [:] }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            let aprs = decoder("aprs"); let sstv = decoder("sstv"); let fsk = decoder("fsk9k6")
+            Text("APRS \(aprs["count"] as? Int ?? 0) frames  •  SSTV \(sstv["rows"] as? Int ?? 0) linhas  •  FSK \(fsk["count"] as? Int ?? 0) frames").font(.caption).foregroundStyle(.secondary)
+            if let frames = aprs["frames"] as? [[String: Any]], let last = frames.last { Text("APRS: \(last["src"] as? String ?? "") → \(last["dst"] as? String ?? "")").font(.caption2).foregroundStyle(.yellow) }
+            if let plugins = status["plugins"] as? [String], !plugins.isEmpty { Text(plugins.suffix(3).joined(separator: "\n")).font(.caption2.monospaced()).foregroundStyle(.green) }
+        }.frame(maxWidth: .infinity, alignment: .leading).padding(8).background(Color.white.opacity(0.06)).clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
