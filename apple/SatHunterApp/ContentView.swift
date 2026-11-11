@@ -14,7 +14,7 @@ private struct FrequencyDisplay: View {
 
 struct ContentView: View {
     @EnvironmentObject private var engine: SatHunterEngine
-    var body: some View { TabView() { ReceiverView().tabItem { Label("Receiver", systemImage: "radio") }; SatellitesView().tabItem { Label("Satellites", systemImage: "dot.radiowaves.left.and.right") }; SettingsView().tabItem { Label("Settings", systemImage: "gearshape.fill") } }.tint(Color(red: 0.32, green: 0.70, blue: 1.0)).preferredColorScheme(.dark).task { engine.bootstrap() } }
+    var body: some View { TabView() { ReceiverScreenView().tabItem { Label("Receiver", systemImage: "radio") }; SatellitesView().tabItem { Label("Satellites", systemImage: "dot.radiowaves.left.and.right") }; SettingsView().tabItem { Label("Settings", systemImage: "gearshape.fill") } }.tint(Color(red: 0.32, green: 0.70, blue: 1.0)).preferredColorScheme(.dark).task { engine.bootstrap() } }
 }
 private struct ReceiverView: View {
     @EnvironmentObject private var engine: SatHunterEngine
@@ -102,4 +102,31 @@ private struct MapOverview: View {
     let latitude: Double
     let longitude: Double
     var body: some View { Map(initialPosition: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)))) { Marker("Observador", coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)).tint(.blue) } }
+}
+
+private struct ReceiverScreenView: View {
+    @EnvironmentObject private var engine: SatHunterEngine
+    @Environment(\.dismiss) private var dismiss
+    @State private var fullscreen = false
+    private var mode: String { engine.status["mode"] as? String ?? "WFM" }
+    private var hz: Double { engine.status["vfo_hz"] as? Double ?? 0 }
+    private var running: Bool { engine.status["running"] as? Bool ?? false }
+    private var look: [String: Any] { engine.detail["look"] as? [String: Any] ?? [:] }
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                VStack(spacing: 6) {
+                    HStack { FrequencyDisplay(hz: hz); Spacer(); Circle().fill(running ? .green : .red).frame(width: 10) }
+                    Text("\(mode)  •  \(engine.status["source"] as? String ?? "demo")").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                    ZStack { SpectrumView(values: engine.spectrum, centerHz: hz) { engine.tune($0) }; FrequencyScaleOverlay(centerHz: hz, mode: mode) }.frame(height: fullscreen ? 220 : 150)
+                    WaterfallView(rows: engine.waterfall, centerHz: hz) { engine.tune($0) }.frame(maxHeight: .infinity).overlay { SatelliteMarkerOverlay(rows: engine.satelliteRows, centerHz: hz) { row in if let n = row["norad"] as? Int { engine.select(n) } } }
+                    if !fullscreen {
+                        HStack { Button("−") { engine.tune(hz - 12500) }; Button(running ? "Parar" : "Iniciar") { running ? engine.stop() : engine.start() }.buttonStyle(.borderedProminent); Button("+") { engine.tune(hz + 12500) } }
+                        HStack(spacing: 4) { ForEach(["NFM","WFM","AM","USB","LSB","CW"], id: \.self) { item in Button(item) { engine.setMode(item) }.buttonStyle(.borderedProminent).tint(item == mode ? .blue : .gray) } }.lineLimit(1)
+                    }
+                }.padding(8)
+            }.toolbar { ToolbarItem(placement: .topBarTrailing) { Button { fullscreen.toggle() } label: { Image(systemName: fullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right") } } }.navigationTitle(fullscreen ? "" : "SatHunter SDR").navigationBarTitleDisplayMode(.inline)
+        }
+    }
 }
