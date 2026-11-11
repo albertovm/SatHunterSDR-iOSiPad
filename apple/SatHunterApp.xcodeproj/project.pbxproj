@@ -11,13 +11,17 @@
 		2864EA80FEAABCBA6F7035C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279FD2B9604EB5EB22DB6851 /* ContentView.swift */; };
 		69871FCCF56CB101B2399C03 /* SatHunterEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A118F9506AC148F01869D47 /* SatHunterEngine.swift */; };
 		887DF8614467FB044EA34F49 /* SatHunterCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8C5AE92C8CE24A35838C5CF /* SatHunterCore.xcframework */; };
+		A73F4D6401EFF4A3774B7551 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52E214637156398591D9593F /* Assets.xcassets */; };
+		BED27904C0AD2FD7026BE714 /* SatHunterLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C79EF9355C5059E34EDE149 /* SatHunterLogo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C79EF9355C5059E34EDE149 /* SatHunterLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SatHunterLogo.swift; sourceTree = "<group>"; };
 		217F22F798D174252ED2719B /* SatHunterApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SatHunterApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2367F9DB29C87E856FD39C97 /* SatHunterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SatHunterApp.swift; sourceTree = "<group>"; };
 		279FD2B9604EB5EB22DB6851 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4A118F9506AC148F01869D47 /* SatHunterEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SatHunterEngine.swift; sourceTree = "<group>"; };
+		52E214637156398591D9593F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A8C5AE92C8CE24A35838C5CF /* SatHunterCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SatHunterCore.xcframework; path = Frameworks/SatHunterCore.xcframework; sourceTree = "<group>"; };
 		B55AA8B9432E7759085E4031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -37,10 +41,12 @@
 		3B22740B642DEE207C3511D1 /* SatHunterApp */ = {
 			isa = PBXGroup;
 			children = (
+				52E214637156398591D9593F /* Assets.xcassets */,
 				279FD2B9604EB5EB22DB6851 /* ContentView.swift */,
 				B55AA8B9432E7759085E4031 /* Info.plist */,
 				2367F9DB29C87E856FD39C97 /* SatHunterApp.swift */,
 				4A118F9506AC148F01869D47 /* SatHunterEngine.swift */,
+				1C79EF9355C5059E34EDE149 /* SatHunterLogo.swift */,
 			);
 			path = SatHunterApp;
 			sourceTree = "<group>";
@@ -78,6 +84,7 @@
 			buildConfigurationList = 1408CAEB4C705C08B8C26B96 /* Build configuration list for PBXNativeTarget "SatHunterApp" */;
 			buildPhases = (
 				03066872E99B1ECBEE79E274 /* Sources */,
+				7A811B176065CA9DEC035767 /* Resources */,
 				E1E846DD552870711513F459 /* Frameworks */,
 			);
 			buildRules = (
@@ -124,6 +131,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		7A811B176065CA9DEC035767 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A73F4D6401EFF4A3774B7551 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		03066872E99B1ECBEE79E274 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -132,6 +150,7 @@
 				2864EA80FEAABCBA6F7035C1 /* ContentView.swift in Sources */,
 				2042BB96F17D1D82B657BA43 /* SatHunterApp.swift in Sources */,
 				69871FCCF56CB101B2399C03 /* SatHunterEngine.swift in Sources */,
+				BED27904C0AD2FD7026BE714 /* SatHunterLogo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
