@@ -1,6 +1,6 @@
 @preconcurrency import CoreLocation
 import Foundation
-@MainActor final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
+final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published private(set) var authorization: CLAuthorizationStatus = .notDetermined
     @Published private(set) var lastLocation: CLLocation?
     private let manager = CLLocationManager()
