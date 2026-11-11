@@ -66,6 +66,7 @@ final class SatHunterEngine: ObservableObject {
     func groundAprs(_ on: Bool, hz: Double? = nil) { var values: [String: Any] = ["on": on]; if let hz { values["hz"] = hz }; setting("ground_aprs", values) }
     func debugMode(_ on: Bool) { setting("debug_mode", ["on": on]) }
     func labPin(_ pin: String) { setting("lab_pin", ["pin": pin]) }
+    func plugins(_ on: Bool) { setting("plugins", ["on": on]) }
     func tune(_ hz: Double) { _ = command(["cmd":"tune", "hz": hz]); refresh() }
     func changeVolume(_ delta: Float) { volume = max(0, min(1, volume + delta)); audio.setVolume(volume) }
     func start() { ensureInitialized(); _ = command(["cmd":"start"]); audio.start(); audio.setVolume(volume); refresh() }; func stop() { ensureInitialized(); _ = command(["cmd":"stop"]); audio.stop(); refresh() }; func updateSatellites() { ensureInitialized(); _ = command(["cmd":"sat_update"]); refresh() }
