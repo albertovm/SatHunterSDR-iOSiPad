@@ -125,6 +125,8 @@ private struct ReceiverScreenView: View {
                         HStack { Button("−") { engine.tune(hz - 12500) }; Button(running ? "Parar" : "Iniciar") { running ? engine.stop() : engine.start() }.buttonStyle(.borderedProminent); Button("+") { engine.tune(hz + 12500) } }
                         HStack(spacing: 4) { ForEach(["NFM","WFM","AM","USB","LSB","CW"], id: \.self) { item in Button(item) { engine.setMode(item) }.buttonStyle(.borderedProminent).tint(item == mode ? .blue : .gray) } }.lineLimit(1)
                     }
+                    HStack { Button("Vol −") { engine.changeVolume(-0.1) }; Text("Vol \(Int(engine.volume * 100))%").font(.caption.monospacedDigit()); Button("Vol +") { engine.changeVolume(0.1) }; RecordButton(engine: engine, active: engine.status["recording"] != nil) }
+                    HStack { DecoderButton(title: "APRS", key: "aprs", status: engine.status["aprs"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "SSTV", key: "sstv", status: engine.status["sstv"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "FSK 9k6", key: "fsk9k6", status: engine.status["fsk9k6"] as? [String: Any] ?? [:], engine: engine) }
                 }.padding(8)
             }.toolbar { ToolbarItem(placement: .topBarTrailing) { Button { fullscreen.toggle() } label: { Image(systemName: fullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right") } } }.navigationTitle(fullscreen ? "" : "SatHunter SDR").navigationBarTitleDisplayMode(.inline)
         }
