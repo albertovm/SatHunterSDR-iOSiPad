@@ -10,6 +10,7 @@ final class SatHunterEngine: ObservableObject {
     @Published private(set) var detail: [String: Any] = [:]
     @Published private(set) var spectrum: [Float] = []
     @Published private(set) var heading: Double = 0
+    @Published private(set) var gpsText: String = "Localização não disponível"
     @Published var volume: Float = 1
     @Published private(set) var waterfall: [[Float]] = []
     @Published private(set) var sstvImage: UIImage?
@@ -30,7 +31,7 @@ final class SatHunterEngine: ObservableObject {
         _ = dir.path.withCString { sh_apple_init($0) }
         initialized = true
         location.onHeading = { [weak self] value in self?.heading = value.trueHeading >= 0 ? value.trueHeading : value.magneticHeading }
-        location.onLocation = { [weak self] point in _ = self?.command(["cmd":"gps", "lat":point.coordinate.latitude, "lon":point.coordinate.longitude, "alt":point.altitude]) }
+        location.onLocation = { [weak self] point in self?.gpsText = String(format: "%.5f, %.5f • %.0f m", point.coordinate.latitude, point.coordinate.longitude, point.altitude); _ = self?.command(["cmd":"gps", "lat":point.coordinate.latitude, "lon":point.coordinate.longitude, "alt":point.altitude]) }
         if let source = UserDefaults.standard.string(forKey: "source") { _ = command(["cmd":"source", "id":source]) }
         if let mode = UserDefaults.standard.string(forKey: "mode") { _ = command(["cmd":"mode", "mode":mode]) }
         if let norad = UserDefaults.standard.object(forKey: "selectedNorad") as? Int { _ = command(["cmd":"sat_select", "norad":norad]) }
