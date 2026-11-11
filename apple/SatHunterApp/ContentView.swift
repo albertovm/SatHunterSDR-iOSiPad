@@ -60,6 +60,7 @@ private struct SpectrumView: View { let values: [Float]; let centerHz: Double; l
 private struct RadarView: View {
     let azimuth: Double
     let elevation: Double
+    var heading: Double = 0
     var body: some View {
         Canvas { context, size in
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -68,12 +69,12 @@ private struct RadarView: View {
                 context.stroke(Path(ellipseIn: CGRect(x: center.x - radius * factor, y: center.y - radius * factor, width: radius * 2 * factor, height: radius * 2 * factor)), with: .color(.green.opacity(0.45)), lineWidth: 1)
             }
             var cross = Path(); cross.move(to: CGPoint(x: center.x - radius, y: center.y)); cross.addLine(to: CGPoint(x: center.x + radius, y: center.y)); cross.move(to: CGPoint(x: center.x, y: center.y - radius)); cross.addLine(to: CGPoint(x: center.x, y: center.y + radius)); context.stroke(cross, with: .color(.green.opacity(0.35)))
-            let angle = (azimuth - 90) * .pi / 180
+            let angle = (azimuth - heading - 90) * .pi / 180
             let distance = radius * max(0, min(1, elevation / 90))
             let point = CGPoint(x: center.x + CGFloat(cos(angle) * distance), y: center.y + CGFloat(sin(angle) * distance))
             context.fill(Path(ellipseIn: CGRect(x: point.x - 6, y: point.y - 6, width: 12, height: 12)), with: .color(.yellow))
         }
-        .overlay(alignment: .topLeading) { Text("Radar • Az \(String(format: "%.0f", azimuth))°  El \(String(format: "%.0f", elevation))°").font(.caption).foregroundStyle(.green).padding(8) }
+        .overlay(alignment: .topLeading) { Text("Radar • Az \(String(format: "%.0f", azimuth))°  El \(String(format: "%.0f", elevation))°  Hdg \(String(format: "%.0f", heading))°").font(.caption).foregroundStyle(.green).padding(8) }
     }
 }
 
@@ -127,6 +128,7 @@ private struct ReceiverScreenView: View {
                     ZStack { SpectrumView(values: engine.spectrum, centerHz: hz) { engine.tune($0) }; FrequencyScaleOverlay(centerHz: hz, mode: mode) }.frame(height: fullscreen ? 220 : 150)
                     WaterfallView(rows: engine.waterfall, centerHz: hz) { engine.tune($0) }.frame(maxHeight: .infinity).overlay { SatelliteMarkerOverlay(rows: engine.satelliteRows, centerHz: hz) { row in if let n = row["norad"] as? Int { engine.select(n) } } }
                     if !fullscreen {
+                        RadarView(azimuth: look["az"] as? Double ?? 0, elevation: look["el"] as? Double ?? 0, heading: engine.heading).frame(height: 150).background(Color.black).clipShape(RoundedRectangle(cornerRadius: 10))
                         HStack { Button("−") { engine.tune(hz - 12500) }; Button(running ? "Parar" : "Iniciar") { running ? engine.stop() : engine.start() }.buttonStyle(.borderedProminent); Button("+") { engine.tune(hz + 12500) } }
                         HStack(spacing: 4) { ForEach(["NFM","WFM","AM","USB","LSB","CW"], id: \.self) { item in Button(item) { engine.setMode(item) }.buttonStyle(.borderedProminent).tint(item == mode ? .blue : .gray) } }.lineLimit(1)
                     }
