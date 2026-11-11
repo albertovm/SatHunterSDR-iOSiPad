@@ -22,6 +22,10 @@
 	<string>1</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>O SatHunter usa sua localização para calcular passes, azimute e elevação dos satélites.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>O SatHunter usa sua localização para manter o rastreio dos satélites ativo.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
