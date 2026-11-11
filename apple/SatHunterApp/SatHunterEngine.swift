@@ -23,6 +23,7 @@ final class SatHunterEngine: ObservableObject {
     private func ensureInitialized() {
         guard !initialized else { return }
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("SatHunterSDR", isDirectory: true)
+        seedSatelliteCache(at: dir)
         _ = dir.path.withCString { sh_apple_init($0) }
         initialized = true
         location.onHeading = { [weak self] value in self?.heading = value.trueHeading >= 0 ? value.trueHeading : value.magneticHeading }
@@ -32,6 +33,19 @@ final class SatHunterEngine: ObservableObject {
         if let norad = UserDefaults.standard.object(forKey: "selectedNorad") as? Int { _ = command(["cmd":"sat_select", "norad":norad]) }
         refresh()
         if satelliteRows.isEmpty { _ = command(["cmd":"sat_update"]); refresh() }
+    }
+    /// Keep the first launch useful when the network is unavailable. The Rust worker will
+    /// replace these records with the current SatNOGS/Celestrak cache when an update succeeds.
+    private func seedSatelliteCache(at dir: URL) {
+        let satDir = dir.appendingPathComponent("sat", isDirectory: true)
+        let fm = FileManager.default
+        guard !fm.fileExists(atPath: satDir.appendingPathComponent("transmitters.json").path) else { return }
+        do {
+            try fm.createDirectory(at: satDir, withIntermediateDirectories: true)
+            try #"[{"uuid":"iss-aprs","description":"ISS APRS 1200","alive":true,"type":"Transceiver","downlink_low":145825000,"downlink_drifted":145825000,"mode":"AFSK","baud":1200,"norad_cat_id":25544,"status":"active","service":"Amateur"}]"#.write(to: satDir.appendingPathComponent("transmitters.json"), atomically: true, encoding: .utf8)
+            try #"[{"tle0":"0 ISS (ZARYA)","tle1":"1 25544U 98067A   26282.95044904  .00006711  00000-0  13074-3 0  9998","tle2":"2 25544  51.6315  92.1575 0006672 244.0714 115.9587 15.48795780589546","norad_cat_id":25544}]"#.write(to: satDir.appendingPathComponent("tle_satnogs.json"), atomically: true, encoding: .utf8)
+            try #"[{"name":"ISS","norad_cat_id":25544,"status":"in orbit","countries":"RU,US"}]"#.write(to: satDir.appendingPathComponent("satellites.json"), atomically: true, encoding: .utf8)
+        } catch { lastError = "Não foi possível preparar a lista inicial de satélites: \(error.localizedDescription)" }
     }
     func bootstrap() { ensureInitialized() }
     @discardableResult func command(_ object: [String: Any]) -> [String: Any] {
