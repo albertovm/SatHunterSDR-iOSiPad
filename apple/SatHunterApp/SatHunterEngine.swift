@@ -68,6 +68,10 @@ final class SatHunterEngine: ObservableObject {
     func debugMode(_ on: Bool) { setting("debug_mode", ["on": on]) }
     func labPin(_ pin: String) { setting("lab_pin", ["pin": pin]) }
     func plugins(_ on: Bool) { setting("plugins", ["on": on]) }
+    func bandwidth(_ hz: Double) { setting("bandwidth", ["hz": hz]) }
+    func sampleRate(_ hz: Double) { setting("rate", ["hz": hz]) }
+    func simulatePass() { _ = command(["cmd": "simulate"]); refresh() }
+    func realTime() { _ = command(["cmd": "real_time"]); refresh() }
     func tune(_ hz: Double) { _ = command(["cmd":"tune", "hz": hz]); refresh() }
     func changeVolume(_ delta: Float) { volume = max(0, min(1, volume + delta)); audio.setVolume(volume) }
     func start() { ensureInitialized(); _ = command(["cmd":"start"]); audio.start(); audio.setVolume(volume); refresh() }; func stop() { ensureInitialized(); _ = command(["cmd":"stop"]); audio.stop(); refresh() }; func updateSatellites() { ensureInitialized(); _ = command(["cmd":"sat_update"]); refresh() }
