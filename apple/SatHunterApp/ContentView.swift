@@ -138,6 +138,7 @@ private struct ReceiverScreenView: View {
                         HStack(spacing: 4) { ForEach(["NFM","WFM","AM","USB","LSB","CW"], id: \.self) { item in Button(item) { engine.setMode(item) }.buttonStyle(.borderedProminent).tint(item == mode ? .blue : .gray) } }.lineLimit(1)
                     }
                     HStack { Button("Vol −") { engine.changeVolume(-0.1) }; Text("Vol \(Int(engine.volume * 100))%").font(.caption.monospacedDigit()); Button("Vol +") { engine.changeVolume(0.1) }; RecordButton(engine: engine, active: engine.status["recording"] != nil) }
+                    if let recording = engine.status["recording"] as? [String: Any] { Text(String(format: "REC %.0f s • %.1f MB • descartadas %@", recording["secs"] as? Double ?? 0, (recording["bytes"] as? Double ?? 0) / 1_000_000, String(recording["dropped"] as? Int ?? 0))).font(.caption2.monospacedDigit()).foregroundStyle(.red) }
                     HStack { DecoderButton(title: "APRS", key: "aprs", status: engine.status["aprs"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "SSTV", key: "sstv", status: engine.status["sstv"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "FSK 9k6", key: "fsk9k6", status: engine.status["fsk9k6"] as? [String: Any] ?? [:], engine: engine) }
                     DecoderSummaryPanel(status: engine.status, engine: engine)
                 }.padding(8)
