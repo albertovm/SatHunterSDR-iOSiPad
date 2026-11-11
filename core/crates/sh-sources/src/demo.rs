@@ -3,7 +3,9 @@
 //! 433.92 MHz ISM bursts, a 70 cm repeater, and the satellite selected in the Cubesat Hunter at
 //! its real Doppler frequency. Lets the app run without hardware (classroom, screenshots).
 
-use crate::{Block, Complex32, SatSignal, SharedSatSignal, SignalKind, Sink, Source, SourceError, SourceInfo};
+use crate::{
+    Block, Complex32, SatSignal, SharedSatSignal, SignalKind, Sink, Source, SourceError, SourceInfo,
+};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
@@ -11,8 +13,8 @@ use std::time::{Duration, Instant};
 
 pub const RATES: [f64; 4] = [2_400_000.0, 2_048_000.0, 1_024_000.0, 250_000.0];
 pub const GAINS: [f32; 29] = [
-    0.0, 0.9, 1.4, 2.7, 3.7, 7.7, 8.7, 12.5, 14.4, 15.7, 16.6, 19.7, 20.7, 22.9, 25.4, 28.0, 29.7, 32.8, 33.8, 36.4, 37.2,
-    38.6, 40.2, 42.1, 43.4, 43.9, 44.5, 48.0, 49.6,
+    0.0, 0.9, 1.4, 2.7, 3.7, 7.7, 8.7, 12.5, 14.4, 15.7, 16.6, 19.7, 20.7, 22.9, 25.4, 28.0, 29.7,
+    32.8, 33.8, 36.4, 37.2, 38.6, 40.2, 42.1, 43.4, 43.9, 44.5, 48.0, 49.6,
 ];
 
 /// 4096-entry sine table with a 32-bit phase accumulator.
@@ -99,10 +101,13 @@ impl Emitter {
 /// Morse key state at time t (dot = 60 ms).
 fn morse_key(text: &str, t: f64) -> bool {
     const LETTERS: [&str; 26] = [
-        ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.",
-        "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..",
+        ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--",
+        "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--",
+        "--..",
     ];
-    const DIGITS: [&str; 10] = ["-----", ".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----."];
+    const DIGITS: [&str; 10] = [
+        "-----", ".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----.",
+    ];
     let code = |c: char| -> Option<&'static str> {
         match c {
             'A'..='Z' => Some(LETTERS[c as usize - 'A' as usize]),
@@ -136,6 +141,7 @@ struct World {
     lut: Lut,
     noise: Vec<Complex32>,
     noise_pos: usize,
+    acc: Vec<Complex32>,
 }
 
 impl World {
@@ -175,7 +181,14 @@ impl World {
                 Complex32::new((r * a.cos()) as f32, (r * a.sin()) as f32)
             })
             .collect();
-        World { emitters: e, sat: None, lut: Lut::new(), noise, noise_pos: 0 }
+        World {
+            emitters: e,
+            sat: None,
+            lut: Lut::new(),
+            noise,
+            noise_pos: 0,
+            acc: Vec::new(),
+        }
     }
 
     fn set_sat(&mut self, sg: Option<SatSignal>) {
@@ -189,7 +202,8 @@ impl World {
             SignalKind::Linear => Kind::Linear,
             SignalKind::Fm => Kind::NfmTones,
         };
-        let keep = matches!(&self.sat, Some(s) if s.kind == kind && (s.freq - sg.freq).abs() < 100e3);
+        let keep =
+            matches!(&self.sat, Some(s) if s.kind == kind && (s.freq - sg.freq).abs() < 100e3);
         if !keep {
             let mut e = Emitter::new(kind, sg.freq, 20.0);
             e.text = "CQ CQ DE DEMOSAT   ";
@@ -202,15 +216,22 @@ impl World {
             e.baud = if sg.baud > 0.0 { sg.baud } else { 1200.0 };
             // Link budget: ~32 dB overhead at 500 km, weaker with range, fading near the horizon
             let r = sg.range_km.max(300.0);
-            e.snr_db = (32.0 - 20.0 * (r / 500.0).log10() - if sg.elevation < 5.0 { (5.0 - sg.elevation) * 2.0 } else { 0.0 }) as f32;
+            e.snr_db = (32.0
+                - 20.0 * (r / 500.0).log10()
+                - if sg.elevation < 5.0 {
+                    (5.0 - sg.elevation) * 2.0
+                } else {
+                    0.0
+                }) as f32;
         }
     }
 
     fn render(&mut self, f0: f64, fs: f64, gain_db: f32, out: &mut Vec<Complex32>, n: usize) {
         let g = 10f32.powf((gain_db - 30.0) / 20.0);
         let n_amp = 0.012 * g;
-        let mut acc = vec![Complex32::new(0.004, -0.003); n]; // RTL-like DC offset
-        for (i, a) in acc.iter_mut().enumerate() {
+        self.acc.clear();
+        self.acc.resize(n, Complex32::new(0.004, -0.003)); // RTL-like DC offset
+        for (i, a) in self.acc.iter_mut().enumerate() {
             let v = self.noise[(self.noise_pos + i) & (self.noise.len() - 1)];
             *a += v * n_amp;
         }
@@ -218,17 +239,21 @@ impl World {
         if (24e6..=1766e6).contains(&f0) {
             let lut = &self.lut;
             for e in self.emitters.iter_mut() {
-                synth(lut, e, f0, fs, &mut acc, n_amp);
+                synth(lut, e, f0, fs, &mut self.acc, n_amp);
             }
             if let Some(e) = self.sat.as_mut() {
-                synth(lut, e, f0, fs, &mut acc, n_amp);
+                synth(lut, e, f0, fs, &mut self.acc, n_amp);
             }
         }
         // 8-bit quantisation and clipping like the RTL2832U
         out.clear();
-        out.extend(acc.iter().map(|v| {
-            Complex32::new((v.re.clamp(-1.0, 1.0) * 127.5).round() / 127.5, (v.im.clamp(-1.0, 1.0) * 127.5).round() / 127.5)
-        }));
+        out.reserve(n);
+        for v in &self.acc {
+            out.push(Complex32::new(
+                (v.re.clamp(-1.0, 1.0) * 127.5).round() / 127.5,
+                (v.im.clamp(-1.0, 1.0) * 127.5).round() / 127.5,
+            ));
+        }
     }
 }
 
@@ -257,15 +282,26 @@ fn synth(lut: &Lut, e: &mut Emitter, f0: f64, fs: f64, acc: &mut [Complex32], n_
         Kind::Wfm => {
             // Music-like mix: melody + fifth + bass, plus the 19 kHz stereo pilot
             let note = 440.0 * 2f64.powf(((t0 * 2.0) as i64 % 8) as f64 / 12.0);
-            let (a1, a2, ab, ap) = (inc(note, fs), inc(note * 1.5, fs), inc(note / 4.0, fs), inc(19_000.0, fs));
+            let (a1, a2, ab, ap) = (
+                inc(note, fs),
+                inc(note * 1.5, fs),
+                inc(note / 4.0, fs),
+                inc(19_000.0, fs),
+            );
             let dev = 75e3 / fs * two32;
             for i in 0..n {
                 e.audio = e.audio.wrapping_add(a1);
                 e.audio2 = e.audio2.wrapping_add(a2);
                 e.aux[0] = e.aux[0].wrapping_add(ab);
                 e.aux[1] = e.aux[1].wrapping_add(ap);
-                let a = 0.4 * lut.sin(e.audio) + 0.25 * lut.sin(e.audio2) + 0.25 * lut.sin(e.aux[0]) + 0.1 * lut.sin(e.aux[1]);
-                e.carrier = e.carrier.wrapping_add(c_inc).wrapping_add((dev * a as f64) as i64 as u32);
+                let a = 0.4 * lut.sin(e.audio)
+                    + 0.25 * lut.sin(e.audio2)
+                    + 0.25 * lut.sin(e.aux[0])
+                    + 0.1 * lut.sin(e.aux[1]);
+                e.carrier = e
+                    .carrier
+                    .wrapping_add(c_inc)
+                    .wrapping_add((dev * a as f64) as i64 as u32);
                 put(i, e.carrier, amp);
             }
         }
@@ -281,7 +317,10 @@ fn synth(lut: &Lut, e: &mut Emitter, f0: f64, fs: f64, acc: &mut [Complex32], n_
             let dev = 3e3 / fs * two32 * env;
             for i in 0..n {
                 e.audio = e.audio.wrapping_add(ai);
-                e.carrier = e.carrier.wrapping_add(c_inc).wrapping_add((dev * lut.sin(e.audio) as f64) as i64 as u32);
+                e.carrier = e
+                    .carrier
+                    .wrapping_add(c_inc)
+                    .wrapping_add((dev * lut.sin(e.audio) as f64) as i64 as u32);
                 put(i, e.carrier, amp);
             }
         }
@@ -291,7 +330,11 @@ fn synth(lut: &Lut, e: &mut Emitter, f0: f64, fs: f64, acc: &mut [Complex32], n_
             for i in 0..n {
                 e.audio = e.audio.wrapping_add(ai);
                 e.carrier = e.carrier.wrapping_add(c_inc);
-                let m = if on { 1.0 + 0.7 * lut.sin(e.audio) } else { 1.0 };
+                let m = if on {
+                    1.0 + 0.7 * lut.sin(e.audio)
+                } else {
+                    1.0
+                };
                 put(i, e.carrier, amp * 0.6 * m);
             }
         }
@@ -335,7 +378,10 @@ fn synth(lut: &Lut, e: &mut Emitter, f0: f64, fs: f64, acc: &mut [Complex32], n_
                 } else {
                     -dev
                 };
-                e.carrier = e.carrier.wrapping_add(c_inc).wrapping_add(fdev as i64 as u32);
+                e.carrier = e
+                    .carrier
+                    .wrapping_add(c_inc)
+                    .wrapping_add(fdev as i64 as u32);
                 put(i, e.carrier, amp);
             }
         }
@@ -363,11 +409,19 @@ fn synth(lut: &Lut, e: &mut Emitter, f0: f64, fs: f64, acc: &mut [Complex32], n_
             let users = [-0.3 * w, -0.05 * w, 0.15 * w, 0.35 * w];
             for (u, uo) in users.iter().enumerate() {
                 let cw = u == 3;
-                let on = if cw { morse_key("CQ DE DEMOSAT  ", t0 + u as f64) } else { (t0 + u as f64 * 1.7) % 6.0 < 4.0 };
+                let on = if cw {
+                    morse_key("CQ DE DEMOSAT  ", t0 + u as f64)
+                } else {
+                    (t0 + u as f64 * 1.7) % 6.0 < 4.0
+                };
                 if !on {
                     continue;
                 }
-                let tone = if cw { 700.0 } else { 600.0 + 800.0 * (((t0 * 4.0) as usize + u) % 2) as f64 };
+                let tone = if cw {
+                    700.0
+                } else {
+                    600.0 + 800.0 * (((t0 * 4.0) as usize + u) % 2) as f64
+                };
                 let ui = inc(off + uo + tone, fs);
                 let a = amp * if cw { 0.8 } else { 0.5 };
                 for i in 0..n {
@@ -428,43 +482,52 @@ impl Source for DemoSource {
         self.shared.run.store(true, Ordering::SeqCst);
         let sh = self.shared.clone();
         let sat = self.sat.clone();
-        self.thread = Some(std::thread::Builder::new().name("demo-source".into()).spawn(move || {
-            let mut world = World::new();
-            let mut next = Instant::now();
-            let mut buf = Vec::new();
-            let mut dec: Option<(sh_dsp::filter::Decimator, f64)> = None;
-            let mut dbuf = Vec::new();
-            while sh.run.load(Ordering::SeqCst) {
-                let fs = f64::from_bits(sh.rate.load(Ordering::Relaxed));
-                let f0 = f64::from_bits(sh.freq.load(Ordering::Relaxed));
-                let gain = f64::from_bits(sh.gain.load(Ordering::Relaxed)) as f32;
-                let n = ((fs / 100.0) as usize).max(1000); // 10 ms blocks
-                world.set_sat(sat.lock().ok().and_then(|g| *g));
-                world.render(f0, fs, gain, &mut buf, n);
-                let d = sh.decimation.load(Ordering::Relaxed) as usize;
-                let (samples, rate) = if d > 1 {
-                    if !matches!(&dec, Some((x, r)) if x.factor() == d && *r == fs) {
-                        dec = Some((sh_dsp::filter::Decimator::new(d, fs), fs));
+        self.thread = Some(
+            std::thread::Builder::new()
+                .name("demo-source".into())
+                .spawn(move || {
+                    let mut world = World::new();
+                    let mut next = Instant::now();
+                    let mut buf = Vec::new();
+                    let mut dec: Option<(sh_dsp::filter::Decimator, f64)> = None;
+                    let mut dbuf = Vec::new();
+                    while sh.run.load(Ordering::SeqCst) {
+                        let fs = f64::from_bits(sh.rate.load(Ordering::Relaxed));
+                        let f0 = f64::from_bits(sh.freq.load(Ordering::Relaxed));
+                        let gain = f64::from_bits(sh.gain.load(Ordering::Relaxed)) as f32;
+                        let n = ((fs / 100.0) as usize).max(1000); // 10 ms blocks
+                        world.set_sat(sat.lock().ok().and_then(|g| *g));
+                        world.render(f0, fs, gain, &mut buf, n);
+                        let d = sh.decimation.load(Ordering::Relaxed) as usize;
+                        let (samples, rate) = if d > 1 {
+                            if !matches!(&dec, Some((x, r)) if x.factor() == d && *r == fs) {
+                                dec = Some((sh_dsp::filter::Decimator::new(d, fs), fs));
+                            }
+                            let (x, _) = dec.as_mut().unwrap();
+                            x.process(&buf, &mut dbuf);
+                            (std::mem::take(&mut dbuf), fs / x.factor() as f64)
+                        } else {
+                            (std::mem::take(&mut buf), fs)
+                        };
+                        if !sink.push(Block {
+                            center_hz: f0,
+                            rate,
+                            samples,
+                        }) {
+                            break;
+                        }
+                        // Real-time pacing
+                        next += Duration::from_secs_f64(n as f64 / fs);
+                        let now = Instant::now();
+                        if now > next + Duration::from_millis(200) {
+                            next = now;
+                        } else if next > now {
+                            std::thread::sleep(next - now);
+                        }
                     }
-                    let (x, _) = dec.as_mut().unwrap();
-                    x.process(&buf, &mut dbuf);
-                    (std::mem::take(&mut dbuf), fs / x.factor() as f64)
-                } else {
-                    (std::mem::take(&mut buf), fs)
-                };
-                if !sink.push(Block { center_hz: f0, rate, samples }) {
-                    break;
-                }
-                // Real-time pacing
-                next += Duration::from_secs_f64(n as f64 / fs);
-                let now = Instant::now();
-                if now > next + Duration::from_millis(200) {
-                    next = now;
-                } else if next > now {
-                    std::thread::sleep(next - now);
-                }
-            }
-        }).map_err(|e| SourceError::Device(e.to_string()))?);
+                })
+                .map_err(|e| SourceError::Device(e.to_string()))?,
+        );
         Ok(())
     }
 
@@ -504,7 +567,9 @@ impl Source for DemoSource {
     }
 
     fn set_gain(&mut self, db: Option<f32>) -> Result<(), SourceError> {
-        self.shared.gain.store((db.unwrap_or(25.4) as f64).to_bits(), Ordering::Relaxed);
+        self.shared
+            .gain
+            .store((db.unwrap_or(25.4) as f64).to_bits(), Ordering::Relaxed);
         Ok(())
     }
 
@@ -534,7 +599,10 @@ mod tests {
     fn peak_near(spec: &[f32], fs: f64, off: f64) -> f32 {
         let n = spec.len();
         let b = (n as f64 / 2.0 + off / fs * n as f64) as usize;
-        spec[b.saturating_sub(3)..(b + 4).min(n)].iter().cloned().fold(f32::MIN, f32::max)
+        spec[b.saturating_sub(3)..(b + 4).min(n)]
+            .iter()
+            .cloned()
+            .fold(f32::MIN, f32::max)
     }
 
     #[test]
@@ -549,10 +617,20 @@ mod tests {
             sp.push(&buf, |f| last = f.to_vec());
         }
         let floor = last[100];
-        assert!(peak_near(&last, fs, 0.0) > floor + 20.0, "100.0 MHz station missing");
+        assert!(
+            peak_near(&last, fs, 0.0) > floor + 20.0,
+            "100.0 MHz station missing"
+        );
 
         // Satellite (FM) 300 kHz above the centre at 30 deg elevation
-        w.set_sat(Some(SatSignal { freq: 436.3e6, width: 0.0, baud: 0.0, elevation: 30.0, range_km: 800.0, kind: SignalKind::Cw }));
+        w.set_sat(Some(SatSignal {
+            freq: 436.3e6,
+            width: 0.0,
+            baud: 0.0,
+            elevation: 30.0,
+            range_km: 800.0,
+            kind: SignalKind::Cw,
+        }));
         let mut sp = Spectrum::new(2048, fs, 1000.0, 0.0);
         let mut best = f32::MIN;
         for _ in 0..100 {
