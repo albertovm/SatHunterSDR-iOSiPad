@@ -64,6 +64,7 @@ final class SatHunterEngine: ObservableObject {
     func setDecimation(_ value: Int) { setting("decimation", ["factor": value]) }
     func recording(_ on: Bool) { let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path; _ = command(["cmd": on ? "record_start" : "record_stop", "dir": dir]); refresh() }
     func decoder(_ name: String, on: Bool) { _ = command(["cmd": name, "on": on]); refresh() }
+    func clearAPRS() { _ = command(["cmd": "aprs_clear"]); refresh() }
     func groundAprs(_ on: Bool, hz: Double? = nil) { var values: [String: Any] = ["on": on]; if let hz { values["hz"] = hz }; setting("ground_aprs", values) }
     func debugMode(_ on: Bool) { setting("debug_mode", ["on": on]) }
     func labPin(_ pin: String) { setting("lab_pin", ["pin": pin]) }
