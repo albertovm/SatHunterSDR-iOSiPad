@@ -27,7 +27,7 @@ final class AudioOutput {
         }
         engine.attach(node); engine.connect(node, to: engine.mainMixerNode, format: format)
         source = node
-        try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .allowBluetooth])
+        try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .allowBluetoothHFP])
         try? AVAudioSession.sharedInstance().setActive(true)
         try? engine.start()
     }
