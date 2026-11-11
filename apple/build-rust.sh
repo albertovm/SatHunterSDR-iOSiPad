@@ -7,6 +7,7 @@ OUT="$ROOT/apple/Frameworks"
 CARGO="${CARGO:-$HOME/.cargo/bin/cargo}"
 
 cd "$CORE"
+export IPHONEOS_DEPLOYMENT_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-18.0}"
 "$CARGO" build --release -p sh-apple --target aarch64-apple-ios
 "$CARGO" build --release -p sh-apple --target aarch64-apple-ios-sim
 
