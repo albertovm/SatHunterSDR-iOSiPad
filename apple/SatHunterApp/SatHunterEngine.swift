@@ -8,13 +8,14 @@ final class SatHunterEngine: ObservableObject {
     @Published private(set) var satelliteRows: [[String: Any]] = []
     @Published private(set) var detail: [String: Any] = [:]
     @Published private(set) var spectrum: [Float] = []
+    @Published private(set) var heading: Double = 0
     @Published private(set) var waterfall: [[Float]] = []
     let location = LocationProvider()
     @Published var lastError: String?
     private var timer: Timer?
     init() {
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("SatHunterSDR", isDirectory: true)
-        do { try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true); _ = dir.path.withCString { sh_apple_init($0) }; location.onLocation = { [weak self] point in _ = self?.command(["cmd":"gps", "lat":point.coordinate.latitude, "lon":point.coordinate.longitude, "alt":point.altitude]) }; refresh() } catch { lastError = error.localizedDescription }
+        do { try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true); _ = dir.path.withCString { sh_apple_init($0) }; location.onHeading = { [weak self] value in self?.heading = value.trueHeading >= 0 ? value.trueHeading : value.magneticHeading }; location.onLocation = { [weak self] point in _ = self?.command(["cmd":"gps", "lat":point.coordinate.latitude, "lon":point.coordinate.longitude, "alt":point.altitude]) }; refresh() } catch { lastError = error.localizedDescription }
     }
     @discardableResult func command(_ object: [String: Any]) -> [String: Any] {
         guard let data = try? JSONSerialization.data(withJSONObject: object), let json = String(data: data, encoding: .utf8), let pointer = json.withCString({ sh_apple_command($0) }) else { return ["ok": false, "error": "comando inválido"] }
