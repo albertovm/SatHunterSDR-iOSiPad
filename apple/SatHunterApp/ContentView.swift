@@ -154,7 +154,7 @@ private struct DecoderSummaryPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             let aprs = decoder("aprs"); let sstv = decoder("sstv"); let fsk = decoder("fsk9k6")
-            Text("APRS \(aprs["count"] as? Int ?? 0) frames  •  SSTV \(sstv["rows"] as? Int ?? 0) linhas  •  FSK \(fsk["count"] as? Int ?? 0) frames").font(.caption).foregroundStyle(.secondary)
+            Text("APRS \(aprs["count"] as? Int ?? 0) frames\((aprs["bad_crc"] as? Int ?? 0) > 0 ? " • \(aprs["bad_crc"] as? Int ?? 0) CRC inválidos" : "")  •  SSTV \(sstv["rows"] as? Int ?? 0) linhas  •  FSK \(fsk["count"] as? Int ?? 0) frames\((fsk["bad_crc"] as? Int ?? 0) > 0 ? " • \(fsk["bad_crc"] as? Int ?? 0) CRC inválidos" : "")").font(.caption).foregroundStyle(.secondary)
             if let frames = aprs["frames"] as? [[String: Any]], let last = frames.last { Text("APRS: \(last["src"] as? String ?? "") → \(last["dst"] as? String ?? "")").font(.caption2).foregroundStyle(.yellow) }
             if (aprs["count"] as? Int ?? 0) > 0 { Button("Limpar frames APRS") { engine.clearAPRS() }.font(.caption2).buttonStyle(.bordered) }
             if let image = engine.sstvImage { Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 180).clipShape(RoundedRectangle(cornerRadius: 6)) }
