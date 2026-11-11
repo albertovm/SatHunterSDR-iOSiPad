@@ -11,6 +11,7 @@
 		2864EA80FEAABCBA6F7035C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279FD2B9604EB5EB22DB6851 /* ContentView.swift */; };
 		64B2F6268E40369B87452D72 /* LocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EDACE4C0B8491106F8CA17 /* LocationProvider.swift */; };
 		69871FCCF56CB101B2399C03 /* SatHunterEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A118F9506AC148F01869D47 /* SatHunterEngine.swift */; };
+		76722B51EBF1F56168B8CD0E /* AudioOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD52748089A5410658B7D0F4 /* AudioOutput.swift */; };
 		887DF8614467FB044EA34F49 /* SatHunterCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8C5AE92C8CE24A35838C5CF /* SatHunterCore.xcframework */; };
 		A73F4D6401EFF4A3774B7551 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52E214637156398591D9593F /* Assets.xcassets */; };
 		BED27904C0AD2FD7026BE714 /* SatHunterLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C79EF9355C5059E34EDE149 /* SatHunterLogo.swift */; };
@@ -26,6 +27,7 @@
 		88EDACE4C0B8491106F8CA17 /* LocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationProvider.swift; sourceTree = "<group>"; };
 		A8C5AE92C8CE24A35838C5CF /* SatHunterCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SatHunterCore.xcframework; path = Frameworks/SatHunterCore.xcframework; sourceTree = "<group>"; };
 		B55AA8B9432E7759085E4031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FD52748089A5410658B7D0F4 /* AudioOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioOutput.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				52E214637156398591D9593F /* Assets.xcassets */,
+				FD52748089A5410658B7D0F4 /* AudioOutput.swift */,
 				279FD2B9604EB5EB22DB6851 /* ContentView.swift */,
 				B55AA8B9432E7759085E4031 /* Info.plist */,
 				88EDACE4C0B8491106F8CA17 /* LocationProvider.swift */,
@@ -150,6 +153,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76722B51EBF1F56168B8CD0E /* AudioOutput.swift in Sources */,
 				2864EA80FEAABCBA6F7035C1 /* ContentView.swift in Sources */,
 				64B2F6268E40369B87452D72 /* LocationProvider.swift in Sources */,
 				2042BB96F17D1D82B657BA43 /* SatHunterApp.swift in Sources */,
