@@ -1,4 +1,4 @@
-import CoreLocation
+@preconcurrency import CoreLocation
 import Foundation
 @MainActor final class LocationProvider: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published private(set) var authorization: CLAuthorizationStatus = .notDetermined
