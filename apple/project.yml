@@ -8,7 +8,8 @@ targets:
     platform: iOS
     sources:
       - path: SatHunterApp
-    resources: []
+    resources:
+      - path: SatHunterApp/Assets.xcassets
     info:
       path: SatHunterApp/Info.plist
       properties:

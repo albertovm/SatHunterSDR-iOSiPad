@@ -1,0 +1,4 @@
+import SwiftUI
+struct SatHunterLogo: View {
+    var body: some View { GeometryReader { proxy in let s = min(proxy.size.width, proxy.size.height) / 108; ZStack { Circle().stroke(Color(red:0.31,green:0.70,blue:1), lineWidth:2.5*s).frame(width:48*s,height:48*s); Circle().stroke(Color(red:0.31,green:0.70,blue:1).opacity(0.6),lineWidth:2*s).frame(width:24*s,height:24*s); Path { p in p.move(to: CGPoint(x:33*s,y:68*s)); p.addQuadCurve(to: CGPoint(x:76*s,y:36*s), control: CGPoint(x:50*s,y:40*s)) }.stroke(Color(red:0.56,green:0.83,blue:1),style:StrokeStyle(lineWidth:3*s,lineCap:.round)); Circle().fill(.yellow).frame(width:10*s,height:10*s).position(x:66*s,y:38*s); Circle().fill(.green).frame(width:6*s,height:6*s).position(x:33*s,y:68*s) }.frame(width:proxy.size.width,height:proxy.size.height) }.aspectRatio(1,contentMode:.fit) }
+}
