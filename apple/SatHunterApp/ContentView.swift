@@ -163,47 +163,76 @@ private struct MapOverview: View {
     var body: some View { Map(initialPosition: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)))) { Marker("Observador", coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)).tint(.blue); if !ground.isEmpty { MapPolyline(coordinates: ground.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }).stroke(.yellow, lineWidth: 2) }; ForEach(Array(pins.enumerated()), id: \.offset) { _, pin in if let lat = pin["lat"] as? Double, let lon = pin["lon"] as? Double { Marker(pin["label"] as? String ?? "APRS", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon)).tint(.orange) } } } }
 }
 
-@MainActor private final class FrequencyInputModel {
-    weak var field: UITextField?
-    var draft = ""
+private struct FrequencyChangeOverlay: View {
+    let initialFrequency: Double
+    let onCancel: () -> Void
+    let onTune: (Double) -> Void
+    @State private var draft: String
 
-    func display(_ frequency: Double, force: Bool = false) {
-        guard force || field?.isFirstResponder != true else { return }
-        draft = FrequencyDisplay.format(frequency)
-        field?.text = draft
-    }
-}
-
-private struct FrequencyInput: UIViewRepresentable {
-    let model: FrequencyInputModel
-
-    func makeUIView(context: Context) -> UITextField {
-        let field = UITextField()
-        field.delegate = context.coordinator
-        field.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .editingChanged)
-        field.keyboardType = .numbersAndPunctuation
-        field.returnKeyType = .done
-        field.textColor = .orange
-        field.tintColor = .orange
-        field.font = .monospacedSystemFont(ofSize: 24, weight: .medium)
-        field.adjustsFontSizeToFitWidth = true
-        field.minimumFontSize = 19
-        field.placeholder = "000.000.000"
-        field.accessibilityLabel = "Frequência em hertz"
-        field.text = model.draft
-        model.field = field
-        return field
+    init(initialFrequency: Double, onCancel: @escaping () -> Void, onTune: @escaping (Double) -> Void) {
+        self.initialFrequency = initialFrequency
+        self.onCancel = onCancel
+        self.onTune = onTune
+        _draft = State(initialValue: "")
     }
 
-    func updateUIView(_ field: UITextField, context: Context) {}
+    private var frequency: Double? { FrequencyDisplay.parse(draft) }
+    private func append(_ character: String) {
+        if draft.filter(\.isNumber).count < 10 || character == "." { draft.append(character) }
+    }
 
-    func makeCoordinator() -> Coordinator { Coordinator(model) }
-
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        let model: FrequencyInputModel
-        init(_ model: FrequencyInputModel) { self.model = model }
-        @objc func changed(_ field: UITextField) { model.draft = field.text ?? "" }
-        func textFieldShouldReturn(_ textField: UITextField) -> Bool { textField.resignFirstResponder(); return true }
+    var body: some View {
+        ZStack(alignment: .top) {
+            Color.black.opacity(0.58).ignoresSafeArea().onTapGesture(perform: onCancel)
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Alterar frequência").font(.headline)
+                    Spacer()
+                    Button("Cancelar", action: onCancel)
+                }
+                Text("Atual: \(FrequencyDisplay.format(initialFrequency)) Hz")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                TextField("Frequência em Hz", text: $draft)
+                    .keyboardType(.numbersAndPunctuation)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .font(.system(size: 25, weight: .medium, design: .monospaced))
+                    .foregroundStyle(.orange)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel("Nova frequência em hertz")
+                Text("Exemplo: 145.800.000 Hz").font(.caption).foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach([ ["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], [".", "0", "⌫"] ], id: \.self) { row in
+                    HStack(spacing: 10) {
+                        ForEach(row, id: \.self) { key in
+                            Button(key) {
+                                if key == "⌫" { if !draft.isEmpty { draft.removeLast() } }
+                                else { append(key) }
+                            }
+                            .font(.system(size: 24, weight: .medium, design: .monospaced))
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+                HStack {
+                    Button("Limpar") { draft = "" }
+                    Spacer()
+                    Button("Sintonizar") {
+                        if let frequency { onTune(frequency) }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(frequency == nil)
+                }
+            }
+            .padding(18)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+        }
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
 
@@ -211,11 +240,9 @@ private struct ReceiverScreenView: View {
     @EnvironmentObject private var engine: SatHunterEngine
     @Environment(\.dismiss) private var dismiss
     @State private var fullscreen = false
-    @State private var frequencyInputModel = FrequencyInputModel()
-    @State private var frequencyInitialized = false
+    @State private var changingFrequency = false
     private func tuneFromGraph(_ value: Double) {
         engine.tune(value)
-        frequencyInputModel.display(value, force: true)
     }
     private var mode: String { engine.status["mode"] as? String ?? "WFM" }
     private var bandwidthRange: ClosedRange<Double> {
@@ -238,30 +265,16 @@ private struct ReceiverScreenView: View {
                 Color.black.ignoresSafeArea()
                 VStack(spacing: 6) {
                     HStack(spacing: 6) {
-                        FrequencyInput(model: frequencyInputModel)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 40)
-                        Button("Sintonizar") {
-                            guard let value = FrequencyDisplay.parse(frequencyInputModel.draft) else { return }
-                            engine.tune(value)
-                            frequencyInputModel.field?.resignFirstResponder()
-                            frequencyInputModel.display(value, force: true)
-                        }
+                        Text(FrequencyDisplay.format(hz))
+                            .font(.system(size: 24, weight: .medium, design: .monospaced))
+                            .foregroundStyle(.orange)
+                            .minimumScaleFactor(0.8)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Button("Alterar") { withAnimation(.easeOut(duration: 0.25)) { changingFrequency = true } }
                             .buttonStyle(.borderedProminent)
                             .font(.caption)
                         Circle().fill(receivingIQ ? .green : running ? .orange : .red).frame(width: 10, height: 10)
-                    }
-                    .onAppear {
-                        if !frequencyInitialized && hz > 0 {
-                            frequencyInputModel.display(hz, force: true)
-                            frequencyInitialized = true
-                        }
-                    }
-                    .onChange(of: hz) { _, value in
-                        if !frequencyInitialized && value > 0 {
-                            frequencyInputModel.display(value, force: true)
-                            frequencyInitialized = true
-                        }
                     }
                     Text("\(mode)  •  \(engine.status["source"] as? String ?? "sdrpp")").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     Text(engine.status["source_status"] as? String ?? "SDR++ desconectado")
@@ -284,7 +297,21 @@ private struct ReceiverScreenView: View {
                     HStack { DecoderButton(title: "APRS", key: "aprs", status: engine.status["aprs"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "SSTV", key: "sstv", status: engine.status["sstv"] as? [String: Any] ?? [:], engine: engine); DecoderButton(title: "FSK 9k6", key: "fsk9k6", status: engine.status["fsk9k6"] as? [String: Any] ?? [:], engine: engine) }
                     DecoderSummaryPanel(status: engine.status, engine: engine)
                 }.padding(8).padding(.top, 12)
+                if changingFrequency {
+                    FrequencyChangeOverlay(initialFrequency: hz, onCancel: {
+                        withAnimation(.easeIn(duration: 0.2)) { changingFrequency = false }
+                    }, onTune: { frequency in
+                        engine.tune(frequency)
+                        withAnimation(.easeIn(duration: 0.2)) { changingFrequency = false }
+                    })
+                    .zIndex(1)
+                }
             }.navigationTitle(fullscreen ? "" : "SDR Outdoor").navigationBarTitleDisplayMode(.inline)
+                .onAppear {
+                    #if DEBUG
+                    if ProcessInfo.processInfo.arguments.contains("-ShowFrequencyEditor") { changingFrequency = true }
+                    #endif
+                }
         }
     }
 }
