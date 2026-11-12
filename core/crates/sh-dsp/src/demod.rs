@@ -41,11 +41,20 @@ impl Mode {
     pub fn default_bw(self) -> f64 {
         match self {
             Mode::Nfm => 12_500.0,
-            Mode::Wfm => 180_000.0,
+            Mode::Wfm => 150_000.0,
             Mode::Am => 10_000.0,
             Mode::Usb | Mode::Lsb => 2_800.0,
             // Wide enough for a beacon a few hundred Hz off (RTL crystal, satellite TX offset)
-            Mode::Cw => 2_000.0,
+            Mode::Cw => 200.0,
+        }
+    }
+    pub fn bandwidth_limits(self) -> (f64, f64) {
+        match self {
+            Mode::Nfm => (1_000.0, 50_000.0),
+            Mode::Wfm => (50_000.0, 250_000.0),
+            Mode::Am => (1_000.0, 15_000.0),
+            Mode::Usb | Mode::Lsb => (500.0, 12_000.0),
+            Mode::Cw => (50.0, 500.0),
         }
     }
 }
@@ -347,6 +356,35 @@ mod tests {
     }
 
     #[test]
+    fn wfm_broadcast_at_sdrpp_default_rate_in_packets() {
+        let fs = 1_000_000.0;
+        let mut d = Demodulator::new(Mode::Wfm, fs, 0.0, 150_000.0);
+        let iq = fm(0.0, 50_000.0, fs, 500_000);
+        let mut audio = Vec::new();
+        for packet in iq.chunks(8192) { d.process(packet, &mut audio); }
+        let tail = &audio[audio.len() / 2..];
+        assert!((freq(tail, AUDIO_RATE) - 1000.0).abs() < 20.0, "{}", freq(tail, AUDIO_RATE));
+        let rms = (tail.iter().map(|v| v * v).sum::<f32>() / tail.len() as f32).sqrt();
+        assert!(rms > 0.2, "WFM audio RMS {rms}");
+    }
+
+    #[test]
+    fn am_recovers_audio_at_sdrpp_default_rate() {
+        let fs = 1_000_000.0;
+        let mut d = Demodulator::new(Mode::Am, fs, 0.0, 10_000.0);
+        let iq: Vec<_> = (0..250_000).map(|i| {
+            let carrier = 1.0 + 0.5 * (2.0 * std::f64::consts::PI * 1000.0 * i as f64 / fs).sin();
+            Complex32::new(carrier as f32, 0.0)
+        }).collect();
+        let mut audio = Vec::new();
+        for packet in iq.chunks(8192) { d.process(packet, &mut audio); }
+        let tail = &audio[audio.len() / 2..];
+        assert!((freq(tail, AUDIO_RATE) - 1000.0).abs() < 20.0, "{}", freq(tail, AUDIO_RATE));
+        let rms = (tail.iter().map(|v| v * v).sum::<f32>() / tail.len() as f32).sqrt();
+        assert!(rms > 0.05, "AM audio RMS {rms}");
+    }
+
+    #[test]
     fn usb_gives_the_audio_offset() {
         let fs = 240_000.0;
         // Carrier at 10 kHz, a 1.5 kHz USB tone = a single line at 11.5 kHz
@@ -369,7 +407,8 @@ mod tests {
     #[test]
     fn cw_hears_a_beacon_off_frequency() {
         let fs = 240_000.0;
-        for off in [-800.0, 0.0, 800.0] {
+        // The default 200 Hz CW passband admits offsets within roughly +/-100 Hz.
+        for off in [-80.0, 0.0, 80.0] {
             // carrier at 10 kHz + off
             let mut nco = Nco::new(-(10_000.0 + off), fs);
             let x: Vec<Complex32> = (0..240_000).map(|_| nco.next() * 0.1).collect();

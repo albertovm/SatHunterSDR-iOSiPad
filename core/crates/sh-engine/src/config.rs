@@ -66,7 +66,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Config {
-            source: "demo".into(),
+            source: if cfg!(target_os = "ios") { "sdrpp".into() } else { "demo".into() },
             center_hz: 100.0e6,
             vfo_hz: 100.0e6,
             mode: "WFM".into(),

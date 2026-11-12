@@ -6,28 +6,34 @@ final class AudioOutput {
     private let engine = AVAudioEngine()
     private let volumeBox = VolumeBox()
     private var source: AVAudioSourceNode?
+    var isRunning: Bool { engine.isRunning }
 
     func start() {
-        guard source == nil else { return }
+        if source != nil {
+            if !engine.isRunning {
+                try? AVAudioSession.sharedInstance().setActive(true)
+                try? engine.start()
+            }
+            return
+        }
         let format = AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1)!
         let volumeBox = self.volumeBox
         let node = AVAudioSourceNode(format: format) { _, _, frameCount, audioBufferList in
             let buffers = UnsafeMutableAudioBufferListPointer(audioBufferList)
-            var samples = [Float](repeating: 0, count: Int(frameCount))
-            let count = sh_apple_audio(&samples, samples.count)
             for buffer in buffers {
                 guard let data = buffer.mData else { continue }
-                samples.withUnsafeBufferPointer { source in
-                    let destination = data.assumingMemoryBound(to: Float.self)
-                    let limit = min(Int(buffer.mDataByteSize) / MemoryLayout<Float>.stride, count)
-                    for index in 0..<limit { destination[index] = source[index] * volumeBox.value }
-                }
+                let destination = data.assumingMemoryBound(to: Float.self)
+                let capacity = Int(buffer.mDataByteSize) / MemoryLayout<Float>.stride
+                let requested = min(capacity, Int(frameCount))
+                let count = sh_apple_audio(destination, requested)
+                for index in 0..<count { destination[index] *= volumeBox.value }
+                if count < capacity { for index in count..<capacity { destination[index] = 0 } }
             }
             return noErr
         }
         engine.attach(node); engine.connect(node, to: engine.mainMixerNode, format: format)
         source = node
-        try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .allowBluetoothHFP])
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.allowBluetoothA2DP])
         try? AVAudioSession.sharedInstance().setActive(true)
         try? engine.start()
     }

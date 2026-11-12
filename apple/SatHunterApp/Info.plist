@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>SatHunter SDR</string>
+    <string>SDR Outdoor</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -28,6 +28,8 @@
 	<string>O SatHunter usa sua localização para manter o rastreio dos satélites ativo.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>O SatHunter usa os sensores de movimento para orientar o radar e a bússola.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>O SatHunter usa a rede local para acessar o servidor SDR++ remoto.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

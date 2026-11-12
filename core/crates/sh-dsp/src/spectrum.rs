@@ -14,6 +14,7 @@ pub struct Spectrum {
     buf: Vec<Complex32>,
     scratch: Vec<Complex32>,
     fill: usize,
+    skip_samples: usize,
     /// FFTs per output frame (power averaged)
     per_frame: usize,
     done: usize,
@@ -48,6 +49,7 @@ impl Spectrum {
             buf: vec![Complex32::new(0.0, 0.0); n],
             scratch,
             fill: 0,
+            skip_samples: 0,
             per_frame,
             done: 0,
             acc: vec![0.0; n],
@@ -63,8 +65,20 @@ impl Spectrum {
     }
 
     /// Feed samples; `on_frame` gets each finished frame (dBFS, bin 0 = -fs/2).
-    pub fn push(&mut self, mut x: &[Complex32], mut on_frame: impl FnMut(&[f32])) {
+    pub fn push(&mut self, x: &[Complex32], mut on_frame: impl FnMut(&[f32])) {
+        self.push_sparse(x, 1, &mut on_frame);
+    }
+
+    /// Analyse one full-rate FFT window out of each `stride` windows. This saves CPU
+    /// without aliasing or narrowing the frequency span shown to the user.
+    pub fn push_sparse(&mut self, mut x: &[Complex32], stride: usize, mut on_frame: impl FnMut(&[f32])) {
         while !x.is_empty() {
+            if self.skip_samples > 0 {
+                let k = self.skip_samples.min(x.len());
+                self.skip_samples -= k;
+                x = &x[k..];
+                continue;
+            }
             let k = (self.n - self.fill).min(x.len());
             self.buf[self.fill..self.fill + k].copy_from_slice(&x[..k]);
             self.fill += k;
@@ -72,6 +86,7 @@ impl Spectrum {
             if self.fill == self.n {
                 self.accumulate();
                 self.fill = 0;
+                self.skip_samples = (stride.max(1) - 1) * self.n;
                 self.done += 1;
                 if self.done >= self.per_frame {
                     self.frame();
@@ -125,6 +140,22 @@ mod tests {
         assert!(vmax.abs() < 0.5, "peak {vmax} dBFS");
         let floor = last[100];
         assert!(floor < -80.0, "leakage {floor}");
+    }
+
+    #[test]
+    fn sparse_fft_preserves_the_full_frequency_span() {
+        let fs = 1_024_000.0;
+        let n = 1024;
+        let mut sp = Spectrum::new(n, fs, 250.0, 0.0);
+        let mut nco = Nco::new(-350_000.0, fs);
+        let samples: Vec<_> = (0..n * 20).map(|_| nco.next()).collect();
+        let mut row = Vec::new();
+        for packet in samples.chunks(700) {
+            sp.push_sparse(packet, 4, |values| row = values.to_vec());
+        }
+        assert!(!row.is_empty());
+        let peak = row.iter().enumerate().max_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0;
+        assert_eq!(peak, n / 2 + 350);
     }
 
     /// A carrier about as strong as the noise in its bin: a single FFT's noise peaks (+8 dB

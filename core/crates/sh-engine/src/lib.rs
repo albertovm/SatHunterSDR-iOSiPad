@@ -19,7 +19,9 @@ use sh_dsp::spectrum::Spectrum;
 use sh_sat::orbit::Station;
 use sh_sat::tracker::{demod_for, waiting_for_aos};
 use sh_sat::{locator, Filter};
-use sh_sources::demo::{sat_slot, DemoSource};
+use sh_sources::demo::sat_slot;
+#[cfg(not(target_os = "ios"))]
+use sh_sources::demo::DemoSource;
 use sh_sources::{SatSignal, SharedSatSignal, SignalKind, Sink, Source};
 use std::collections::VecDeque;
 use std::path::{Path, PathBuf};
@@ -30,6 +32,7 @@ use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
 const AUDIO_MAX: usize = 48_000; // 1 s
+const AUDIO_PREROLL: usize = 12_000; // 250 ms absorbs network and DSP scheduling jitter
 const ROWS_MAX: usize = 64;
 
 pub fn now_unix() -> f64 {
@@ -61,6 +64,7 @@ struct DspParams {
 #[derive(Debug, Default)]
 struct DspOut {
     level_db: f32,
+    audio_rms: f32,
     bins: usize,
     center_hz: f64,
     rate: f64,
@@ -90,6 +94,8 @@ struct Inner {
     /// FFT rows with the centre frequency and sample rate they were taken at
     rows: Mutex<VecDeque<(f64, f64, Vec<f32>)>>,
     audio: Mutex<VecDeque<f32>>,
+    audio_primed: AtomicBool,
+    audio_underruns: AtomicU64,
     sat: Mutex<SatState>,
     sat_signal: SharedSatSignal,
     dsp_thread: Mutex<Option<JoinHandle<()>>>,
@@ -240,7 +246,9 @@ enum Cmd {
 impl Engine {
     pub fn new(dir: &Path) -> Engine {
         let _ = std::fs::create_dir_all(dir);
-        let cfg = Config::load(&dir.join("config.json"));
+        let mut cfg = Config::load(&dir.join("config.json"));
+        #[cfg(target_os = "ios")]
+        if cfg.source == "demo" { cfg.source = "sdrpp".into(); }
         let mode = Mode::parse(&cfg.mode).unwrap_or(Mode::Wfm);
         let (wtx, wrx) = channel();
         let inner = Arc::new(Inner {
@@ -259,6 +267,8 @@ impl Engine {
             out: Mutex::new(DspOut::default()),
             rows: Mutex::new(VecDeque::new()),
             audio: Mutex::new(VecDeque::new()),
+            audio_primed: AtomicBool::new(false),
+            audio_underruns: AtomicU64::new(0),
             sat: Mutex::new(SatState::default()),
             sat_signal: sat_slot(),
             source: Mutex::new(None),
@@ -351,7 +361,15 @@ impl Engine {
     /// Pull up to out.len() audio samples (48 kHz mono). Returns samples written.
     pub fn audio(&self, out: &mut [f32]) -> usize {
         let mut q = lock(&self.inner.audio);
+        if !self.inner.audio_primed.load(Ordering::Relaxed) {
+            if q.len() < AUDIO_PREROLL { return 0; }
+            self.inner.audio_primed.store(true, Ordering::Relaxed);
+        }
         let n = out.len().min(q.len());
+        if n < out.len() && self.inner.running.load(Ordering::Relaxed) {
+            self.inner.audio_underruns.fetch_add(1, Ordering::Relaxed);
+            self.inner.audio_primed.store(false, Ordering::Relaxed);
+        }
         for (o, s) in out.iter_mut().zip(q.drain(..n)) {
             *o = s;
         }
@@ -376,6 +394,7 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
         }
         Cmd::Tune { hz } => {
             tune(i, hz)?;
+            i.save();
             Ok(json!({ "vfo_hz": lock(&i.cfg).vfo_hz }))
         }
         Cmd::Center { hz } => {
@@ -403,23 +422,31 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
         }
         Cmd::Mode { mode, bw } => {
             let m = Mode::parse(&mode).ok_or("unknown mode")?;
-            let bw = bw.unwrap_or(m.default_bw());
+            let (min_bw, max_bw) = m.bandwidth_limits();
+            let bw = bw.unwrap_or(m.default_bw()).clamp(min_bw, max_bw);
             {
                 let mut c = lock(&i.cfg);
                 c.mode = m.name().into();
                 c.bw = bw;
+                c.auto_demod = false;
             }
             i.bump_params(|p| {
                 p.mode = m;
                 p.bw = bw;
             });
+            lock(&i.audio).clear();
+            i.audio_primed.store(false, Ordering::Relaxed);
             i.save();
             Ok(json!({}))
         }
         Cmd::Bandwidth { hz } => {
-            let hz = hz.clamp(100.0, 250_000.0);
+            let mode = Mode::parse(&lock(&i.cfg).mode).unwrap_or(Mode::Wfm);
+            let (min_bw, max_bw) = mode.bandwidth_limits();
+            let hz = hz.clamp(min_bw, max_bw);
             lock(&i.cfg).bw = hz;
             i.bump_params(|p| p.bw = hz);
+            lock(&i.audio).clear();
+            i.audio_primed.store(false, Ordering::Relaxed);
             i.save();
             Ok(json!({}))
         }
@@ -765,7 +792,10 @@ fn usb_id(i: &Inner, kind: &str) -> sh_sources::usb::UsbId {
 
 fn make_source(i: &Inner, id: &str) -> Result<Box<dyn Source>, String> {
     match id {
+        #[cfg(not(target_os = "ios"))]
         "demo" => Ok(Box::new(DemoSource::new(i.sat_signal.clone()))),
+        #[cfg(target_os = "ios")]
+        "demo" => Err("a fonte de demonstração não está disponível no iOS".into()),
         "sdrpp" => { let c = lock(&i.cfg); Ok(Box::new(sh_sources::sdrpp::SdrppSource::new(c.sdrpp_host.clone(), c.sdrpp_port))) },
         #[cfg(not(target_os = "ios"))]
         "rtl" => Ok(Box::new(sh_sources::rtl::RtlSource::new(usb_id(i, "rtl")))),
@@ -786,15 +816,15 @@ fn switch_source(i: &Arc<Inner>, id: &str) -> Result<(), String> {
         let mut c = lock(&i.cfg);
         let old = c.source.clone();
         let v = c.vfo_hz;
-        c.freqs.insert(old, v);
+        c.freqs.insert(old.clone(), v);
         let def = if id == "esp" { 2_450_000_000.0 } else { 100_000_000.0 };
-        let mut f = c.freqs.get(id).copied().unwrap_or(def);
+        let mut f = if old == id { v } else { c.freqs.get(id).copied().unwrap_or(def) };
         if !(info.min_hz..=info.max_hz).contains(&f) {
             f = def;
         }
         c.source = id.to_string();
         c.vfo_hz = f;
-        c.center_hz = f - 0.2 * if info.sample_rates.contains(&c.rate) { c.rate } else { info.sample_rates[0] };
+        c.center_hz = if id == "sdrpp" { f } else { f - 0.2 * if info.sample_rates.contains(&c.rate) { c.rate } else { info.sample_rates[0] } };
         c.center_hz = c.center_hz.clamp(info.min_hz, info.max_hz);
         if !info.sample_rates.contains(&c.rate) {
             c.rate = info.sample_rates[0];
@@ -815,7 +845,7 @@ fn start(i: &Arc<Inner>) -> Result<(), String> {
     let info = src.info();
     let rate = if info.sample_rates.contains(&c.rate) { c.rate } else { info.sample_rates[0] };
     src.set_sample_rate(rate).map_err(|e| e.to_string())?;
-    let center = c.center_hz.clamp(info.min_hz, info.max_hz);
+    let center = if c.source == "sdrpp" { c.vfo_hz } else { c.center_hz }.clamp(info.min_hz, info.max_hz);
     src.set_frequency(center).map_err(|e| e.to_string())?;
     src.set_gain(c.gain).map_err(|e| e.to_string())?;
     src.set_ppm(c.ppm).map_err(|e| e.to_string())?;
@@ -824,7 +854,7 @@ fn start(i: &Arc<Inner>) -> Result<(), String> {
     if src.has_bias_tee() {
         src.set_bias_tee(c.bias_tee).map_err(|e| e.to_string())?;
     }
-    let (sink, rx, dropped) = Sink::new(32);
+    let (sink, rx, dropped) = Sink::new(128);
     src.start(sink).map_err(|e| e.to_string())?;
     {
         let mut cc = lock(&i.cfg);
@@ -833,6 +863,8 @@ fn start(i: &Arc<Inner>) -> Result<(), String> {
     }
     *lock(&i.source) = Some(src);
     *lock(&i.dropped) = Some(dropped);
+    i.audio_primed.store(false, Ordering::Relaxed);
+    i.audio_underruns.store(0, Ordering::Relaxed);
     i.running.store(true, Ordering::SeqCst);
     let ii = i.clone();
     let t = std::thread::Builder::new().name("dsp".into()).spawn(move || dsp(ii, rx)).map_err(|e| e.to_string())?;
@@ -855,6 +887,8 @@ fn stop(i: &Inner) {
         let _ = t.join();
     }
     lock(&i.audio).clear();
+    i.audio_primed.store(false, Ordering::Relaxed);
+    lock(&i.rows).clear();
 }
 
 fn set_center(i: &Inner, hz: f64) -> Result<f64, String> {
@@ -869,6 +903,19 @@ fn set_center(i: &Inner, hz: f64) -> Result<f64, String> {
 /// Tune the VFO. If it would leave the usable span, move the hardware so the signal sits a
 /// little away from the DC spike.
 fn tune(i: &Inner, hz: f64) -> Result<(), String> {
+    if lock(&i.cfg).source == "sdrpp" {
+        let center = set_center(i, hz)?;
+        lock(&i.audio).clear();
+        i.audio_primed.store(false, Ordering::Relaxed);
+        lock(&i.cfg).vfo_hz = center;
+        i.bump_params(|p| {
+            p.vfo_hz = center;
+            p.vfo_rate = 0.0;
+            p.vfo_at = Instant::now();
+        });
+        lock(&i.rows).clear();
+        return Ok(());
+    }
     let (center, rate, bw, centered) = {
         let c = lock(&i.cfg);
         // the span the DSP sees: the hardware rate over the decimation
@@ -923,8 +970,11 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
                 p = lp.clone();
             }
         }
+        // Rendering every IQ sample at network rates competes with the audio demodulator.
+        // Analyse fewer complete FFT windows while preserving the full frequency span.
+        let spectrum_stride = if b.rate >= 500_000.0 { 4 } else { 1 };
         if !matches!(&spec, Some((_, r, n)) if *r == b.rate && *n == p.fft_size) {
-            spec = Some((Spectrum::new(p.fft_size, b.rate, p.fps, 0.4), b.rate, p.fft_size));
+            spec = Some((Spectrum::new(p.fft_size, b.rate, p.fps * spectrum_stride as f64, 0.4), b.rate, p.fft_size));
         }
         {
             let mut rec = lock(&i.recorder);
@@ -957,7 +1007,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
         }
         let mut new_rows = Vec::new();
         if let Some((s, _, _)) = spec.as_mut() {
-            s.push(&b.samples, |f| new_rows.push(f.to_vec()));
+            s.push_sparse(&b.samples, spectrum_stride, |f| new_rows.push(f.to_vec()));
             if i.lab_on.load(Ordering::Relaxed) && !new_rows.is_empty() {
                 lab::feed(&i, b.center_hz, b.rate, &new_rows, &[]);
             }
@@ -992,6 +1042,7 @@ fn dsp(i: Arc<Inner>, rx: Receiver<sh_sources::Block>) {
             }
             let mut o = lock(&i.out);
             o.level_db = d.level_db();
+            o.audio_rms = if audio.is_empty() { 0.0 } else { (audio.iter().map(|v| v * v).sum::<f32>() / audio.len() as f32).sqrt() };
             o.bins = p.fft_size;
             o.center_hz = b.center_hz;
             o.rate = b.rate;
@@ -1459,6 +1510,7 @@ fn control(i: Arc<Inner>) {
 
 fn status(i: &Inner) -> Value {
     let c = lock(&i.cfg).clone();
+    let audio_buffered_ms = lock(&i.audio).len() * 1000 / 48_000;
     let o = lock(&i.out);
     let dropped = lock(&i.dropped).as_ref().map(|d| d.load(Ordering::Relaxed)).unwrap_or(0);
     let (shift, _) = *lock(&i.time_shift);
@@ -1478,6 +1530,9 @@ fn status(i: &Inner) -> Value {
         "gain": c.gain,
         "squelch": c.squelch,
         "level_db": o.level_db,
+        "audio_rms": o.audio_rms,
+        "audio_buffered_ms": audio_buffered_ms,
+        "audio_underruns": i.audio_underruns.load(Ordering::Relaxed),
         "bins": if o.bins > 0 { o.bins } else { c.fft_size },
         "spectrum_center_hz": o.center_hz,
         "spectrum_rate": o.rate,
