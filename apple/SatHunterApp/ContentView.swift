@@ -213,25 +213,21 @@ private struct FrequencyChangeOverlay: View {
                     .accessibilityLabel("Nova frequência em hertz")
                 Text("Exemplo: 145.800.000 Hz").font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach([ ["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "⌫"] ], id: \.self) { row in
+                ForEach([ ["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["Limpar", "0", "⌫"] ], id: \.self) { row in
                     HStack(spacing: 10) {
                         ForEach(row, id: \.self) { key in
-                            if key.isEmpty {
-                                Color.clear.frame(maxWidth: .infinity).frame(height: 44)
-                            } else {
-                                Button(key) {
-                                    if key == "⌫" { if !draft.isEmpty { draft.removeLast() } }
-                                    else { append(key) }
-                                }
-                                .font(.system(size: 24, weight: .medium, design: .monospaced))
-                                .frame(maxWidth: .infinity, minHeight: 44)
-                                .buttonStyle(.bordered)
+                            Button(key) {
+                                if key == "Limpar" { draft = "" }
+                                else if key == "⌫" { if !draft.isEmpty { draft.removeLast() } }
+                                else { append(key) }
                             }
+                            .font(.system(size: key == "Limpar" ? 15 : 24, weight: .medium, design: .monospaced))
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .buttonStyle(.bordered)
                         }
                     }
                 }
                 HStack {
-                    Button("Limpar") { draft = "" }
                     Spacer()
                     Button("Sintonizar") {
                         if let frequency { onTune(frequency) }
