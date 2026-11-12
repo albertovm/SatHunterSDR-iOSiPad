@@ -59,6 +59,8 @@ pub struct Config {
     pub ground_aprs_hz: f64,
     /// Last VFO frequency per source ("demo", "rtl", "esp")
     pub freqs: std::collections::BTreeMap<String, f64>,
+    pub sdrpp_host: String,
+    pub sdrpp_port: u16,
 }
 
 impl Default for Config {
@@ -98,6 +100,8 @@ impl Default for Config {
             ground_aprs: false,
             ground_aprs_hz: 144.800e6,
             freqs: Default::default(),
+            sdrpp_host: "127.0.0.1".into(),
+            sdrpp_port: 5259,
         }
     }
 }

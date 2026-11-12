@@ -200,6 +200,7 @@ enum Cmd {
     UsbDetach { vid: u16, pid: u16 },
     /// Choose the source: demo, rtl, esp
     Source { id: String },
+    SdrppConfig { host: String, port: Option<u16> },
     /// The file name a recording started now would get
     RecordName,
     /// Start recording IQ: into `dir` (a folder), or into `fd` (Android: an opened Downloads
@@ -720,6 +721,17 @@ fn run_cmd(i: &Arc<Inner>, c: Cmd) -> Result<Value, String> {
             switch_source(i, &id)?;
             Ok(json!({}))
         }
+        Cmd::SdrppConfig { host, port } => {
+            let mut c = lock(&i.cfg);
+            c.sdrpp_host = host;
+            if let Some(p) = port { c.sdrpp_port = p; }
+            c.source = "sdrpp".into();
+            let host = c.sdrpp_host.clone(); let port = c.sdrpp_port;
+            drop(c);
+            let _ = (host, port);
+            switch_source(i, "sdrpp")?;
+            Ok(json!({ "host": lock(&i.cfg).sdrpp_host, "port": lock(&i.cfg).sdrpp_port }))
+        }
     }
 }
 
@@ -754,6 +766,7 @@ fn usb_id(i: &Inner, kind: &str) -> sh_sources::usb::UsbId {
 fn make_source(i: &Inner, id: &str) -> Result<Box<dyn Source>, String> {
     match id {
         "demo" => Ok(Box::new(DemoSource::new(i.sat_signal.clone()))),
+        "sdrpp" => { let c = lock(&i.cfg); Ok(Box::new(sh_sources::sdrpp::SdrppSource::new(c.sdrpp_host.clone(), c.sdrpp_port))) },
         #[cfg(not(target_os = "ios"))]
         "rtl" => Ok(Box::new(sh_sources::rtl::RtlSource::new(usb_id(i, "rtl")))),
         #[cfg(not(target_os = "ios"))]

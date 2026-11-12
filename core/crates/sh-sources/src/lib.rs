@@ -8,6 +8,7 @@ use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError};
 use std::sync::{Arc, Mutex};
 
 pub mod demo;
+pub mod sdrpp;
 #[cfg(not(target_os = "ios"))]
 pub mod esp;
 #[cfg(not(target_os = "ios"))]
