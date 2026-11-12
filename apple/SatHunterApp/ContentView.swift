@@ -163,31 +163,41 @@ private struct MapOverview: View {
     var body: some View { Map(initialPosition: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)))) { Marker("Observador", coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)).tint(.blue); if !ground.isEmpty { MapPolyline(coordinates: ground.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }).stroke(.yellow, lineWidth: 2) }; ForEach(Array(pins.enumerated()), id: \.offset) { _, pin in if let lat = pin["lat"] as? Double, let lon = pin["lon"] as? Double { Marker(pin["label"] as? String ?? "APRS", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon)).tint(.orange) } } } }
 }
 
-private struct FrequencyEntrySheet: View {
-    @Binding var value: String
-    let onTune: (Double) -> Void
-    @FocusState private var focused: Bool
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Digitar frequência (Hz)").font(.headline)
-            TextField("000.000.000", text: $value)
-                .keyboardType(.numbersAndPunctuation)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .font(.system(size: 28, weight: .medium, design: .monospaced))
-                .focused($focused)
-                .submitLabel(.done)
-                .onSubmit(tune)
-            Button("Sintonizar", action: tune)
-                .buttonStyle(.borderedProminent)
-                .disabled(FrequencyDisplay.parse(value) == nil)
-        }
-        .padding(20)
-        .onAppear { focused = true }
+private struct FrequencyInput: UIViewRepresentable {
+    @Binding var text: String
+    @Binding var editing: Bool
+
+    func makeUIView(context: Context) -> UITextField {
+        let field = UITextField()
+        field.delegate = context.coordinator
+        field.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .editingChanged)
+        field.keyboardType = .numbersAndPunctuation
+        field.returnKeyType = .done
+        field.textColor = .orange
+        field.tintColor = .orange
+        field.font = .monospacedSystemFont(ofSize: 24, weight: .medium)
+        field.adjustsFontSizeToFitWidth = true
+        field.minimumFontSize = 19
+        field.placeholder = "000.000.000"
+        field.accessibilityLabel = "Frequência em hertz"
+        field.text = text
+        return field
     }
-    private func tune() {
-        guard let frequency = FrequencyDisplay.parse(value) else { return }
-        onTune(frequency)
+
+    func updateUIView(_ field: UITextField, context: Context) {
+        context.coordinator.parent = self
+        if !field.isFirstResponder && field.text != text { field.text = text }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: FrequencyInput
+        init(_ parent: FrequencyInput) { self.parent = parent }
+        @objc func changed(_ field: UITextField) { parent.text = field.text ?? "" }
+        func textFieldDidBeginEditing(_ textField: UITextField) { parent.editing = true }
+        func textFieldDidEndEditing(_ textField: UITextField) { parent.editing = false }
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool { textField.resignFirstResponder(); return true }
     }
 }
 
@@ -196,7 +206,8 @@ private struct ReceiverScreenView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var fullscreen = false
     @State private var frequencyMHz = ""
-    @State private var showingFrequencyEditor = false
+    @State private var frequencyEditing = false
+    @State private var frequencyDirty = false
     private var mode: String { engine.status["mode"] as? String ?? "WFM" }
     private var bandwidthRange: ClosedRange<Double> {
         switch mode {
@@ -218,27 +229,23 @@ private struct ReceiverScreenView: View {
                 Color.black.ignoresSafeArea()
                 VStack(spacing: 6) {
                     HStack(spacing: 6) {
-                        Button {
-                            frequencyMHz = FrequencyDisplay.format(hz)
-                            showingFrequencyEditor = true
-                        } label: {
-                            Text(FrequencyDisplay.format(hz))
-                                .font(.system(size: 24, weight: .medium, design: .monospaced))
-                                .foregroundStyle(.orange)
-                                .minimumScaleFactor(0.8)
-                                .lineLimit(1)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Editar frequência em hertz")
+                        FrequencyInput(text: $frequencyMHz, editing: $frequencyEditing)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 40)
                         Button("Sintonizar") {
-                            frequencyMHz = FrequencyDisplay.format(hz)
-                            showingFrequencyEditor = true
+                            guard let value = FrequencyDisplay.parse(frequencyMHz) else { return }
+                            engine.tune(value)
+                            frequencyMHz = FrequencyDisplay.format(value)
+                            frequencyDirty = false
                         }
                             .buttonStyle(.borderedProminent)
                             .font(.caption)
                         Circle().fill(receivingIQ ? .green : running ? .orange : .red).frame(width: 10, height: 10)
+                    }
+                    .onAppear { if !frequencyDirty && !frequencyEditing { frequencyMHz = FrequencyDisplay.format(hz) } }
+                    .onChange(of: frequencyMHz) { _, _ in if frequencyEditing { frequencyDirty = true } }
+                    .onChange(of: hz) { _, value in
+                        if !frequencyDirty && !frequencyEditing { frequencyMHz = FrequencyDisplay.format(value) }
                     }
                     Text("\(mode)  •  \(engine.status["source"] as? String ?? "sdrpp")").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     Text(engine.status["source_status"] as? String ?? "SDR++ desconectado")
@@ -262,13 +269,6 @@ private struct ReceiverScreenView: View {
                     DecoderSummaryPanel(status: engine.status, engine: engine)
                 }.padding(8).padding(.top, 12)
             }.navigationTitle(fullscreen ? "" : "SDR Outdoor").navigationBarTitleDisplayMode(.inline)
-                .sheet(isPresented: $showingFrequencyEditor) {
-                    FrequencyEntrySheet(value: $frequencyMHz) { value in
-                        engine.tune(value)
-                        showingFrequencyEditor = false
-                    }
-                    .presentationDetents([.height(240)])
-                }
         }
     }
 }
