@@ -177,8 +177,14 @@ private struct FrequencyChangeOverlay: View {
     }
 
     private var frequency: Double? { FrequencyDisplay.parse(draft) }
-    private func append(_ character: String) {
-        if draft.filter(\.isNumber).count < 10 || character == "." { draft.append(character) }
+    private var formattedDraft: String {
+        let reversed = Array(draft.reversed())
+        return stride(from: 0, to: reversed.count, by: 3)
+            .map { String(reversed[$0..<min($0 + 3, reversed.count)].reversed()) }
+            .reversed().joined(separator: ".")
+    }
+    private func append(_ digit: String) {
+        if draft.count < 10 { draft.append(digit) }
     }
 
     var body: some View {
@@ -194,8 +200,11 @@ private struct FrequencyChangeOverlay: View {
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                TextField("Frequência em Hz", text: $draft)
-                    .keyboardType(.numbersAndPunctuation)
+                TextField("Frequência em Hz", text: Binding(
+                    get: { formattedDraft },
+                    set: { draft = String($0.filter(\.isNumber).prefix(10)) }
+                ))
+                    .keyboardType(.numberPad)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .font(.system(size: 25, weight: .medium, design: .monospaced))
@@ -204,16 +213,20 @@ private struct FrequencyChangeOverlay: View {
                     .accessibilityLabel("Nova frequência em hertz")
                 Text("Exemplo: 145.800.000 Hz").font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach([ ["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], [".", "0", "⌫"] ], id: \.self) { row in
+                ForEach([ ["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "⌫"] ], id: \.self) { row in
                     HStack(spacing: 10) {
                         ForEach(row, id: \.self) { key in
-                            Button(key) {
-                                if key == "⌫" { if !draft.isEmpty { draft.removeLast() } }
-                                else { append(key) }
+                            if key.isEmpty {
+                                Color.clear.frame(maxWidth: .infinity).frame(height: 44)
+                            } else {
+                                Button(key) {
+                                    if key == "⌫" { if !draft.isEmpty { draft.removeLast() } }
+                                    else { append(key) }
+                                }
+                                .font(.system(size: 24, weight: .medium, design: .monospaced))
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                                .buttonStyle(.bordered)
                             }
-                            .font(.system(size: 24, weight: .medium, design: .monospaced))
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                            .buttonStyle(.bordered)
                         }
                     }
                 }
