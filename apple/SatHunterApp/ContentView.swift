@@ -163,9 +163,19 @@ private struct MapOverview: View {
     var body: some View { Map(initialPosition: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)))) { Marker("Observador", coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)).tint(.blue); if !ground.isEmpty { MapPolyline(coordinates: ground.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }).stroke(.yellow, lineWidth: 2) }; ForEach(Array(pins.enumerated()), id: \.offset) { _, pin in if let lat = pin["lat"] as? Double, let lon = pin["lon"] as? Double { Marker(pin["label"] as? String ?? "APRS", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon)).tint(.orange) } } } }
 }
 
+@MainActor private final class FrequencyInputModel {
+    weak var field: UITextField?
+    var draft = ""
+
+    func display(_ frequency: Double, force: Bool = false) {
+        guard force || field?.isFirstResponder != true else { return }
+        draft = FrequencyDisplay.format(frequency)
+        field?.text = draft
+    }
+}
+
 private struct FrequencyInput: UIViewRepresentable {
-    @Binding var text: String
-    @Binding var editing: Bool
+    let model: FrequencyInputModel
 
     func makeUIView(context: Context) -> UITextField {
         let field = UITextField()
@@ -180,23 +190,19 @@ private struct FrequencyInput: UIViewRepresentable {
         field.minimumFontSize = 19
         field.placeholder = "000.000.000"
         field.accessibilityLabel = "Frequência em hertz"
-        field.text = text
+        field.text = model.draft
+        model.field = field
         return field
     }
 
-    func updateUIView(_ field: UITextField, context: Context) {
-        context.coordinator.parent = self
-        if !field.isFirstResponder && field.text != text { field.text = text }
-    }
+    func updateUIView(_ field: UITextField, context: Context) {}
 
-    func makeCoordinator() -> Coordinator { Coordinator(self) }
+    func makeCoordinator() -> Coordinator { Coordinator(model) }
 
     final class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: FrequencyInput
-        init(_ parent: FrequencyInput) { self.parent = parent }
-        @objc func changed(_ field: UITextField) { parent.text = field.text ?? "" }
-        func textFieldDidBeginEditing(_ textField: UITextField) { parent.editing = true }
-        func textFieldDidEndEditing(_ textField: UITextField) { parent.editing = false }
+        let model: FrequencyInputModel
+        init(_ model: FrequencyInputModel) { self.model = model }
+        @objc func changed(_ field: UITextField) { model.draft = field.text ?? "" }
         func textFieldShouldReturn(_ textField: UITextField) -> Bool { textField.resignFirstResponder(); return true }
     }
 }
@@ -205,9 +211,12 @@ private struct ReceiverScreenView: View {
     @EnvironmentObject private var engine: SatHunterEngine
     @Environment(\.dismiss) private var dismiss
     @State private var fullscreen = false
-    @State private var frequencyMHz = ""
-    @State private var frequencyEditing = false
-    @State private var frequencyDirty = false
+    @State private var frequencyInputModel = FrequencyInputModel()
+    @State private var frequencyInitialized = false
+    private func tuneFromGraph(_ value: Double) {
+        engine.tune(value)
+        frequencyInputModel.display(value, force: true)
+    }
     private var mode: String { engine.status["mode"] as? String ?? "WFM" }
     private var bandwidthRange: ClosedRange<Double> {
         switch mode {
@@ -229,23 +238,30 @@ private struct ReceiverScreenView: View {
                 Color.black.ignoresSafeArea()
                 VStack(spacing: 6) {
                     HStack(spacing: 6) {
-                        FrequencyInput(text: $frequencyMHz, editing: $frequencyEditing)
+                        FrequencyInput(model: frequencyInputModel)
                             .frame(maxWidth: .infinity)
                             .frame(height: 40)
                         Button("Sintonizar") {
-                            guard let value = FrequencyDisplay.parse(frequencyMHz) else { return }
+                            guard let value = FrequencyDisplay.parse(frequencyInputModel.draft) else { return }
                             engine.tune(value)
-                            frequencyMHz = FrequencyDisplay.format(value)
-                            frequencyDirty = false
+                            frequencyInputModel.field?.resignFirstResponder()
+                            frequencyInputModel.display(value, force: true)
                         }
                             .buttonStyle(.borderedProminent)
                             .font(.caption)
                         Circle().fill(receivingIQ ? .green : running ? .orange : .red).frame(width: 10, height: 10)
                     }
-                    .onAppear { if !frequencyDirty && !frequencyEditing { frequencyMHz = FrequencyDisplay.format(hz) } }
-                    .onChange(of: frequencyMHz) { _, _ in if frequencyEditing { frequencyDirty = true } }
+                    .onAppear {
+                        if !frequencyInitialized && hz > 0 {
+                            frequencyInputModel.display(hz, force: true)
+                            frequencyInitialized = true
+                        }
+                    }
                     .onChange(of: hz) { _, value in
-                        if !frequencyDirty && !frequencyEditing { frequencyMHz = FrequencyDisplay.format(value) }
+                        if !frequencyInitialized && value > 0 {
+                            frequencyInputModel.display(value, force: true)
+                            frequencyInitialized = true
+                        }
                     }
                     Text("\(mode)  •  \(engine.status["source"] as? String ?? "sdrpp")").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     Text(engine.status["source_status"] as? String ?? "SDR++ desconectado")
@@ -255,8 +271,8 @@ private struct ReceiverScreenView: View {
                     Text("Buffer de áudio \(engine.status["audio_buffered_ms"] as? Int ?? 0) ms • falhas \(engine.status["audio_underruns"] as? Int ?? 0)")
                         .font(.caption2.monospacedDigit()).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     HStack { Text("Heading \(String(format: "%.0f°", engine.heading))").font(.caption2.monospacedDigit()).foregroundStyle(.secondary); Spacer(); Button { fullscreen.toggle() } label: { Image(systemName: fullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right") }.buttonStyle(.plain).foregroundStyle(.blue).accessibilityLabel(fullscreen ? "Sair da tela cheia" : "Tela cheia") }
-                    ZStack { SpectrumView(values: engine.spectrum, centerHz: engine.spectrumCenterHz, rateHz: engine.spectrumRateHz) { engine.tune($0) }; FrequencyScaleOverlay(centerHz: engine.spectrumCenterHz, mode: mode, rateHz: engine.spectrumRateHz, vfoHz: hz, bandwidthHz: engine.status["bw"] as? Double ?? 12_500).allowsHitTesting(false) }.frame(height: fullscreen ? 94 : 60)
-                    ZStack { WaterfallView(rows: engine.waterfall, centerHz: engine.spectrumCenterHz, rateHz: engine.spectrumRateHz) { engine.tune($0) }; FrequencyScaleOverlay(centerHz: engine.spectrumCenterHz, mode: mode, rateHz: engine.spectrumRateHz, vfoHz: hz, bandwidthHz: engine.status["bw"] as? Double ?? 12_500, showScale: false).allowsHitTesting(false) }.frame(height: fullscreen ? 188 : 120).overlay { SatelliteMarkerOverlay(rows: engine.satelliteRows, centerHz: hz) { row in if let n = row["norad"] as? Int { engine.select(n) } }.allowsHitTesting(false) }
+                    ZStack { SpectrumView(values: engine.spectrum, centerHz: engine.spectrumCenterHz, rateHz: engine.spectrumRateHz) { tuneFromGraph($0) }; FrequencyScaleOverlay(centerHz: engine.spectrumCenterHz, mode: mode, rateHz: engine.spectrumRateHz, vfoHz: hz, bandwidthHz: engine.status["bw"] as? Double ?? 12_500).allowsHitTesting(false) }.frame(height: fullscreen ? 94 : 60)
+                    ZStack { WaterfallView(rows: engine.waterfall, centerHz: engine.spectrumCenterHz, rateHz: engine.spectrumRateHz) { tuneFromGraph($0) }; FrequencyScaleOverlay(centerHz: engine.spectrumCenterHz, mode: mode, rateHz: engine.spectrumRateHz, vfoHz: hz, bandwidthHz: engine.status["bw"] as? Double ?? 12_500, showScale: false).allowsHitTesting(false) }.frame(height: fullscreen ? 188 : 120).overlay { SatelliteMarkerOverlay(rows: engine.satelliteRows, centerHz: hz) { row in if let n = row["norad"] as? Int { engine.select(n) } }.allowsHitTesting(false) }
                     if !fullscreen {
                         RadarView(azimuth: look["az"] as? Double ?? 0, elevation: look["el"] as? Double ?? 0, heading: engine.heading).frame(height: 110).background(Color.black).clipShape(RoundedRectangle(cornerRadius: 10))
                         HStack { Button("−") { engine.tune(hz - 12500) }; Button(running ? "Parar" : "Iniciar") { running ? engine.stop() : engine.start() }.buttonStyle(.borderedProminent); Button("+") { engine.tune(hz + 12500) } }
